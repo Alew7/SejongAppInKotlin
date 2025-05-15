@@ -34,7 +34,7 @@ import com.example.sejongapp.ui.theme.primaryColor
 @Composable
 fun AnnousmentPage () {
 
-//This is a changing comment just to see what is going on
+
 
     BoxWithConstraints  (
         modifier = Modifier
