@@ -35,7 +35,7 @@ import com.example.sejongapp.ui.theme.primaryColor
 fun AnnousmentPage () {
 
 
-
+//The new comments
     BoxWithConstraints  (
         modifier = Modifier
             .fillMaxSize()
