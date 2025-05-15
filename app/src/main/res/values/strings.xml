@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SejongApp</string>
+    <string name="title_activity_splash_login">SplashLoginActivity</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+</resources>
