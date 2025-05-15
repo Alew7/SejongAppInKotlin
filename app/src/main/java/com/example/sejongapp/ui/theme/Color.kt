@@ -15,7 +15,8 @@ val mediumGray  = Color(0xff838383)
 val lightGray  = Color(0xffA4A4A4)
 
 val WarmBeige  = Color(0xffE1DFD8)
-val Black = Color(0xff000000)
+
+val totalWhite = Color(0xffF2F0E5))
 
 
 
