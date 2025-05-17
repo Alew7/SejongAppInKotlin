@@ -68,7 +68,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 
-    /// навигатсия между экранами
-    implementation("androidx.navigation:navigation-compose:2.7.0")
 
 }
