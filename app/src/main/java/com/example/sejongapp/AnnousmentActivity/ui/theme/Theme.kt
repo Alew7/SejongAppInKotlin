@@ -1,4 +1,4 @@
-package com.example.sejongapp.SpleshLoginPages.ui.theme
+package com.example.sejongapp.AnnousmentActivity.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -12,15 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = primaryColor,
-    secondary = secondaryColor,
-    tertiary = backgroundColor
+    primary = Purple80,
+    secondary = PurpleGrey80,
+    tertiary = Pink80
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = primaryColor,
-    secondary = secondaryColor,
-    tertiary = backgroundColor
+    primary = Purple40,
+    secondary = PurpleGrey40,
+    tertiary = Pink40
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
