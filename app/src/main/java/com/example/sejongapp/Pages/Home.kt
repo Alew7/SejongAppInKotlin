@@ -32,7 +32,7 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
 @Composable
-fun HomePage () {
+fun HomePage (onChangeScreen : (Int) -> Unit) {
     val context = LocalContext.current
     val scale = remember {
         androidx.compose.animation.core.Animatable(0.2f)
@@ -93,6 +93,13 @@ fun HomePage () {
                 modifier = Modifier
                     .padding(end = endPadding)
                     .scale(scale.value)
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+
+                    ) {
+                        onChangeScreen(1)
+                    }
 
             )
             Image (
@@ -133,8 +140,8 @@ fun HomePage () {
 
 
 
-@Preview (showBackground = true, showSystemUi = true)
-@Composable
-private fun Preview () {
-    HomePage()
-}
+//@Preview (showBackground = true, showSystemUi = true)
+//@Composable
+//private fun Preview () {
+//    HomePage()
+//}

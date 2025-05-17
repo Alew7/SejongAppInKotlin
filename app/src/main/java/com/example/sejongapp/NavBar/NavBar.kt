@@ -72,7 +72,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 }
             }
         ) { innerPadding ->
-            ContentScreen(modifier = Modifier.padding(innerPadding), selectedIndex)
+            ContentScreen(modifier = Modifier.padding(innerPadding), selectedIndex = selectedIndex, onChangeScreen = {newIndex -> selectedIndex = newIndex})
+
         }
 
 
@@ -80,10 +81,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : Int) {
+fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : Int,onChangeScreen : (Int) -> Unit) {
     when(selectedIndex) {
-        0 -> HomePage()
+        0 -> HomePage(onChangeScreen)
         1 -> AnnousmentPage()
+        else -> Box (modifier)
     }
 }
 

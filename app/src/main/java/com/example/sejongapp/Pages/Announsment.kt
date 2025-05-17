@@ -1,10 +1,12 @@
 package com.example.sejongapp.Pages
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +25,8 @@ import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
+import com.example.sejongapp.ui.theme.darkGray
 import kotlin.reflect.typeOf
 
 
@@ -91,14 +95,9 @@ fun AnnousmentPage() {
                             value = searchText,
                             onValueChange = {searchText = it},
                             placeholder = { Text("Search")},
-                            visualTransformation = PasswordVisualTransformation(),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-
                                 focusedTextColor = Color.Black,
-                                focusedBorderColor = Color.Black,
-
-
-
+                                focusedBorderColor = darkGray
                             ),
                             modifier = Modifier
                                 .width(350.dp)
@@ -117,28 +116,28 @@ fun AnnousmentPage() {
 
         }
     }
-}
 
 
 
-//            // Список карточек
-//            LazyColumn(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(top = 16.dp),
-//                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-//                verticalArrangement = Arrangement.spacedBy(16.dp)
-//            ) {
-//                items(10) { index ->
-//                    AnnousmentCard {
-//                        val intent = Intent(context, AnnousmentActivity::class.java)
-//                        context.startActivity(intent)
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
+
+            // Список карточек
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 150.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(10) { index ->
+                    AnnousmentCard {
+                        val intent = Intent(context, AnnousmentActivity::class.java)
+                        context.startActivity(intent)
+                    }
+                }
+            }
+        }
+
+
 
 @Composable
 fun AnnousmentCard(onClick: () -> Unit) {
