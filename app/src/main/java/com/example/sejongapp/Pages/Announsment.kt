@@ -27,6 +27,7 @@ import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
+import com.example.sejongapp.ui.theme.brightBackgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 
 
@@ -175,9 +176,9 @@ fun AnnousmentCard(onClick: () -> Unit) {
                 onClick()
             },
         shape = RoundedCornerShape(15.dp),
-        elevation = CardDefaults.cardElevation(20.dp),
+//        elevation = CardDefaults.cardElevation(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
+            containerColor = brightBackgroundColor,
         )
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
