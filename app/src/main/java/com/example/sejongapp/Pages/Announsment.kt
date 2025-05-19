@@ -26,11 +26,9 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
 import com.example.sejongapp.ui.theme.darkGray
-import kotlin.reflect.typeOf
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)

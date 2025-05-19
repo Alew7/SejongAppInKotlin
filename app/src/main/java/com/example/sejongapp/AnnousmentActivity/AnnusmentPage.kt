@@ -105,9 +105,7 @@ fun AnnousmentDetailPage () {
 
                 )
                 Text (
-                    text = "   In the heart of Dushanbe, the Dushanbe 3 Sejong Institute stands as a vibrant center for the promotion of Korean language and culture, fostering a deeper understanding between Tajikistan and South Korea. Since its establishment, the institute has witnessed a remarkable surge in interest, with students of all ages eager to explore the rich tapestry of Korean traditions.  \n" +
-                            "   The institute's comprehensive curriculum extends beyond basic language instruction, offering a diverse range of programs that delve into the intricacies of Korean history, art, and contemporary culture. From traditional calligraphy and cooking classes to modern K-pop dance workshops, the Sejong Institute provides a holistic cultural experience.\n" +
-                            "  "
+                    text = "In the heart of Dushanbe, the Dushanbe 3 Sejong\nInstitute stands as a vibrant center for the promotion\nof Korean language and culture, fostering a deeper\nunderstanding between Tajikistan and South Korea.\nSince its establishment,the instite has witnessed\n a remarkable surge in interest, with students of all ages\neagerto explore the rich tapestry of Korean\ntraditions.\n   The institute's comprehensive curreculum extends\nbeyond basic language instruction, offering a diverse\nrange of programs that delve  into the intricaries of\nKorean history, art, and contemporary culture.From\ntraditional calligraphy and cooking classes to modern\nK-pop dance workshops,the Sejong Institute\nprovides a holistic cultural experience."
                 )
 
             }
