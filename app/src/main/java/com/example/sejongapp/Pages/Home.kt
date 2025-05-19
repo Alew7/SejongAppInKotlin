@@ -140,8 +140,8 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
 
 
 
-//@Preview (showBackground = true, showSystemUi = true)
-//@Composable
-//private fun Preview () {
-//    HomePage()
-//}
+@Preview (showBackground = true, showSystemUi = true)
+@Composable
+private fun Preview () {
+    HomePage(onChangeScreen = {})
+}

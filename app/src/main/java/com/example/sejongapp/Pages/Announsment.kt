@@ -8,6 +8,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -24,6 +26,7 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
 import com.example.sejongapp.ui.theme.darkGray
@@ -91,26 +94,46 @@ fun AnnousmentPage() {
 
 
                     if (isSeraching) {
-                        OutlinedTextField(
-                            value = searchText,
-                            onValueChange = {searchText = it},
-                            placeholder = { Text("Search")},
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedTextColor = Color.Black,
-                                focusedBorderColor = darkGray,
-                                cursorColor = Color.Black
-
-                            ),
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .width(350.dp)
-                                .align(Alignment.Center)
+                                .fillMaxWidth()
                                 .height(90.dp)
-                                .padding(horizontal = 16.dp, vertical = 16.dp),
+                                .padding(horizontal = 16.dp, vertical = 16.dp)
+                        ) {
+
+
+                            Spacer(modifier = Modifier.width(20.dp))
+
+                            OutlinedTextField(
+                                value = searchText,
+                                onValueChange = { searchText = it },
+                                placeholder = { Text("Search") },
+                                leadingIcon = {
+                                    IconButton(onClick = {isSeraching = false}) {
+                                        Icon (
+                                            imageVector = Icons.Default.ArrowBack,
+                                            contentDescription = "Back",
+                                            tint = Color.Black
+                                        )
+                                    }
+                                },
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedTextColor = Color.Black,
+                                    focusedBorderColor = darkGray,
+                                    cursorColor = Color.Black
+
+                                ),
+                                modifier = Modifier
+                                    .padding(end = 15.dp)
+                                    .fillMaxWidth()
+                                    .height(60.dp),
                                 shape = RoundedCornerShape(15.dp)
 
-                        )
+                            )
 
 
+                        }
                     }
 
             }
@@ -137,7 +160,8 @@ fun AnnousmentPage() {
                     }
                 }
             }
-        }
+
+}
 
 
 
