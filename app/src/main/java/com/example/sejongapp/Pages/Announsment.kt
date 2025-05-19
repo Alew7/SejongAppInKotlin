@@ -97,7 +97,9 @@ fun AnnousmentPage() {
                             placeholder = { Text("Search")},
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 focusedTextColor = Color.Black,
-                                focusedBorderColor = darkGray
+                                focusedBorderColor = darkGray,
+                                cursorColor = Color.Black
+
                             ),
                             modifier = Modifier
                                 .width(350.dp)

@@ -26,7 +26,7 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun NavBar(modifier: Modifier = Modifier) {
     val navItemList = listOf(
         NavItem(R.drawable.home),
         NavItem(R.drawable.annousment),
@@ -95,5 +95,5 @@ fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : Int,onChangeScr
 @Preview (showBackground = true, showSystemUi = true)
 @Composable
 private  fun Preview () {
-    MainScreen()
+    NavBar()
 }
