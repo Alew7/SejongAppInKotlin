@@ -13,7 +13,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NavBar()
-
         }
     }
 }

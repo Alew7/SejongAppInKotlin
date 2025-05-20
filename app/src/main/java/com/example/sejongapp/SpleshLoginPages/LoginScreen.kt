@@ -1,8 +1,9 @@
 package com.example.sejongapp.SpleshLoginPages
 
-
+import LocalToken
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -32,16 +34,37 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sejongapp.MainActivity
+import androidx.compose.runtime.livedata.observeAsState
+import com.example.sejongapp.models.UserViewModel
+import com.example.sejongapp.models.tokenData
+import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
 
+const val TAG = "Login_TAG"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen () {
+
+
+
+
+
+    val userViewModel = UserViewModel()
+    val userResult = userViewModel.userResult.observeAsState()
     val context = LocalContext.current
 
-    var usernmae by remember {
+
+    if (LocalToken.getSavedToken(context) != "null"){
+        Log.i(TAG, "The token is ${LocalToken.getSavedToken(context)}")
+        val intent = Intent (context,MainActivity :: class.java)
+        context.startActivity(intent)
+
+    }
+
+    var username by remember {
         mutableStateOf("")
     }
 
@@ -68,8 +91,8 @@ fun LoginScreen () {
             )
             Spacer(modifier = Modifier.height(35.dp))
 
-            OutlinedTextField(value = usernmae, onValueChange = {
-                usernmae = it
+            OutlinedTextField(value = username, onValueChange = {
+                username = it
 
             }, label = {
                 Text(text = "username")
@@ -102,12 +125,24 @@ fun LoginScreen () {
 
             Spacer(modifier = Modifier.height(35.dp))
 
+
+            LaunchedEffect  (userResult){
+
+                Log.i(TAG, "userResult data had been changed ${userResult.value}")
+                if (userResult.value is NetworkResponse.Success) {
+                    Log.i(TAG,"user result ${(userResult.value as NetworkResponse.Success<tokenData>).data.token}")
+                    val intent = Intent (context,MainActivity :: class.java)
+
+                    LocalToken.setToken(context, (userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
+                }
+
+            }
+
             Button (
                 shape = RoundedCornerShape(10.dp),
 
                 onClick = {
-                    val intent = Intent(context, MainActivity::class.java)
-                    context.startActivity(intent)
+                    userViewModel.login(username, password)
 
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -117,6 +152,26 @@ fun LoginScreen () {
             ) {
                 Text (
                     text = "Sign In"
+                )
+            }
+
+
+            if (userResult.value is NetworkResponse.Success) {
+                Log.i(TAG,"user result ${(userResult.value as NetworkResponse.Success<tokenData>).data.token}")
+                val intent = Intent (context,MainActivity :: class.java)
+
+                LocalToken.setToken(context, (userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
+
+
+            }
+            else if (userResult.value is NetworkResponse.Loading){
+                Text(
+                    text = "Loading..."
+                )
+            }
+            else{
+                Text(
+                    text = "Loggin please"
                 )
             }
 
