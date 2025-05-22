@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sejongapp.ProfileActivity.ProfileActivity
+import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
@@ -134,6 +135,8 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
             )
         }
     }
+
+
 
 
 }

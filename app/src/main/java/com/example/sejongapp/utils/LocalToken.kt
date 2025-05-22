@@ -9,6 +9,8 @@ import java.util.*
 
 object LocalToken {
 
+    private const val  PREFERENCES_NAME = "user_prefs"
+
 //    fun setLocal(context: Context, token: String): Context {
 //        val locale = Locale(token)
 //        Locale.setDefault(locale)
@@ -42,8 +44,6 @@ object LocalToken {
 
         startActivity(context, intent, null)
     }
-
-
 
 
 }

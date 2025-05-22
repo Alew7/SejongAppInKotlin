@@ -1,7 +1,8 @@
 package com.example.sejongapp.SpleshLoginPages
 
 import LocalToken
-
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.background
@@ -18,10 +19,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -35,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sejongapp.MainActivity
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.text.input.VisualTransformation
+import com.example.sejongapp.ProfileActivity.ui.theme.WarmBeige
 import com.example.sejongapp.models.UserViewModel
 import com.example.sejongapp.models.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
@@ -49,20 +54,18 @@ const val TAG = "Login_TAG"
 fun LoginScreen () {
 
 
-
-
-
     val userViewModel = UserViewModel()
     val userResult = userViewModel.userResult.observeAsState()
     val context = LocalContext.current
+    var passwordVisible by remember { mutableStateOf(false) }
 
 
-    if (LocalToken.getSavedToken(context) != "null"){
-        Log.i(TAG, "The token is ${LocalToken.getSavedToken(context)}")
-        val intent = Intent (context,MainActivity :: class.java)
-        context.startActivity(intent)
-
-    }
+//    if (LocalToken.getSavedToken(context) != "null"){
+//        Log.i(TAG, "The token is ${LocalToken.getSavedToken(context)}")
+//        val intent = Intent (context,MainActivity :: class.java)
+//        context.startActivity(intent)
+//
+//    }
 
     var username by remember {
         mutableStateOf("")
@@ -114,7 +117,27 @@ fun LoginScreen () {
                 Text(text = "password")
 
             },
-                visualTransformation = PasswordVisualTransformation(),
+                singleLine = true,
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                  val image = if (passwordVisible)
+                      Icons.Filled.Visibility
+                    else Icons.Filled.VisibilityOff
+
+                    val description = if (passwordVisible) "Hide password" else "Show password"
+
+                    IconButton(onClick = {passwordVisible = !passwordVisible}){
+                        Icon (
+                            imageVector = image,
+                            contentDescription = description,
+                            tint = WarmBeige
+                        )
+                    }
+
+
+
+                },
+
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedTextColor = Color.Black,
                     focusedBorderColor = primaryColor,
@@ -171,7 +194,7 @@ fun LoginScreen () {
             }
             else{
                 Text(
-                    text = "Loggin please"
+                    text = "Login please"
                 )
             }
 
@@ -180,12 +203,13 @@ fun LoginScreen () {
 
         }
     }
+
 }
 
 
 @Preview (showSystemUi = true, showBackground = true)
 @Composable
-fun Preview ( ) {
+fun Preview () {
     LoginScreen()
 }
 
