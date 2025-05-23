@@ -1,6 +1,8 @@
 package com.example.sejongapp.Pages
 
 
+
+import LocalToken.deletToken
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.secondaryColor
 
@@ -39,13 +40,14 @@ fun test () {
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
         Button(
             shape = RoundedCornerShape(10.dp),
             onClick = {
+                deletToken(context)
 
             },
             colors = ButtonDefaults.buttonColors(
@@ -54,9 +56,8 @@ fun test () {
 
         ) {
             Text (
-                text = "Log out"
+                text = "Log Out"
             )
-
         }
 
     }
@@ -69,4 +70,3 @@ fun test () {
 private fun Preview () {
     test()
 }
-

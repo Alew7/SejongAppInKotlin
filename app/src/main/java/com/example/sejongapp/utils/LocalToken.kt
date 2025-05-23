@@ -1,11 +1,12 @@
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
-import android.content.res.Configuration
-import android.os.Build
 import android.util.Log
 import androidx.core.content.ContextCompat.startActivity
+import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
+
 import java.util.*
+
 
 object LocalToken {
 
@@ -43,6 +44,21 @@ object LocalToken {
         editor.apply()
 
         startActivity(context, intent, null)
+    }
+
+    fun deletToken (context: Context) {
+        Log.i("Token_TAG", "Trying to delete the token!")
+        val prefs = context.getSharedPreferences("Settings", Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.remove("token")
+        editor.apply()
+
+        Log.i("Token_TAG", "The token has deleted")
+
+
+        val intent = Intent(context,SplashLoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        context.startActivity(intent)
     }
 
 

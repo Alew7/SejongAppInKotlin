@@ -87,6 +87,7 @@ fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : Int,onChangeScr
         0 -> HomePage(onChangeScreen)
         1 -> AnnousmentPage()
         2 -> test()
+
         else -> Box (modifier)
     }
 }
