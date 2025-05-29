@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sejongapp.Pages.AnnousmentPage
 import com.example.sejongapp.Pages.HomePage
+import com.example.sejongapp.Pages.librarypage
 import com.example.sejongapp.Pages.test
 import com.example.sejongapp.R
 import com.example.sejongapp.ui.theme.WarmBeige
@@ -86,7 +87,7 @@ fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : Int,onChangeScr
     when(selectedIndex) {
         0 -> HomePage(onChangeScreen)
         1 -> AnnousmentPage()
-        2 -> test()
+        2 -> librarypage()
 
         else -> Box (modifier)
     }

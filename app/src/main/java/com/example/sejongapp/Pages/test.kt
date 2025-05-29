@@ -2,7 +2,7 @@ package com.example.sejongapp.Pages
 
 
 
-import LocalToken.deletToken
+import LocalToken
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +29,7 @@ fun test () {
 
     val context = LocalContext.current
 
+
     Box (
         modifier = Modifier
             .fillMaxSize()
@@ -47,8 +48,7 @@ fun test () {
         Button(
             shape = RoundedCornerShape(10.dp),
             onClick = {
-                deletToken(context)
-
+                LocalToken.deletToken(context)
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = secondaryColor

@@ -67,6 +67,8 @@ fun LoginScreen () {
 //
 //    }
 
+
+
     var username by remember {
         mutableStateOf("")
     }
@@ -149,17 +151,6 @@ fun LoginScreen () {
             Spacer(modifier = Modifier.height(35.dp))
 
 
-            LaunchedEffect  (userResult){
-
-                Log.i(TAG, "userResult data had been changed ${userResult.value}")
-                if (userResult.value is NetworkResponse.Success) {
-                    Log.i(TAG,"user result ${(userResult.value as NetworkResponse.Success<tokenData>).data.token}")
-                    val intent = Intent (context,MainActivity :: class.java)
-
-                    LocalToken.setToken(context, (userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
-                }
-
-            }
 
             Button (
                 shape = RoundedCornerShape(10.dp),
@@ -180,10 +171,23 @@ fun LoginScreen () {
 
 
             if (userResult.value is NetworkResponse.Success) {
-                Log.i(TAG,"user result ${(userResult.value as NetworkResponse.Success<tokenData>).data.token}")
-                val intent = Intent (context,MainActivity :: class.java)
 
-                LocalToken.setToken(context, (userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
+                Log.i(TAG, "NetWorkResponse is Successful")
+
+                if ((userResult.value as NetworkResponse.Success<tokenData>).data.token != null){
+                    Log.i(TAG,"token was taken fine")
+
+                    Log.i(TAG,"user result ${(userResult.value as NetworkResponse.Success<tokenData>).data.token}")
+                    val intent = Intent (context,MainActivity :: class.java)
+
+                    LocalToken.setToken(context, (userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
+                }
+                else{
+                    Log.i(TAG,"Password or Login was incorrect!")
+                    Text(
+                        text = "Login or password is incorrect!"
+                    )
+                }
 
 
             }

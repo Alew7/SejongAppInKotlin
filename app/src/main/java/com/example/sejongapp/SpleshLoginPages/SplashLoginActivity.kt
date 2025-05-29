@@ -1,11 +1,13 @@
 package com.example.sejongapp.SpleshLoginPages
 
+import LocalToken
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
+import com.example.sejongapp.Pages.test
 import kotlinx.coroutines.delay
 
 class SplashLoginActivity : ComponentActivity() {
@@ -14,6 +16,7 @@ class SplashLoginActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SejongApp()
+
         }
     }
 }
@@ -34,6 +37,7 @@ private fun SejongApp () {
         LoginScreen()
     }
 }
+
 
 
 
