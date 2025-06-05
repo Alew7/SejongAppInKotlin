@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
-import com.example.sejongapp.Pages.test
 import kotlinx.coroutines.delay
 
 class SplashLoginActivity : ComponentActivity() {

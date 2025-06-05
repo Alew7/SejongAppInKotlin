@@ -1,6 +1,5 @@
 package com.example.sejongapp.Pages
 
-
 import android.content.Intent
 import androidx.compose.animation.core.tween
 import com.example.sejongapp.R
@@ -28,12 +27,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sejongapp.ProfileActivity.ProfileActivity
-import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
 @Composable
 fun HomePage (onChangeScreen : (Int) -> Unit) {
+
     val context = LocalContext.current
     val scale = remember {
         androidx.compose.animation.core.Animatable(0.2f)
@@ -149,8 +148,10 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
 
 
 
+
+
 @Preview (showBackground = true, showSystemUi = true)
 @Composable
 private fun Preview () {
-    HomePage(onChangeScreen = {})
+    HomePage (onChangeScreen = {})
 }
