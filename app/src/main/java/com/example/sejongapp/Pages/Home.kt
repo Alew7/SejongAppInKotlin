@@ -98,7 +98,7 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
                         indication = null
 
                     ) {
-                        onChangeScreen(1)
+                        onChangeScreen(0)
                     }
 
             )
@@ -112,7 +112,7 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) { 
-                        onChangeScreen(2)
+
                     }
 
             )

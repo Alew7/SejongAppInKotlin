@@ -15,7 +15,6 @@ class SplashLoginActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SejongApp()
-
         }
     }
 }

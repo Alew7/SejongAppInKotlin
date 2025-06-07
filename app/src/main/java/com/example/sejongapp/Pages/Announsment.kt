@@ -34,7 +34,7 @@ import com.example.sejongapp.ui.theme.darkGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnnousmentPage() {
+fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
     val context = LocalContext.current
 
     var isSeraching by remember { mutableStateOf(false) }
@@ -48,7 +48,7 @@ fun AnnousmentPage() {
         val screenWidth = maxWidth
 
         Column {
-            // Верхняя панель с логотипом
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -90,7 +90,6 @@ fun AnnousmentPage() {
                 )
 
             }
-
 
                     if (isSeraching) {
                         Row(
@@ -263,12 +262,3 @@ private fun PreviewLargePhone() {
 private fun PreviewTablet() {
     AnnousmentPage()
 }
-
-
-
-
-
-
-
-
-

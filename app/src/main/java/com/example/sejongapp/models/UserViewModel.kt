@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 
 class UserViewModel: ViewModel() {
 
+
     private val userApi =  RetrofitInstance.userApi
 
 
@@ -52,5 +53,7 @@ class UserViewModel: ViewModel() {
             }
         }
     }
-
+    fun resetUserResult(){
+        _userResult.value = Idle
+    }
 }

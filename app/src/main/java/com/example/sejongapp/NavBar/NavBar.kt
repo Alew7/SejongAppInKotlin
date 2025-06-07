@@ -1,6 +1,10 @@
 package com.example.sejongapp.NavBar
 
+//import LocalToken.deletToken
+import LocalToken.deletToken
+import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,17 +30,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sejongapp.Pages.AnnousmentPage
 import com.example.sejongapp.Pages.HomePage
 import com.example.sejongapp.R
+import com.example.sejongapp.SpleshLoginPages.TAG
 import com.example.sejongapp.ui.theme.WarmBeige
 
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import kotlinx.coroutines.launch
+
+
+//const val TAG = "delet token"
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
@@ -49,6 +58,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     var selectedIndex by remember { mutableStateOf(2) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -81,13 +91,20 @@ fun MainScreen(modifier: Modifier = Modifier) {
 
                     Row(
                         modifier = Modifier
-                            .clickable { /* обработка выхода */ }
+                            .clickable (
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            )
+                            {
+                                deletToken(context)
+                            }
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_logout),
-                            contentDescription = "Выход"
+                            contentDescription = "Выход",
+
                         )
                         Text(
                             text = "Выход",

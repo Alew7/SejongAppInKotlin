@@ -18,10 +18,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,12 +42,16 @@ import androidx.compose.ui.unit.dp
 import com.example.sejongapp.MainActivity
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.WarmBeige
 import com.example.sejongapp.models.UserViewModel
 import com.example.sejongapp.models.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
+
+
+
 
 
 const val TAG = "Login_TAG"
@@ -54,10 +61,19 @@ const val TAG = "Login_TAG"
 fun LoginScreen () {
 
 
-    val userViewModel = UserViewModel()
-    val userResult = userViewModel.userResult.observeAsState()
+//    val userViewModel = UserViewModel()
+    val userViewModel : UserViewModel = viewModel()
+    val userResult = userViewModel.userResult.observeAsState(NetworkResponse.Idle)  // добавил Network.Idle
     val context = LocalContext.current
     var passwordVisible by remember { mutableStateOf(false) }
+
+    val isLoading = userResult.value is NetworkResponse.Loading
+    val isScuccess = userResult.value is NetworkResponse.Success <*>
+
+
+
+
+
 
 
 //    if (LocalToken.getSavedToken(context) != "null"){
@@ -156,53 +172,80 @@ fun LoginScreen () {
                 shape = RoundedCornerShape(10.dp),
 
                 onClick = {
-                    userViewModel.login(username, password)
+                    if (!isLoading) {
+                        userViewModel.login(username, password)
+                    }
 
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = primaryColor,
-                    contentColor = backgroundColor
-                )
+                    contentColor = backgroundColor,
+                    disabledContainerColor = primaryColor,
+                    disabledContentColor = backgroundColor
+                ),
+                enabled = !isLoading
             ) {
-                Text (
-                    text = "Sign In"
-                )
-            }
 
-
-            if (userResult.value is NetworkResponse.Success) {
-
-                Log.i(TAG, "NetWorkResponse is Successful")
-
-                if ((userResult.value as NetworkResponse.Success<tokenData>).data.token != null){
-                    Log.i(TAG,"token was taken fine")
-
-                    Log.i(TAG,"user result ${(userResult.value as NetworkResponse.Success<tokenData>).data.token}")
-                    val intent = Intent (context,MainActivity :: class.java)
-
-                    LocalToken.setToken(context, (userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
-                }
-                else{
-                    Log.i(TAG,"Password or Login was incorrect!")
-                    Text(
-                        text = "Login or password is incorrect!"
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier
+                            .height(20.dp)
+                            .size(24.dp)
+                            .padding(bottom = 2.dp, start = 1.dp)
                     )
                 }
-
-
-            }
-            else if (userResult.value is NetworkResponse.Loading){
-                Text(
-                    text = "Loading..."
-                )
-            }
-            else{
-                Text(
-                    text = "Login please"
-                )
+                else {
+                    Text (
+                        text = "Sign In"
+                    )
+                }
             }
 
 
+                val token = (userResult.value as? NetworkResponse.Success<tokenData>)?.data?.token
+                LaunchedEffect  (token){
+                    if (!token.isNullOrEmpty()) {
+                        Log.i(TAG, "token was $token")
+                        Log.i(TAG,"user result $token")
+
+                        val intent = Intent(context,MainActivity :: class.java)
+                        LocalToken.setToken(context,(userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
+
+                        userViewModel.resetUserResult()
+                    }
+                }
+
+
+
+//            if (userResult.value is NetworkResponse.Success) {
+//
+//                Log.i(TAG, "NetWorkResponse is Successful")
+//
+//                if ((userResult.value as NetworkResponse.Success<tokenData>).data.token != null){
+//                    Log.i(TAG,"token was taken fine")
+//
+//                    Log.i(TAG,"user result ${(userResult.value as NetworkResponse.Success<tokenData>).data.token}")
+//                    val intent = Intent (context,MainActivity :: class.java)
+//
+//                    LocalToken.setToken(context, (userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
+//                }
+//                else{
+//                    Log.i(TAG,"Password or Login was incorrect!")
+//                    Text(
+//                        text = "Login or password is incorrect!"
+//                    )
+//                }
+//
+//
+//            }
+
+//            else{
+//                Text(
+//                    text = "Login please"
+//                )
+//            }
 
 
         }
@@ -216,7 +259,3 @@ fun LoginScreen () {
 fun Preview () {
     LoginScreen()
 }
-
-
-
-
