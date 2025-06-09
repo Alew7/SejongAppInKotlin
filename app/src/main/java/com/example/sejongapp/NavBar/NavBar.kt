@@ -1,11 +1,9 @@
 package com.example.sejongapp.NavBar
 
-//import LocalToken.deletToken
+
 import LocalToken.deletToken
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,15 +35,13 @@ import androidx.compose.ui.unit.dp
 import com.example.sejongapp.Pages.AnnousmentPage
 import com.example.sejongapp.Pages.HomePage
 import com.example.sejongapp.R
-import com.example.sejongapp.SpleshLoginPages.TAG
 import com.example.sejongapp.ui.theme.WarmBeige
-
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import kotlinx.coroutines.launch
 
 
-//const val TAG = "delet token"
+
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {

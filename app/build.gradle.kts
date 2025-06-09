@@ -74,7 +74,7 @@ dependencies {
     // Основная библиотека Retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
 
-// Конвертер для работы с JSON (Gson)
+    // Конвертер для работы с JSON (Gson)
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
     implementation("androidx.compose.material:material-icons-extended:1.6.1")
