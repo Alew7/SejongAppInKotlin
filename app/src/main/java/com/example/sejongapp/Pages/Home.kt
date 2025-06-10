@@ -111,7 +111,8 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
                     .clickable (
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
-                    ) { 
+                    ) {
+                        onChangeScreen(1)
 
                     }
 

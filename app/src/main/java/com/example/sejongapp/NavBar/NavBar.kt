@@ -46,15 +46,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
     val navItemList = listOf(
-        NavItem(R.drawable.ic_menu),
-        NavItem(R.drawable.annousment),
-        NavItem(R.drawable.home),
+        NavItem(R.drawable.ic_menu),  // index 0;
+        NavItem(R.drawable.annousment), // index 1;
+        NavItem(R.drawable.home),       // index 2;
     )
 
     var selectedIndex by remember { mutableStateOf(2) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -155,19 +157,21 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 }
             }
         ) { innerPadding ->
-            ContentScreen(modifier = Modifier.padding(innerPadding), selectedIndex)
+            ContentScreen(modifier = Modifier.padding(innerPadding), selectedIndex = selectedIndex,onChangeScreen = {index -> selectedIndex = index})
         }
     }
 }
 
 
 @Composable
-fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : Int) {
+fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : Int,onChangeScreen : (Int) -> Unit) {
     when(selectedIndex) {
-        1 -> AnnousmentPage()
+        1 -> AnnousmentPage(onChangeScreen = {})
         2 -> HomePage(onChangeScreen = {})
     }
 }
+
+
 
 
 

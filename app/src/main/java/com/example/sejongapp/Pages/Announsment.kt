@@ -40,6 +40,8 @@ fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
     var isSeraching by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 
+
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
@@ -85,7 +87,6 @@ fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
 
                         ) {
                             isSeraching = true
-
                         }
                 )
 
