@@ -62,7 +62,7 @@ fun SpleshScreen () {
 
 @Preview (showBackground = true, showSystemUi = true)
 @Composable
-fun ff () {
+fun Display () {
     SpleshScreen()
 }
 

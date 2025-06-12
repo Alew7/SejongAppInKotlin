@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun NavBar(modifier: Modifier = Modifier) {
     val navItemList = listOf(
         NavItem(R.drawable.ic_menu),  // index 0;
         NavItem(R.drawable.annousment), // index 1;
@@ -179,5 +179,5 @@ fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : Int,onChangeScr
 @Preview (showBackground = true, showSystemUi = true)
 @Composable
 private  fun Preview () {
-    MainScreen()
+    NavBar()
 }
