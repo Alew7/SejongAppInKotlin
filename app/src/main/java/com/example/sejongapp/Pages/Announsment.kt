@@ -35,8 +35,9 @@ import com.example.sejongapp.ui.theme.darkGray
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
-    val context = LocalContext.current
 
+
+    val context = LocalContext.current
     var isSeraching by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 

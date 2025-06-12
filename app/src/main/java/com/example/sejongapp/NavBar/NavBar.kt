@@ -2,6 +2,7 @@ package com.example.sejongapp.NavBar
 
 
 import LocalToken.deletToken
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sejongapp.Pages.AnnousmentPage
 import com.example.sejongapp.Pages.HomePage
+import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.ui.theme.WarmBeige
 import com.example.sejongapp.ui.theme.backgroundColor
@@ -72,7 +74,13 @@ fun NavBar(modifier: Modifier = Modifier) {
 
                     Row(
                         modifier = Modifier
-                            .clickable { /* перейти в профиль */ }
+                            .clickable  (
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ){
+                                val intent = Intent(context,ProfileActivity :: class.java)
+                                context.startActivity(intent)
+                            }
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -166,8 +174,8 @@ fun NavBar(modifier: Modifier = Modifier) {
 @Composable
 fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : Int,onChangeScreen : (Int) -> Unit) {
     when(selectedIndex) {
-        1 -> AnnousmentPage(onChangeScreen = {})
-        2 -> HomePage(onChangeScreen = {})
+        1 -> AnnousmentPage(onChangeScreen = onChangeScreen)
+        2 -> HomePage(onChangeScreen = onChangeScreen)
     }
 }
 

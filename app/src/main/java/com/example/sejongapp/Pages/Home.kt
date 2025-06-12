@@ -98,7 +98,7 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
                         indication = null
 
                     ) {
-                        onChangeScreen(0)
+                        onChangeScreen(1)
                     }
 
             )
@@ -108,13 +108,12 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
                 modifier = Modifier
                     .padding(start = startPadding)
                     .scale(scale.value)
-                    .clickable (
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        onChangeScreen(1)
+                    .clickable {  }
 
-                    }
+
+
+
+
 
             )
             Image (
