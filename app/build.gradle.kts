@@ -59,6 +59,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.animation.core.lint)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,4 +69,22 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
+    // Основная библиотека Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Конвертер для работы с JSON (Gson)
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
+
+
+    /// ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+
+
+
+
+
 }

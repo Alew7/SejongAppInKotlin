@@ -59,3 +59,12 @@ fun SpleshScreen () {
 
 }
 
+
+@Preview (showBackground = true, showSystemUi = true)
+@Composable
+fun Display () {
+    SpleshScreen()
+}
+
+
+

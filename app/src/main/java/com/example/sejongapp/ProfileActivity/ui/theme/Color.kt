@@ -14,6 +14,6 @@ val steelGray    = Color(0xff4C4C4C)
 val mediumGray  = Color(0xff838383)
 val lightGray  = Color(0xffA4A4A4)
 
+//              тут мои добавленые цвета
 val WarmBeige  = Color(0xffE1DFD8)
-
-/// настояший проект
+val brightBackgroundColor = Color(0xFFFFFDF5)

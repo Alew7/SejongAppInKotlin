@@ -2,10 +2,23 @@ package com.example.sejongapp.SpleshLoginPages.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+
+val primaryColor = Color(0xffBFA353)
+val secondaryColor = Color(0xffBEA96A)
+val backgroundColor = Color(0xffF2F0E5)
+
+val deepBlack = Color(0xff070707)
+val darkGray  = Color(0xff545454)
+val mediumDarkGray   = Color(0xff5C5C5C)
+val steelGray    = Color(0xff4C4C4C)
+
+val mediumGray  = Color(0xff838383)
+val lightGray  = Color(0xffA4A4A4)
+
+//              тут мои добавленые цвета
+val WarmBeige  = Color(0xffE1DFD8)
+val brightBackgroundColor = Color(0xFFFFFDF5)
+
+
+
