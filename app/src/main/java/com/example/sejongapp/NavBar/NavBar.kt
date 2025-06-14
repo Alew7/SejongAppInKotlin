@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
 fun NavBar(modifier: Modifier = Modifier) {
     val iconSize = 40.dp
     val navItemList = listOf(
-        NavItem(R.drawable.ic_menu),  // index 0;
+        NavItem(R.drawable.ic_burger),  // index 0;
         NavItem(R.drawable.annousment), // index 1;
         NavItem(R.drawable.home),       // index 2;
     )
@@ -92,7 +92,7 @@ fun NavBar(modifier: Modifier = Modifier) {
 //
                         Icon(
                             modifier = Modifier.size(iconSize),
-                            painter = painterResource(R.drawable.icon_person),
+                            painter = painterResource(R.drawable.ic_sejong_profile),
                             contentDescription = "Профиль"
 
                         )
