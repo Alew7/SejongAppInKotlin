@@ -32,12 +32,15 @@ import com.example.sejongapp.ui.theme.primaryColor
 
 @Composable
 fun HomePage (onChangeScreen : (Int) -> Unit) {
+    
+    val iconSize = 80.dp
 
     val context = LocalContext.current
     val scale = remember {
         androidx.compose.animation.core.Animatable(0.2f)
     }
 
+//    Animation for scaling icons (btn icons)
     LaunchedEffect  (Unit){
         scale.animateTo(
             targetValue = 1.2f,
@@ -45,20 +48,25 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
         )
     }
 
+//    Whole page
     BoxWithConstraints  (
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
     ){
         val screenWidth = maxWidth
+
+//      padding for icons so as they appeard from left and right of the corner
         val startPadding = screenWidth * 0.5f
         val endPadding = screenWidth * 0.5f
 
 
+//       Head (with head icon and gold line)
         Box (
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 40.dp)
+//                the line
                 .drawBehind {
                     val strokeWidth = 2.dp.toPx()
                     val y = size.height - strokeWidth / 2
@@ -70,29 +78,34 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
                     )
                 }
         ) {
+//            The HEAD
             Image (
-                painter = painterResource(R.drawable.ic_hed),
-                contentDescription = "ic_had",
+                painter = painterResource(R.drawable.ic_head),
+                contentDescription = "ic_head",
                 modifier = Modifier
-                    .size(65.dp)
+                    .size(64.dp)
                     .padding(start = 25.dp)
             )
         }
 
+//        The body of the page (all btn icons)
         Column  (
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 100.dp),
+                .padding(top = 20.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
 
         ){
+
+//            Announcment
             Image (
                 painter = painterResource(R.drawable.icon_annousment),
                 contentDescription = "icon_annousment",
                 modifier = Modifier
                     .padding(end = endPadding)
                     .scale(scale.value)
+                    .size(iconSize)
                     .clickable (
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
@@ -102,33 +115,36 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
                     }
 
             )
+
+//           Library
             Image (
                 painter = painterResource(R.drawable.ic_library),
                 contentDescription = "ic_library",
                 modifier = Modifier
                     .padding(start = startPadding)
                     .scale(scale.value)
+                    .size(iconSize)
                     .clickable {  }
-
-
-
-
-
-
             )
+
+//            schedule
             Image (
-                painter = painterResource(R.drawable.ic_shhedule),
-                contentDescription = "ic_shhedule",
+                painter = painterResource(R.drawable.ic_schedule),
+                contentDescription = "ic_schedule",
                 modifier = Modifier
                     .padding(end = endPadding)
                    .scale(scale.value)
+                    .size(iconSize)
             )
+
+//            profile
             Image (
                 painter = painterResource(R.drawable.ic_profile),
                 contentDescription = "ic_profile",
                 modifier = Modifier
                     .padding(start = startPadding)
                     .scale(scale.value)
+                    .size(iconSize)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null

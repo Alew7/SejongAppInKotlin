@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
@@ -59,9 +60,11 @@ fun NavBar(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
 
-
+//  The side bar and nav bar
     ModalNavigationDrawer(
         drawerState = drawerState,
+
+//        side bar content
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.width(300.dp),
@@ -87,6 +90,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                         Icon(
                             painter = painterResource(R.drawable.icon_person),
                             contentDescription = "Профиль"
+
                         )
                         Text(
                             text = "Профиль",
@@ -124,6 +128,8 @@ fun NavBar(modifier: Modifier = Modifier) {
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
+
+//            nav bar  btns  & Icons
             bottomBar = {
                 NavigationBar(
                     containerColor = backgroundColor,
@@ -139,6 +145,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                             )
                         }
                 ) {
+//                    Each Icons
                     navItemList.forEachIndexed { index, navItem ->
                         NavigationBarItem(
                             selected = selectedIndex == index,
@@ -153,8 +160,10 @@ fun NavBar(modifier: Modifier = Modifier) {
                             },
                             icon = {
                                 Icon(
+                                    modifier = Modifier.size(24.dp),
                                     painter = painterResource(navItem.icon),
                                     contentDescription = "Icon"
+
                                 )
                             },
                             colors = NavigationBarItemDefaults.colors(

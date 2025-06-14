@@ -69,7 +69,7 @@ fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
             ) {
             if (!isSeraching) {
                 Image(
-                    painter = painterResource(R.drawable.ic_hed),
+                    painter = painterResource(R.drawable.ic_head),
                     contentDescription = "ic_had",
                     modifier = Modifier
                         .size(65.dp)
