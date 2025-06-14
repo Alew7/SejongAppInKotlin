@@ -10,10 +10,13 @@ import com.example.sejongapp.retrofitAPI.NetworkResponse.*
 import com.example.sejongapp.retrofitAPI.RetrofitInstance
 import kotlinx.coroutines.launch
 
+
+
 class UserViewModel: ViewModel() {
 
 
     private val userApi =  RetrofitInstance.userApi
+
 
 
     private val _userResult = MutableLiveData<NetworkResponse<tokenData>>()
@@ -35,13 +38,21 @@ class UserViewModel: ViewModel() {
             val response = userApi.loginUser(loginRequestData(username, password))
 
 
+
             try {
                 if (response.isSuccessful){
-                    Log.i(TAG, "data successfully taken " + response.body().toString())
+                    Log.i(TAG, "data successfully taken  " + response.body().toString())
 
-                    response.body()?.let {
-                        _userResult.value = NetworkResponse.Success(it)
+                    if (response.body()!!.token == null) {
+                        _userResult.value = NetworkResponse.Error("Token is empty")
                     }
+                    else{
+                        response.body()?.let {
+                            _userResult.value = NetworkResponse.Success(it)
+                        }
+                    }
+
+
                 } else {
                     Log.e(TAG, response.message().toString())
                     _userResult.value = Error("Failed to fetch data")
