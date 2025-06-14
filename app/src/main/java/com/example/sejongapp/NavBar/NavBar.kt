@@ -48,6 +48,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NavBar(modifier: Modifier = Modifier) {
+    val iconSize = 40.dp
     val navItemList = listOf(
         NavItem(R.drawable.ic_menu),  // index 0;
         NavItem(R.drawable.annousment), // index 1;
@@ -74,7 +75,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                     Text(text = "Меню", style = MaterialTheme.typography.titleLarge)
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-
+//                   Profile icon btn
                     Row(
                         modifier = Modifier
                             .clickable  (
@@ -87,7 +88,10 @@ fun NavBar(modifier: Modifier = Modifier) {
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
+//
                         Icon(
+                            modifier = Modifier.size(iconSize),
                             painter = painterResource(R.drawable.icon_person),
                             contentDescription = "Профиль"
 
@@ -98,7 +102,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                         )
                     }
 
-
+//                   Exit icon btn
                     Row(
                         modifier = Modifier
                             .clickable (
@@ -112,6 +116,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
+                            modifier = Modifier.size(iconSize),
                             painter = painterResource(R.drawable.ic_logout),
                             contentDescription = "Выход",
 
