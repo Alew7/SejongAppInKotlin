@@ -1,0 +1,28 @@
+[33mf4ed151[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m trying to connect MM and Master
+[33mcab17c0[m changed icon size and made some comments
+[33m6ab8d3c[m put some comments into the code
+[33m0ca3705[m when user click on annousment icon we go to annousmentPage
+[33m9fa5de7[m change funcshion names
+[33m7342930[m change icon aplication
+[33m3aba302[m delet imports
+[33md6ae6d0[m fiksed the bag. when user click on sign in button to enter program it was necessary to press the sign in button twice. I did it 1 click. and i add the saidbar in saidbar i add 2 icon 1 profile icon 2 log out. when user click on logout icon removed token and back to LoginScreen
+[33m682709d[m add saydbar
+[33mcfe8671[m добавил пример e-labrary
+[33m55f14f9[m added the, when user click on log out user token be deleted
+[33m40f0125[m добавил иконку глазок на LoginScreen
+[33mb50b977[m creat API and logic token
+[33m699f5fe[m added new color and change the card color in Annousment
+[33mb2bd0f7[m change text AnnousmentPage
+[33m173919e[m added a back icon in Search field
+[33m594f08b[m added color cursor and change name function MainScreen to NavBar in NavBar file
+[33m881e33a[m добавил функцию каторый во время нажатии на ic_annousment он переход к annousmentPage
+[33m5bc02f5[m добавил функцию каторый во время нажатии на ic_annousment он переход к annousmentPage
+[33m740b2b7[m add the search
+[33mb3016b8[m Test
+[33m074484e[m added the search
+[33mbcdbff4[m deleted white color
+[33m87650ba[m added a white color
+[33m849ad1b[m added new coment
+[33m49648d1[m removed comment
+[33m8698d0f[m[33m ([m[1;31morigin/MM[m[33m, [m[1;32mMM[m[33m)[m add a comment
+[33mb30dc4c[m just a test commit

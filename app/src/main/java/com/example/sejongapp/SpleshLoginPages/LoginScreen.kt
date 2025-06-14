@@ -76,12 +76,12 @@ fun LoginScreen () {
 
 
 
-//    if (LocalToken.getSavedToken(context) != "null"){
-//        Log.i(TAG, "The token is ${LocalToken.getSavedToken(context)}")
-//        val intent = Intent (context,MainActivity :: class.java)
-//        context.startActivity(intent)
-//
-//    }
+    if (LocalToken.getSavedToken(context) != "null"){
+        Log.i(TAG, "The token is ${LocalToken.getSavedToken(context)}")
+        val intent = Intent (context,MainActivity :: class.java)
+        context.startActivity(intent)
+
+    }
 
 
 

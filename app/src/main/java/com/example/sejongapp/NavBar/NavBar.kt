@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
@@ -47,8 +48,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NavBar(modifier: Modifier = Modifier) {
+    val iconSize = 40.dp
     val navItemList = listOf(
-        NavItem(R.drawable.ic_menu),  // index 0;
+        NavItem(R.drawable.ic_burger),  // index 0;
         NavItem(R.drawable.annousment), // index 1;
         NavItem(R.drawable.home),       // index 2;
     )
@@ -59,9 +61,11 @@ fun NavBar(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
 
-
+//  The side bar and nav bar
     ModalNavigationDrawer(
         drawerState = drawerState,
+
+//        side bar content
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.width(300.dp),
@@ -71,7 +75,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                     Text(text = "Меню", style = MaterialTheme.typography.titleLarge)
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-
+//                   Profile icon btn
                     Row(
                         modifier = Modifier
                             .clickable  (
@@ -84,9 +88,13 @@ fun NavBar(modifier: Modifier = Modifier) {
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
+//
                         Icon(
-                            painter = painterResource(R.drawable.icon_person),
+                            modifier = Modifier.size(iconSize),
+                            painter = painterResource(R.drawable.ic_sejong_profile),
                             contentDescription = "Профиль"
+
                         )
                         Text(
                             text = "Профиль",
@@ -94,7 +102,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                         )
                     }
 
-
+//                   Exit icon btn
                     Row(
                         modifier = Modifier
                             .clickable (
@@ -108,6 +116,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
+                            modifier = Modifier.size(iconSize),
                             painter = painterResource(R.drawable.ic_logout),
                             contentDescription = "Выход",
 
@@ -124,6 +133,8 @@ fun NavBar(modifier: Modifier = Modifier) {
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
+
+//            nav bar  btns  & Icons
             bottomBar = {
                 NavigationBar(
                     containerColor = backgroundColor,
@@ -139,6 +150,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                             )
                         }
                 ) {
+//                    Each Icons
                     navItemList.forEachIndexed { index, navItem ->
                         NavigationBarItem(
                             selected = selectedIndex == index,
@@ -153,8 +165,10 @@ fun NavBar(modifier: Modifier = Modifier) {
                             },
                             icon = {
                                 Icon(
+                                    modifier = Modifier.size(24.dp),
                                     painter = painterResource(navItem.icon),
                                     contentDescription = "Icon"
+
                                 )
                             },
                             colors = NavigationBarItemDefaults.colors(
