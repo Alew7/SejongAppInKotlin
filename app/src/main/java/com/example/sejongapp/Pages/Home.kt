@@ -140,10 +140,6 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
             )
         }
     }
-
-
-
-
 }
 
 
