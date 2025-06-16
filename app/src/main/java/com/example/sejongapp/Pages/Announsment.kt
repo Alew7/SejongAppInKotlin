@@ -29,12 +29,12 @@ import androidx.compose.ui.graphics.Color
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
 import com.example.sejongapp.ui.theme.brightBackgroundColor
 import com.example.sejongapp.ui.theme.darkGray
-
+import com.example.sejongapp.utils.NavigationScreenEnum
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
+fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
 
     val context = LocalContext.current
@@ -42,7 +42,7 @@ fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
     var searchText by remember { mutableStateOf("") }
 
 
-
+//    The header (with logo icon and search btn)
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +55,7 @@ fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp)
+                    .padding(top = 20.dp)
                     .drawBehind {
                         val strokeWidth = 2.dp.toPx()
                         val y = size.height - strokeWidth / 2
@@ -67,12 +67,12 @@ fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
                         )
                     }
             ) {
-            if (!isSeraching) {
+                if (!isSeraching) {
                 Image(
-                    painter = painterResource(R.drawable.ic_hed),
-                    contentDescription = "ic_had",
+                    painter = painterResource(R.drawable.ic_head),
+                    contentDescription = "ic_head",
                     modifier = Modifier
-                        .size(65.dp)
+                        .size(64.dp)
                         .padding(start = 25.dp)
                 )
 
@@ -80,6 +80,7 @@ fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
                     painter = painterResource(R.drawable.ic_search),
                     contentDescription = "ic_search",
                     modifier = Modifier
+                        .size(48.dp)
                         .padding(end = 20.dp,top = 20.dp)
                         .align(Alignment.TopEnd)
                         .clickable(
@@ -93,14 +94,14 @@ fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
 
             }
 
-                    if (isSeraching) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
+                if (isSeraching) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
                                 .fillMaxWidth()
                                 .height(90.dp)
                                 .padding(horizontal = 16.dp, vertical = 16.dp)
-                        ) {
+                    ) {
 
 
                             Spacer(modifier = Modifier.width(20.dp))
@@ -134,8 +135,7 @@ fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
 
 
                         }
-                    }
-
+                }
             }
 
 
@@ -216,51 +216,51 @@ private fun Preview() {
     AnnousmentPage()
 }
 
-
-@Preview(
-    name = "📱 Small Phone",
-    showBackground = true,
-    showSystemUi = true,
-    widthDp = 320,
-    heightDp = 568
-)
-@Composable
-private fun PreviewSmallPhone() {
-    AnnousmentPage()
-}
-
-@Preview(
-    name = "📱 Standard Phone",
-    showBackground = true,
-    showSystemUi = true,
-    widthDp = 393,
-    heightDp = 851
-)
-@Composable
-private fun PreviewStandardPhone() {
-    AnnousmentPage()
-}
-
-@Preview(
-    name = "📱 Large Phone / Fold",
-    showBackground = true,
-    showSystemUi = true,
-    widthDp = 600,
-    heightDp = 960
-)
-@Composable
-private fun PreviewLargePhone() {
-    AnnousmentPage()
-}
-
-@Preview(
-    name = "💻 Tablet",
-    showBackground = true,
-    showSystemUi = true,
-    widthDp = 800,
-    heightDp = 1280
-)
-@Composable
-private fun PreviewTablet() {
-    AnnousmentPage()
-}
+//
+//@Preview(
+//    name = "📱 Small Phone",
+//    showBackground = true,
+//    showSystemUi = true,
+//    widthDp = 320,
+//    heightDp = 568
+//)
+//@Composable
+//private fun PreviewSmallPhone() {
+//    AnnousmentPage()
+//}
+//
+//@Preview(
+//    name = "📱 Standard Phone",
+//    showBackground = true,
+//    showSystemUi = true,
+//    widthDp = 393,
+//    heightDp = 851
+//)
+//@Composable
+//private fun PreviewStandardPhone() {
+//    AnnousmentPage()
+//}
+//
+//@Preview(
+//    name = "📱 Large Phone / Fold",
+//    showBackground = true,
+//    showSystemUi = true,
+//    widthDp = 600,
+//    heightDp = 960
+//)
+//@Composable
+//private fun PreviewLargePhone() {
+//    AnnousmentPage()
+//}
+//
+//@Preview(
+//    name = "💻 Tablet",
+//    showBackground = true,
+//    showSystemUi = true,
+//    widthDp = 800,
+//    heightDp = 1280
+//)
+//@Composable
+//private fun PreviewTablet() {
+//    AnnousmentPage()
+//}
