@@ -87,7 +87,7 @@ fun ProfilePage () {
                     contentDescription = "ic_profile",
                     modifier = Modifier
                         .padding(end = 5.dp)
-//                        .scale(scale.value)
+
 
                 )
                 Column {
@@ -160,3 +160,64 @@ private fun Preview () {
 //@Preview(name = "XL Phone", widthDp = 480, heightDp = 1000, showBackground = true, showSystemUi = true)
 //@Composable
 //fun PreviewXL() { ProfilePage() }
+//
+//
+//@Preview(
+//    name = "📱 Small Phone",
+//    showBackground = true,
+//    showSystemUi = true,
+//    widthDp = 320,
+//    heightDp = 568
+//)
+//@Composable
+//private fun PreviewSmallPhone() {
+//    ProfilePage()
+//}
+//
+//@Preview(
+//    name = "📱 Standard Phone",
+//    showBackground = true,
+//    showSystemUi = true,
+//    widthDp = 393,
+//    heightDp = 851
+//)
+//@Composable
+//private fun PreviewStandardPhone() {
+//    ProfilePage()
+//}
+//
+//@Preview(
+//    name = "📱 Large Phone / Fold",
+//    showBackground = true,
+//    showSystemUi = true,
+//    widthDp = 600,
+//    heightDp = 960
+//)
+//@Composable
+//private fun PreviewLargePhone() {
+//    ProfilePage()
+//}
+//
+//@Preview(
+//    name = "💻 Tablet",
+//    showBackground = true,
+//    showSystemUi = true,
+//    widthDp = 800,
+//    heightDp = 1280
+//)
+//@Composable
+//private fun PreviewTablet() {
+//    ProfilePage()
+//}
+//
+//@Preview (
+//    name = "📱 Small Phone",
+//    showBackground = true,
+//    showSystemUi = true,
+//    widthDp = 320,
+//    heightDp = 568
+//)
+//@Composable
+//private fun smallPreview() {
+//    ProfilePage()
+//}

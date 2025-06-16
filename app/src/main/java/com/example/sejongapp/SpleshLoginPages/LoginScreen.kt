@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -204,50 +205,35 @@ fun LoginScreen () {
             }
 
 
-                val token = (userResult.value as? NetworkResponse.Success<tokenData>)?.data?.token
-                LaunchedEffect  (token){
-                    if (!token.isNullOrEmpty()) {
-                        Log.i(TAG, "token was $token")
-                        Log.i(TAG,"user result $token")
 
-                        val intent = Intent(context,MainActivity :: class.java)
-                        LocalToken.setToken(context,(userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
+                LaunchedEffect(userResult.value) {
+                    userViewModel.resetUserResult()
 
-                        userViewModel.resetUserResult()
+                    when (userResult.value) {
+                        is NetworkResponse.Error -> {
+                            Log.e (TAG,"Error")
+                            Toast.makeText(context,"Error, Username pr Password is oncorrect",Toast.LENGTH_SHORT).show()
+                        }
+                        is NetworkResponse.Success -> {
+                            val token = (userResult.value as? NetworkResponse.Success<tokenData>)?.data?.token
+                            if (!token.isNullOrEmpty()) {
+                                Log.i(TAG, "token was $token")
+                                Log.i(TAG,"user result $token")
+
+                                val intent = Intent (context,MainActivity :: class.java)
+                                LocalToken.setToken(
+                                    context,(userResult.value as NetworkResponse.Success<tokenData>).data.token,
+                                    intent
+
+                                )
+                                userViewModel.resetUserResult()
+                        }
+
                     }
+                        else ->  {  }
                 }
 
-
-
-//            if (userResult.value is NetworkResponse.Success) {
-//
-//                Log.i(TAG, "NetWorkResponse is Successful")
-//
-//                if ((userResult.value as NetworkResponse.Success<tokenData>).data.token != null){
-//                    Log.i(TAG,"token was taken fine")
-//
-//                    Log.i(TAG,"user result ${(userResult.value as NetworkResponse.Success<tokenData>).data.token}")
-//                    val intent = Intent (context,MainActivity :: class.java)
-//
-//                    LocalToken.setToken(context, (userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
-//                }
-//                else{
-//                    Log.i(TAG,"Password or Login was incorrect!")
-//                    Text(
-//                        text = "Login or password is incorrect!"
-//                    )
-//                }
-//
-//
-//            }
-
-//            else{
-//                Text(
-//                    text = "Login please"
-//                )
-//            }
-
-
+            }
         }
     }
 
