@@ -36,11 +36,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sejongapp.Pages.AnnousmentPage
 import com.example.sejongapp.Pages.HomePage
+import com.example.sejongapp.Pages.Schedule
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.ui.theme.WarmBeige
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
+import com.example.sejongapp.utils.NavigationScreenEnum
 import kotlinx.coroutines.launch
 
 
@@ -55,7 +57,7 @@ fun NavBar(modifier: Modifier = Modifier) {
         NavItem(R.drawable.home),       // index 2;
     )
 
-    var selectedIndex by remember { mutableStateOf(2) }
+    var selectedIndex by remember { mutableStateOf(NavigationScreenEnum.HOMEPAGE) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -150,16 +152,17 @@ fun NavBar(modifier: Modifier = Modifier) {
                             )
                         }
                 ) {
+                    NavigationScreenEnum.entries
 //                    Each Icons
                     navItemList.forEachIndexed { index, navItem ->
                         NavigationBarItem(
-                            selected = selectedIndex == index,
+                            selected = selectedIndex == NavigationScreenEnum.entries[index],
                             onClick = {
                                 if (index == 0) {
                                     scope.launch { drawerState.open() }
                                 }
                                 else {
-                                    selectedIndex = index
+                                    selectedIndex = NavigationScreenEnum.entries[index]
                                 }
 
                             },
@@ -186,10 +189,13 @@ fun NavBar(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : Int,onChangeScreen : (Int) -> Unit) {
+fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScreenEnum,onChangeScreen : (NavigationScreenEnum) -> Unit) {
     when(selectedIndex) {
-        1 -> AnnousmentPage(onChangeScreen = onChangeScreen)
-        2 -> HomePage(onChangeScreen = onChangeScreen)
+        NavigationScreenEnum.ANNOUNCEMENTS -> AnnousmentPage(onChangeScreen = onChangeScreen)
+        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen)
+        NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
+        NavigationScreenEnum.LIBRARY -> TODO()
+        NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied
     }
 }
 

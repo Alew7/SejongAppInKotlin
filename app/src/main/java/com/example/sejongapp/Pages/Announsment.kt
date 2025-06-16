@@ -29,12 +29,12 @@ import androidx.compose.ui.graphics.Color
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
 import com.example.sejongapp.ui.theme.brightBackgroundColor
 import com.example.sejongapp.ui.theme.darkGray
-
+import com.example.sejongapp.utils.NavigationScreenEnum
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnnousmentPage(onChangeScreen: (Int) -> Unit = {}) {
+fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
 
     val context = LocalContext.current

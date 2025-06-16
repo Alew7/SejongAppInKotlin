@@ -29,9 +29,10 @@ import androidx.compose.ui.unit.dp
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
+import com.example.sejongapp.utils.NavigationScreenEnum
 
 @Composable
-fun HomePage (onChangeScreen : (Int) -> Unit) {
+fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
     
     val iconSize = 80.dp
 
@@ -47,6 +48,7 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
             animationSpec = tween(durationMillis = 800)
         )
     }
+
 
 //    Whole page
     BoxWithConstraints  (
@@ -111,7 +113,7 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
                         indication = null
 
                     ) {
-                        onChangeScreen(1)
+                        onChangeScreen(NavigationScreenEnum.ANNOUNCEMENTS)
                     }
 
             )
@@ -135,6 +137,13 @@ fun HomePage (onChangeScreen : (Int) -> Unit) {
                     .padding(end = endPadding)
                    .scale(scale.value)
                     .size(iconSize)
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+
+                    ) {
+                        onChangeScreen(NavigationScreenEnum.SCHEDULE)
+                    }
             )
 
 //            profile
