@@ -67,7 +67,7 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
         Box (
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 40.dp)
+                .padding(top = 20.dp)
 //                the line
                 .drawBehind {
                     val strokeWidth = 2.dp.toPx()
@@ -126,7 +126,13 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
                     .padding(start = startPadding)
                     .scale(scale.value)
                     .size(iconSize)
-                    .clickable {  }
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+
+                    ) {
+                        onChangeScreen(NavigationScreenEnum.LIBRARY)
+                    }
             )
 
 //            schedule

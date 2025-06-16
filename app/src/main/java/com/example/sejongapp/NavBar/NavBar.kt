@@ -152,7 +152,6 @@ fun NavBar(modifier: Modifier = Modifier) {
                             )
                         }
                 ) {
-                    NavigationScreenEnum.entries
 //                    Each Icons
                     navItemList.forEachIndexed { index, navItem ->
                         NavigationBarItem(

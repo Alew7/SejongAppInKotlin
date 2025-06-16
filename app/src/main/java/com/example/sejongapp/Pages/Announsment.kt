@@ -55,7 +55,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp)
+                    .padding(top = 20.dp)
                     .drawBehind {
                         val strokeWidth = 2.dp.toPx()
                         val y = size.height - strokeWidth / 2

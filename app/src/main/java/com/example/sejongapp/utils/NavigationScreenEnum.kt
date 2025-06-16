@@ -7,3 +7,4 @@ enum class NavigationScreenEnum {
     SCHEDULE,
     LIBRARY
 }
+

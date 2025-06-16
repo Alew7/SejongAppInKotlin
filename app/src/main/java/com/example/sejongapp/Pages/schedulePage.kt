@@ -93,6 +93,7 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
         var selectedPage by remember { mutableStateOf(0) }
 
+//        The pagination func for sorting data
         PaginationSelector(
             selectedIndex = selectedPage,
             onSelected = { selectedPage = it }
@@ -103,6 +104,7 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 }
 
+// a compose func for pagination (the one that sorts data from all to the specific group)
 @Composable
 fun PaginationSelector(
     pages: List<String> = listOf("All", "1", "2", "3", "4", "5", "6", "7"),
@@ -123,8 +125,8 @@ fun PaginationSelector(
                     .size(40.dp)
                     .clip(CircleShape)
                     .background(
-                        if (isSelected) primaryColor // gold
-                        else lightGray          // light gray
+                        if (isSelected) primaryColor
+                        else lightGray
                     )
                     .clickable { onSelected(index) },
                 contentAlignment = Alignment.Center
