@@ -5,7 +5,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,19 +51,29 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
 
+
+
+
 const val TAG = "Login_TAG"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen () {
 
-    val userViewModel: UserViewModel = viewModel()
+
+//    val userViewModel = UserViewModel()
+    val userViewModel : UserViewModel = viewModel()
     val userResult = userViewModel.userResult.observeAsState(NetworkResponse.Idle)  // добавил Network.Idle
     val context = LocalContext.current
     var passwordVisible by remember { mutableStateOf(false) }
 
     val isLoading = userResult.value is NetworkResponse.Loading
-    val isScuccess = userResult.value is NetworkResponse.Success<*>
+    val isScuccess = userResult.value is NetworkResponse.Success <*>
+
+
+
+
+
 
 
     if (LocalToken.getSavedToken(context) != "null"){
@@ -75,6 +84,7 @@ fun LoginScreen () {
     }
 
 
+
     var username by remember {
         mutableStateOf("")
     }
@@ -83,20 +93,20 @@ fun LoginScreen () {
         mutableStateOf("")
     }
 
-    Box(
+    Box (
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
 
     ) {
-        Column(
+        Column  (
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Image (
                 painter = painterResource(R.drawable.ic_sejong),
                 contentDescription = "ic_sejong"
             )
@@ -109,39 +119,39 @@ fun LoginScreen () {
                 Text(text = "username")
             },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedTextColor = Color.Black,
-                    focusedBorderColor = primaryColor,
-                    focusedLabelColor = Color.Black,
-                    cursorColor = Color.Black
+                  focusedTextColor = Color.Black,
+                  focusedBorderColor = primaryColor,
+                  focusedLabelColor = Color.Black,
+                  cursorColor = Color.Black
 
-                )
-            )
+                ))
 
             Spacer(modifier = Modifier.height(35.dp))
 
             OutlinedTextField(value = password, onValueChange = {
                 password = it
 
-            }, label = {
+            },label = {
                 Text(text = "password")
 
             },
                 singleLine = true,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
-                    val image = if (passwordVisible)
-                        Icons.Filled.Visibility
+                  val image = if (passwordVisible)
+                      Icons.Filled.Visibility
                     else Icons.Filled.VisibilityOff
 
                     val description = if (passwordVisible) "Hide password" else "Show password"
 
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(
+                    IconButton(onClick = {passwordVisible = !passwordVisible}){
+                        Icon (
                             imageVector = image,
                             contentDescription = description,
                             tint = WarmBeige
                         )
                     }
+
 
 
                 },
@@ -152,14 +162,13 @@ fun LoginScreen () {
                     focusedLabelColor = Color.Black,
                     cursorColor = Color.Black
 
-                )
-            )
+                ))
 
             Spacer(modifier = Modifier.height(35.dp))
 
 
 
-            Button(
+            Button (
                 shape = RoundedCornerShape(10.dp),
 
                 onClick = {
@@ -186,43 +195,64 @@ fun LoginScreen () {
                             .size(24.dp)
                             .padding(bottom = 2.dp, start = 1.dp)
                     )
-                } else {
-                    Text(
+                }
+                else {
+                    Text (
                         text = "Sign In"
                     )
                 }
             }
 
 
-            LaunchedEffect(userResult.value) {
+                val token = (userResult.value as? NetworkResponse.Success<tokenData>)?.data?.token
+                LaunchedEffect  (token){
+                    if (!token.isNullOrEmpty()) {
+                        Log.i(TAG, "token was $token")
+                        Log.i(TAG,"user result $token")
 
-                when (userResult.value) {
-                    is NetworkResponse.Error -> {
-                        Log.e(TAG, "Error")
-                        Toast.makeText(context, "Login or password is incorrect!", Toast.LENGTH_SHORT).show()
-                    }
-                    is NetworkResponse.Success -> {
-                        val token = (userResult.value as? NetworkResponse.Success<tokenData>)?.data?.token
-                        if (!token.isNullOrEmpty()) {
-                            Log.i(TAG, "token was $token")
-                            Log.i(TAG, "user result $token")
+                        val intent = Intent(context,MainActivity :: class.java)
+                        LocalToken.setToken(context,(userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
 
-                            val intent = Intent(context, MainActivity::class.java)
-                            LocalToken.setToken(
-                                context,
-                                (userResult.value as NetworkResponse.Success<tokenData>).data.token,
-                                intent
-                            )
-                            userViewModel.resetUserResult()
-                        }
+                        userViewModel.resetUserResult()
                     }
-                    else -> {}
                 }
-            }
+
+
+
+//            if (userResult.value is NetworkResponse.Success) {
+//
+//                Log.i(TAG, "NetWorkResponse is Successful")
+//
+//                if ((userResult.value as NetworkResponse.Success<tokenData>).data.token != null){
+//                    Log.i(TAG,"token was taken fine")
+//
+//                    Log.i(TAG,"user result ${(userResult.value as NetworkResponse.Success<tokenData>).data.token}")
+//                    val intent = Intent (context,MainActivity :: class.java)
+//
+//                    LocalToken.setToken(context, (userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
+//                }
+//                else{
+//                    Log.i(TAG,"Password or Login was incorrect!")
+//                    Text(
+//                        text = "Login or password is incorrect!"
+//                    )
+//                }
+//
+//
+//            }
+
+//            else{
+//                Text(
+//                    text = "Login please"
+//                )
+//            }
+
 
         }
     }
+
 }
+
 
 @Preview (showSystemUi = true, showBackground = true)
 @Composable
