@@ -32,7 +32,7 @@ object LocalToken {
 
     fun getSavedToken(context: Context): String {
         val prefs = context.getSharedPreferences("Settings", Context.MODE_PRIVATE)
-        return prefs.getString("token", "token") ?: "null"
+        return prefs.getString("token", "null") ?: "null"
     }
 
     fun setToken(context: Context,token: String, intent: Intent) {
