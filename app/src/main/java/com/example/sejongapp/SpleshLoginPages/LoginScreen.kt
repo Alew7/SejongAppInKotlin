@@ -62,7 +62,7 @@ const val TAG = "Login_TAG"
 fun LoginScreen () {
 
 
-//    val userViewModel = UserViewModel()
+
     val userViewModel : UserViewModel = viewModel()
     val userResult = userViewModel.userResult.observeAsState(NetworkResponse.Idle)  // добавил Network.Idle
     val context = LocalContext.current
@@ -207,7 +207,6 @@ fun LoginScreen () {
 
 
                 LaunchedEffect(userResult.value) {
-                    userViewModel.resetUserResult()
 
                     when (userResult.value) {
                         is NetworkResponse.Error -> {
@@ -215,28 +214,30 @@ fun LoginScreen () {
                             Toast.makeText(context,"Error, Username pr Password is oncorrect",Toast.LENGTH_SHORT).show()
                         }
                         is NetworkResponse.Success -> {
+                            Log.i(TAG, "The response is successful token is abtained")
+
                             val token = (userResult.value as? NetworkResponse.Success<tokenData>)?.data?.token
                             if (!token.isNullOrEmpty()) {
                                 Log.i(TAG, "token was $token")
-                                Log.i(TAG,"user result $token")
+                                Log.i(TAG, "user result $token")
 
-                                val intent = Intent (context,MainActivity :: class.java)
+                                val intent = Intent(context, MainActivity::class.java)
                                 LocalToken.setToken(
-                                    context,(userResult.value as NetworkResponse.Success<tokenData>).data.token,
+                                    context,
+                                    (userResult.value as NetworkResponse.Success<tokenData>).data.token,
                                     intent
 
                                 )
                                 userViewModel.resetUserResult()
-                        }
+                            }
 
-                    }
+                        }
                         else ->  {  }
+                    }
                 }
 
-            }
         }
     }
-
 }
 
 

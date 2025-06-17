@@ -14,12 +14,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,15 +36,11 @@ import com.example.sejongapp.R
 @Composable
 fun ProfilePage () {
 
+    val text_size = 14.sp
     val context = LocalContext.current
-    val scale = remember { androidx.compose.animation.core.Animatable(0.2f) }
 
-    LaunchedEffect  (Unit){
-        scale.animateTo(
-                targetValue = 1.2f,
-                animationSpec = tween(durationMillis = 800)
-            )
-    }
+
+
 
     Box (
         modifier = Modifier
@@ -50,6 +50,7 @@ fun ProfilePage () {
         Column {
             Row(
                 modifier = Modifier
+
                     .padding(start = 10.dp, top = 15.dp)
 
 
@@ -58,7 +59,8 @@ fun ProfilePage () {
                     painter = painterResource(R.drawable.ic_back),
                     contentDescription = "ic_back",
                     modifier = Modifier
-                        .padding(top = 20.dp)
+                        .size(40.dp)
+                        .padding(top = 15.dp)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -71,14 +73,15 @@ fun ProfilePage () {
                 )
                 Text(
                     text = "Profile",
-                    fontSize = 25.sp,
+                    fontSize = 26.sp,
                     modifier = Modifier
-                        .padding(start = 15.dp, top = 30.dp)
+                        .padding(start = 15.dp, top = 13.dp )
 
 
                 )
             }
             Row (
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(start = 50.dp, top = 20.dp)
             ) {
@@ -86,6 +89,7 @@ fun ProfilePage () {
                     painter = painterResource(R.drawable.ic_profile),
                     contentDescription = "ic_profile",
                     modifier = Modifier
+                        .size(120.dp)
                         .padding(end = 5.dp)
 
 
@@ -93,7 +97,7 @@ fun ProfilePage () {
                 Column {
                     Text(
                         text = "Full name",
-                        fontSize = 30.sp,
+                        fontSize = 26.sp,
                         modifier = Modifier
                             .padding(start = 25.dp)
 
@@ -104,6 +108,7 @@ fun ProfilePage () {
 
                     Text (
                         text = "Number: +992 000-33-90-66",
+                        fontSize = text_size,
                         modifier = Modifier
                             .padding(start = 25.dp)
                     )
@@ -112,6 +117,7 @@ fun ProfilePage () {
 
                     Text (
                         text = "Email: ",
+                        fontSize = text_size,
                         modifier = Modifier
                             .padding(start = 25.dp)
                     )
@@ -119,15 +125,16 @@ fun ProfilePage () {
             }
             Column (
                 modifier = Modifier
-                    .padding(start = 50.dp, top = 40.dp)
+                    .padding(start = 50.dp, top = 35.dp)
             ) {
                 Text (
-                    text = "status: Student"
+                    text = "status: Student",
+                    fontSize = text_size,
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text (
-                    text = "Groups: 3B"
-
+                    text = "Groups: 3B",
+                    fontSize = text_size,
                 )
             }
         }
@@ -145,79 +152,79 @@ private fun Preview () {
 }
 
 
-//@Preview(name = "Small Phone", widthDp = 320, heightDp = 640, showBackground = true, showSystemUi = true)
-//@Composable
-//fun PreviewSmall() { ProfilePage() }
-//
-//@Preview(name = "Medium Phone", widthDp = 360, heightDp = 740, showBackground = true, showSystemUi = true)
-//@Composable
-//fun PreviewMedium() { ProfilePage() }
-//
-//@Preview(name = "Large Phone", widthDp = 412, heightDp = 892, showBackground = true, showSystemUi = true)
-//@Composable
-//fun PreviewLarge() { ProfilePage() }
-//
-//@Preview(name = "XL Phone", widthDp = 480, heightDp = 1000, showBackground = true, showSystemUi = true)
-//@Composable
-//fun PreviewXL() { ProfilePage() }
-//
-//
-//@Preview(
-//    name = "📱 Small Phone",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 320,
-//    heightDp = 568
-//)
-//@Composable
-//private fun PreviewSmallPhone() {
-//    ProfilePage()
-//}
-//
-//@Preview(
-//    name = "📱 Standard Phone",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 393,
-//    heightDp = 851
-//)
-//@Composable
-//private fun PreviewStandardPhone() {
-//    ProfilePage()
-//}
-//
-//@Preview(
-//    name = "📱 Large Phone / Fold",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 600,
-//    heightDp = 960
-//)
-//@Composable
-//private fun PreviewLargePhone() {
-//    ProfilePage()
-//}
-//
-//@Preview(
-//    name = "💻 Tablet",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 800,
-//    heightDp = 1280
-//)
-//@Composable
-//private fun PreviewTablet() {
-//    ProfilePage()
-//}
-//
-//@Preview (
-//    name = "📱 Small Phone",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 320,
-//    heightDp = 568
-//)
-//@Composable
-//private fun smallPreview() {
-//    ProfilePage()
-//}
+@Preview(name = "Small Phone", widthDp = 320, heightDp = 640, showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewSmall() { ProfilePage() }
+
+@Preview(name = "Medium Phone", widthDp = 360, heightDp = 740, showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewMedium() { ProfilePage() }
+
+@Preview(name = "Large Phone", widthDp = 412, heightDp = 892, showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewLarge() { ProfilePage() }
+
+@Preview(name = "XL Phone", widthDp = 480, heightDp = 1000, showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewXL() { ProfilePage() }
+
+
+@Preview(
+    name = "📱 Small Phone",
+    showBackground = true,
+    showSystemUi = true,
+    widthDp = 320,
+    heightDp = 568
+)
+@Composable
+private fun PreviewSmallPhone() {
+    ProfilePage()
+}
+
+@Preview(
+    name = "📱 Standard Phone",
+    showBackground = true,
+    showSystemUi = true,
+    widthDp = 393,
+    heightDp = 851
+)
+@Composable
+private fun PreviewStandardPhone() {
+    ProfilePage()
+}
+
+@Preview(
+    name = "📱 Large Phone / Fold",
+    showBackground = true,
+    showSystemUi = true,
+    widthDp = 600,
+    heightDp = 960
+)
+@Composable
+private fun PreviewLargePhone() {
+    ProfilePage()
+}
+
+@Preview(
+    name = "💻 Tablet",
+    showBackground = true,
+    showSystemUi = true,
+    widthDp = 800,
+    heightDp = 1280
+)
+@Composable
+private fun PreviewTablet() {
+    ProfilePage()
+}
+
+@Preview (
+    name = "📱 Small Phone",
+    showBackground = true,
+    showSystemUi = true,
+    widthDp = 320,
+    heightDp = 568
+)
+@Composable
+private fun smallPreview() {
+    ProfilePage()
+}

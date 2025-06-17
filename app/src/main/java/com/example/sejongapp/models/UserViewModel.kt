@@ -44,10 +44,12 @@ class UserViewModel: ViewModel() {
                     Log.i(TAG, "data successfully taken  " + response.body().toString())
 
                     if (response.body()!!.token == null) {
+                        Log.i(TAG, "token is empty so it is an error  ")
                         _userResult.value = NetworkResponse.Error("Token is empty")
                     }
                     else{
                         response.body()?.let {
+                            Log.i(TAG, "the token is full so it is fine")
                             _userResult.value = NetworkResponse.Success(it)
                         }
                     }
@@ -64,6 +66,8 @@ class UserViewModel: ViewModel() {
             }
         }
     }
+
+
     fun resetUserResult(){
         _userResult.value = Idle
     }
