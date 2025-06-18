@@ -90,7 +90,7 @@ fun ProfilePage () {
                     contentDescription = "ic_profile",
                     modifier = Modifier
                         .size(120.dp)
-                        .padding(end = 5.dp)
+                        .padding(end = 30.dp)
 
 
                 )
