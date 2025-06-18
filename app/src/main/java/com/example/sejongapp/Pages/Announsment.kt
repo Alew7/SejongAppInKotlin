@@ -149,7 +149,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 150.dp),
+                    .padding(top = 110.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -210,12 +210,12 @@ fun AnnousmentCard(onClick: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun Preview() {
-    AnnousmentPage()
-}
-
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//private fun Preview() {
+//    AnnousmentPage()
+//}
+//
 //
 //@Preview(
 //    name = "📱 Small Phone",
