@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.sejongapp.R
 import com.example.sejongapp.ui.theme.backgroundColor
 
@@ -51,6 +54,8 @@ fun SpleshScreen () {
                 contentDescription = "ic_sejong",
                 modifier = Modifier
                     .scale(scale.value)
+                    .then(Modifier.sizeIn(maxWidth = 220.dp))
+
 
 
             )

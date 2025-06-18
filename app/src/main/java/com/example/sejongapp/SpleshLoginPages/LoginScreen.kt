@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
@@ -42,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sejongapp.MainActivity
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.WarmBeige
@@ -70,6 +72,8 @@ fun LoginScreen () {
 
     val isLoading = userResult.value is NetworkResponse.Loading
     val isScuccess = userResult.value is NetworkResponse.Success <*>
+
+
 
 
 
@@ -109,9 +113,12 @@ fun LoginScreen () {
         ){
             Image (
                 painter = painterResource(R.drawable.ic_sejong),
-                contentDescription = "ic_sejong"
+                contentDescription = "ic_sejong",
+                modifier = Modifier
+
+                    .then(Modifier.sizeIn(maxWidth = 220.dp))
             )
-            Spacer(modifier = Modifier.height(35.dp))
+            Spacer(modifier = Modifier.height(20.dp)) // 35.dp
 
             OutlinedTextField(value = username, onValueChange = {
                 username = it
@@ -127,7 +134,7 @@ fun LoginScreen () {
 
                 ))
 
-            Spacer(modifier = Modifier.height(35.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             OutlinedTextField(value = password, onValueChange = {
                 password = it
