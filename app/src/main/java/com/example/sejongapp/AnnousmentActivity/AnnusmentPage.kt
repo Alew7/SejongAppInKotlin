@@ -1,6 +1,7 @@
 package com.example.sejongapp.AnnousmentActivity
 
 import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,13 +27,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
-import kotlin.system.exitProcess
 
 
 @Composable
@@ -85,19 +85,19 @@ fun AnnousmentDetailPage(annousmentActivity: AnnousmentActivity) {
                     painter = painterResource(R.drawable.ic_back),
                     contentDescription = "ic_back",
                     modifier = Modifier
-                        .padding(top = 10.dp)
+                        .size(55.dp)
+                        .padding(top = 20.dp, start = 10.dp)
                         .clickable  (
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         )
                         {
-                            val intent = Intent (context,MainActivity :: class.java)
-                            context.startActivity(intent)
-
+                            (context as? ComponentActivity)?.finish()
                         }
-
-
                 )
+
+
+
             }
             Text(
                 text = "11.02.2025",
@@ -141,12 +141,12 @@ fun AnnousmentDetailPage(annousmentActivity: AnnousmentActivity) {
 
 
 
-/*
-@Preview (showBackground = true, showSystemUi = true)
+
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun Preview () {
-    AnnousmentDetailPage(onChangeScreen = {})
-}*/
+    AnnousmentDetailPage(AnnousmentActivity())
+}
 
 
 
