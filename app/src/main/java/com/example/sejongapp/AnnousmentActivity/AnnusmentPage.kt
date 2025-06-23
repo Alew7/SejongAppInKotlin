@@ -1,6 +1,5 @@
 package com.example.sejongapp.AnnousmentActivity
 
-import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,7 +35,7 @@ import com.example.sejongapp.ui.theme.primaryColor
 
 
 @Composable
-fun AnnousmentDetailPage(annousmentActivity: AnnousmentActivity) {
+fun AnnousmentDetailPage() {
 
     val text_size = 15.sp
     val scrollState = rememberScrollState()
@@ -145,7 +144,7 @@ fun AnnousmentDetailPage(annousmentActivity: AnnousmentActivity) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun Preview () {
-    AnnousmentDetailPage(AnnousmentActivity())
+    AnnousmentDetailPage()
 }
 
 
