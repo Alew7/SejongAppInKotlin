@@ -14,6 +14,8 @@ val steelGray    = Color(0xff4C4C4C)
 val mediumGray  = Color(0xff838383)
 val lightGray  = Color(0xffA4A4A4)
 
+val cardGreyBackground  = Color(0xB1D9D9D9)
+
 
 //              тут мои добавленые цвета
 val WarmBeige  = Color(0xffE1DFD8)
