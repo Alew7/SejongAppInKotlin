@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -76,24 +77,47 @@ fun AnnousmentDetailPage() {
                     painter = painterResource(R.drawable.ic_head),
                     contentDescription = "ic_had",
                     modifier = Modifier
-                        .size(65.dp)
+                        .size(32.dp)  /// 65.dp old
                         .align(Alignment.TopEnd)
                         .padding(end = 25.dp)
                 )
-                Image(
-                    painter = painterResource(R.drawable.ic_back),
-                    contentDescription = "ic_back",
+
+                Box(
                     modifier = Modifier
-                        .size(55.dp)
+                        .size(48.dp)
                         .padding(top = 20.dp, start = 10.dp)
                         .clickable  (
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
-                        )
-                        {
+
+                        ){
                             (context as? ComponentActivity)?.finish()
-                        }
-                )
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image (
+                        painter = painterResource(R.drawable.ic_back),
+                        contentDescription = "ic_back",
+                        modifier = Modifier
+                            .size(30.dp)
+
+                    )
+                }
+
+//                Image(
+//                    painter = painterResource(R.drawable.ic_back),
+//                    contentDescription = "ic_back",
+//                    modifier = Modifier
+//                        .size(55.dp)
+//                        .padding(top = 20.dp, start = 10.dp)
+//                        .clickable  (
+//                            interactionSource = remember { MutableInteractionSource() },
+//                            indication = null
+//                        )
+//                        {
+//                            (context as? ComponentActivity)?.finish()
+//                        }
+//                )
 
 
 
