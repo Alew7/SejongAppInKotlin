@@ -1,39 +1,27 @@
 package com.example.sejongapp.Pages
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,24 +32,37 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sejongapp.R
-import com.example.sejongapp.ui.theme.backgroundColor
+import com.example.sejongapp.models.DataClasses.ScheduleData
+import com.example.sejongapp.models.DataClasses.ScheduleTime
 import com.example.sejongapp.ui.theme.cardGreyBackground
-import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.ui.theme.lightGray
-import com.example.sejongapp.ui.theme.mediumGray
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
+import org.jetbrains.annotations.Async
+
 
 @Composable
 fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
+
+    var scheduleData: ArrayList<ScheduleData> = arrayListOf(
+        ScheduleData(1, "Sejong Group 1", "Alisher", listOf<ScheduleTime>(
+            ScheduleTime(301, 0, "12:00", "13:00"),
+            ScheduleTime(301, 2, "12:00", "13:00"),
+            ScheduleTime(301, 4, "12:00", "13:00"),
+            )
+        ),
+        ScheduleData(2, "Sejong Group 2", "Anushervon", listOf<ScheduleTime>(
+            ScheduleTime(301, 1, "12:00", "14:00"),
+            ScheduleTime(301, 3, "12:00", "14:00"),
+        )
+    )
+    )
 
     Column {
         //    The header with logo icon
@@ -108,9 +109,18 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
             onSelected = { selectedPage = it }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-        table()
+        val sortedScheduleData: ArrayList<ScheduleData> = scheduleData
+        if  (selectedPage != 0) scheduleData.filter { it.book == scheduleData[selectedPage-1].book }
+
+        LazyColumn {
+            items(sortedScheduleData.size) { index ->
+                table(sortedScheduleData[index])
+            }
+        }
+
+
     }
   
 
@@ -120,7 +130,7 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 // a compose func for pagination (the one that sorts data from all to the specific group)
 @Composable
 fun PaginationSelector(
-    pages: List<String> = listOf("All", "1", "2", "3", "4", "5", "6", "7"),
+    pages: List<String> = listOf("All", "1", "2", "3", "4","5","6","7"),
     selectedIndex: Int,
     onSelected: (Int) -> Unit
 ) {
@@ -159,8 +169,9 @@ fun PaginationSelector(
 
 }
 
+
 @Composable()
-fun table(){
+fun table(scheduleData: ScheduleData) {
     ElevatedCard (
         modifier = Modifier
             .fillMaxWidth()
@@ -184,7 +195,7 @@ fun table(){
                 .padding(16.dp)
         ) {
             Text(
-                text = "세종 한국어 1A",
+                text = scheduleData.group,
                 fontSize = 32.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -230,16 +241,16 @@ fun table(){
                 }
             }
 
-            TableRowElements("MON", "from 14:00-16:00")
-            TableRowElements("WED", "from 14:00-16:00")
-            TableRowElements("FRI", "from 14:00-16:00")
+            scheduleData.time.forEach { time ->
+                TableRowElements(time.day.toString(), time.start_time + "-" + time.end_time)
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 modifier = Modifier.align(Alignment.Start),
                 fontSize = 20.sp,
-                text = "Teacher's name"
+                text = scheduleData.teacher
             )
         }
     }
@@ -295,5 +306,5 @@ fun TableRowElements(day: String, time: String){
 @Preview(showSystemUi = true)
 @Composable()
 private fun Preview() {
-    Schedule()
+    Async.Schedule()
 }

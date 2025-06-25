@@ -1,4 +1,4 @@
-package com.example.sejongapp.models
+package com.example.sejongapp.models.DataClasses
 
 data class loginRequestData(
     val username: String,
