@@ -46,8 +46,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.WarmBeige
-import com.example.sejongapp.models.UserViewModel
-import com.example.sejongapp.models.tokenData
+import com.example.sejongapp.models.ViewModels.UserViewModel
+import com.example.sejongapp.models.DataClasses.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor

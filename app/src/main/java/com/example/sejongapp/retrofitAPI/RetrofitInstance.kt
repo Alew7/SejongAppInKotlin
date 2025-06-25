@@ -1,6 +1,7 @@
 package com.example.sejongapp.retrofitAPI
 
-import com.example.sejongapp.retrofitAPI.UserApi
+import com.example.sejongapp.retrofitAPI.api.ScheduleApi
+import com.example.sejongapp.retrofitAPI.api.UserApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -17,5 +18,6 @@ object RetrofitInstance {
     }
 
     val userApi: UserApi = getInstance().create(UserApi::class.java)
+    val scheduleApi: ScheduleApi = getInstance().create(ScheduleApi::class.java)
 
 }
