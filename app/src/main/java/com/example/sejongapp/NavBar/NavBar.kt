@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.example.sejongapp.Pages.AnnousmentPage
 import com.example.sejongapp.Pages.HomePage
 import com.example.sejongapp.Pages.Schedule
+import com.example.sejongapp.Pages.elaibaryPage
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.ui.theme.WarmBeige
@@ -193,7 +194,7 @@ fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScree
         NavigationScreenEnum.ANNOUNCEMENTS -> AnnousmentPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
-        NavigationScreenEnum.LIBRARY -> TODO()
+        NavigationScreenEnum.LIBRARY -> elaibaryPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied
     }
 }
