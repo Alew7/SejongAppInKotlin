@@ -63,12 +63,13 @@ fun LoginScreen () {
 
 //    val userViewModel = UserViewModel()
     val userViewModel : UserViewModel = viewModel()
-    val userResult = userViewModel.userResult.observeAsState(NetworkResponse.Idle)  // добавил Network.Idle
+    val userTokenResult = userViewModel.userTokenResult.observeAsState(NetworkResponse.Idle)
+    val userDataResult = userViewModel.userDataResult.observeAsState(NetworkResponse.Idle)
     val context = LocalContext.current
     var passwordVisible by remember { mutableStateOf(false) }
 
-    val isLoading = userResult.value is NetworkResponse.Loading
-    val isSuccess = userResult.value is NetworkResponse.Success <*>
+    val isLoading = userTokenResult.value is NetworkResponse.Loading
+    val isSuccess = userTokenResult.value is NetworkResponse.Success <*>
 
 
 
@@ -77,10 +78,11 @@ fun LoginScreen () {
 
 
     if (LocalToken.getSavedToken(context) != "null"){
+
         Log.i(TAG, "The token is ${LocalToken.getSavedToken(context)}")
+        userViewModel.getUserData(LocalToken.getSavedToken(context))
         val intent = Intent (context,MainActivity :: class.java)
         context.startActivity(intent)
-
     }
 
 
@@ -204,14 +206,14 @@ fun LoginScreen () {
             }
 
 
-                val token = (userResult.value as? NetworkResponse.Success<tokenData>)?.data?.token
+                val token = (userTokenResult.value as? NetworkResponse.Success<tokenData>)?.data?.token
                 LaunchedEffect  (token){
                     if (!token.isNullOrEmpty()) {
                         Log.i(TAG, "token was $token")
                         Log.i(TAG,"user result $token")
 
                         val intent = Intent(context,MainActivity :: class.java)
-                        LocalToken.setToken(context,(userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
+                        LocalToken.setToken(context,(userTokenResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
 
                         userViewModel.resetUserResult()
                     }

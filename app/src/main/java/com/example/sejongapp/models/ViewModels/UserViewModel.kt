@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sejongapp.models.DataClasses.UserData
 import com.example.sejongapp.models.DataClasses.loginRequestData
 import com.example.sejongapp.models.DataClasses.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
@@ -18,9 +19,12 @@ class UserViewModel: ViewModel() {
     private val userApi =  RetrofitInstance.userApi
 
 
-    private val _userResult = MutableLiveData<NetworkResponse<tokenData>>()
-    val userResult : LiveData<NetworkResponse<tokenData>> = _userResult
+    private val _userTokenResult = MutableLiveData<NetworkResponse<tokenData>>()
+    val userTokenResult : LiveData<NetworkResponse<tokenData>> = _userTokenResult
 
+
+    private val _userDataResult = MutableLiveData<NetworkResponse<UserData>>()
+    val userDataResult : LiveData<NetworkResponse<UserData>> = _userDataResult
 
     companion object {
         private const val TAG = "UserViewModel_TAG"
@@ -29,7 +33,7 @@ class UserViewModel: ViewModel() {
     fun login(username: String, password: String){
         Log.i(TAG, "the username and password is $username - $password")
 
-        _userResult.value = Loading
+        _userTokenResult.value = Loading
 
         viewModelScope.launch {
 
@@ -42,20 +46,48 @@ class UserViewModel: ViewModel() {
                     Log.i(TAG, "data successfully taken " + response.body().toString())
 
                     response.body()?.let {
-                        _userResult.value = NetworkResponse.Success(it)
+                        _userTokenResult.value = Success(it)
                     }
                 } else {
                     Log.e(TAG, response.message().toString())
-                    _userResult.value = Error("Failed to fetch data")
+                    _userTokenResult.value = Error("Failed to fetch data")
                 }
             }
             catch (e: Exception){
                 Log.e(TAG, e.message.toString())
-                _userResult.value = NetworkResponse.Error("Exception: ${e.message}")
+                _userTokenResult.value = Error("Exception: ${e.message}")
             }
         }
     }
-    fun resetUserResult(){
-        _userResult.value = Idle
+
+
+    fun getUserData(token: String){
+        Log.i(TAG, "trying to get user data")
+        _userDataResult.value = Loading
+
+        viewModelScope.launch {
+            val response = userApi.getUserData(token)
+
+            try {
+                if (response.isSuccessful){
+                    Log.i(TAG, "data successfully taken " + response.body().toString())
+
+
+                    response.body()?.let {
+                        _userDataResult.value = Success(it)
+                    }
+                } else {
+                    Log.e(TAG, response.message().toString())
+                }
+            }
+            catch (e: Exception){
+                Log.e(TAG, e.message.toString())
+            }
+        }
     }
+
+    fun resetUserResult(){
+        _userTokenResult.value = Idle
+    }
+
 }

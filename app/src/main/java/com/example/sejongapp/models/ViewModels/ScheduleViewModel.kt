@@ -37,6 +37,7 @@ class ScheduleViewModel: ViewModel() {
 
                     response.body()?.let {
                         _scheduleResult.value = NetworkResponse.Success(it)
+                        Log.i(TAG, "data successfully added to value " + it.toString())
                     }
                 }
                 else {

@@ -9,27 +9,6 @@ import java.util.*
 
 
 object LocalToken {
-
-    private const val  PREFERENCES_NAME = "user_prefs"
-
-//    fun setLocal(context: Context, token: String): Context {
-//        val locale = Locale(token)
-//        Locale.setDefault(locale)
-//
-//        val config = Configuration(context.resources.configuration)
-//        config.setLocale(locale)
-//
-//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            context.createConfigurationContext(config)
-//        } else {
-//            @Suppress("DEPRECATION")
-//            context.resources.updateConfiguration(config, context.resources.displayMetrics)
-//            context
-//        }
-//    }
-
-
-
     fun getSavedToken(context: Context): String {
         val prefs = context.getSharedPreferences("Settings", Context.MODE_PRIVATE)
         return prefs.getString("token", "token") ?: "null"

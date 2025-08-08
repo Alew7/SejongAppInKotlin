@@ -25,6 +25,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
+import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.models.DataClasses.ScheduleData
 import com.example.sejongapp.models.ViewModels.ScheduleViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
@@ -67,15 +69,19 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
     val isLoading = scheduleResult.value is NetworkResponse.Loading
     val isSuccess = scheduleResult.value is NetworkResponse.Success <*>
 
-    if (LocalToken.getSavedToken(context) != "null"){
+    var selectedPage by remember { mutableStateOf(0) }
+
+    if (LocalToken.getSavedToken(context) == "null"){
         Log.i(com.example.sejongapp.SpleshLoginPages.TAG, "The token is ${LocalToken.getSavedToken(context)}")
-        val intent = Intent (context, MainActivity :: class.java)
+        val intent = Intent (context, SplashLoginActivity :: class.java)
         context.startActivity(intent)
 
     }
 
 //    Getting all the schedule data from the server db
+    LaunchedEffect(selectedPage) {
     scheduleViewModel.getAllSchedules(LocalToken.getSavedToken(context))
+    }
 
     weekDays.put(0, "MON")
     weekDays.put(1, "TUE")
@@ -148,7 +154,8 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
         Spacer(modifier = Modifier.height(4.dp))
 
 
-        if (isLoading) {
+        if (scheduleResult.value is NetworkResponse.Loading) {
+            Log.e(TAG, "the schedule result is Loading")
             CircularProgressIndicator(
                 color = Color.White,
                 strokeWidth = 2.dp,
@@ -158,13 +165,22 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
                     .padding(bottom = 2.dp, start = 1.dp)
             )
         }
-        else if (isSuccess){
-            var sortedScheduleData: ArrayList<ScheduleData> = arrayListOf<ScheduleData>()
+        else{
 
-            if  (selectedPage == 0) sortedScheduleData.addAll(scheduleResult.value)
+            Log.i(TAG, "the schedule result is Successful")
+            Log.i(TAG, "the schedule result is $scheduleResult")
+
+            var scheduleData: ArrayList<ScheduleData> = arrayListOf()
+            val response = scheduleResult.value
+            if (response is NetworkResponse.Success<*>) {
+                scheduleData = response.data as? ArrayList<ScheduleData> ?: arrayListOf()
+                }
+
+            var sortedScheduleData: ArrayList<ScheduleData> = arrayListOf<ScheduleData>()
+            if  (selectedPage == 0) sortedScheduleData.addAll(scheduleData)
             else {
                 Log.i(TAG, "selected page is $selectedPage" )
-                scheduleResult.value.forEach{item ->
+                scheduleData.forEach{item ->
                     if (item.book == selectedPage) {
                         sortedScheduleData.add(item)
                     }
