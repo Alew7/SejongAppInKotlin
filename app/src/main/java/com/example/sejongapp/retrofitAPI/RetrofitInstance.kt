@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
 
-    private const val baseUrl = "https://dushanbe3sejong.pythonanywhere.com/api/"
+    private const val baseUrl = "http://192.168.88.252:8000/api/"
 
     private fun getInstance(): Retrofit {
         return Retrofit.Builder()
