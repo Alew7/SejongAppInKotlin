@@ -68,7 +68,7 @@ fun LoginScreen () {
     var passwordVisible by remember { mutableStateOf(false) }
 
     val isLoading = userResult.value is NetworkResponse.Loading
-    val isScuccess = userResult.value is NetworkResponse.Success <*>
+    val isSuccess = userResult.value is NetworkResponse.Success <*>
 
 
 

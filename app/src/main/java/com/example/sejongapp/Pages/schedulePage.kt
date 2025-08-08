@@ -1,4 +1,7 @@
 package com.example.sejongapp.Pages
+import LocalToken
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,11 +21,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,37 +36,69 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.ScheduleData
-import com.example.sejongapp.models.DataClasses.ScheduleTime
+import com.example.sejongapp.models.ViewModels.ScheduleViewModel
+import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.cardGreyBackground
 import com.example.sejongapp.ui.theme.lightGray
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
-import org.jetbrains.annotations.Async
 
+const val TAG = "Schedule_TAG"
+
+var weekDays = HashMap<Int, String>()
 
 @Composable
 fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
-    var scheduleData: ArrayList<ScheduleData> = arrayListOf(
-        ScheduleData(1, "Sejong Group 1", "Alisher", listOf<ScheduleTime>(
-            ScheduleTime(301, 0, "12:00", "13:00"),
-            ScheduleTime(301, 2, "12:00", "13:00"),
-            ScheduleTime(301, 4, "12:00", "13:00"),
-            )
-        ),
-        ScheduleData(2, "Sejong Group 2", "Anushervon", listOf<ScheduleTime>(
-            ScheduleTime(301, 1, "12:00", "14:00"),
-            ScheduleTime(301, 3, "12:00", "14:00"),
-        )
-    )
-    )
+    val scheduleViewModel: ScheduleViewModel = viewModel()
+    val scheduleResult = scheduleViewModel.scheduleResult.observeAsState(NetworkResponse.Idle)
+
+    val context = LocalContext.current
+    val isLoading = scheduleResult.value is NetworkResponse.Loading
+    val isSuccess = scheduleResult.value is NetworkResponse.Success <*>
+
+    if (LocalToken.getSavedToken(context) != "null"){
+        Log.i(com.example.sejongapp.SpleshLoginPages.TAG, "The token is ${LocalToken.getSavedToken(context)}")
+        val intent = Intent (context, MainActivity :: class.java)
+        context.startActivity(intent)
+
+    }
+
+//    Getting all the schedule data from the server db
+    scheduleViewModel.getAllSchedules(LocalToken.getSavedToken(context))
+
+    weekDays.put(0, "MON")
+    weekDays.put(1, "TUE")
+    weekDays.put(2, "WED")
+    weekDays.put(3, "THU")
+    weekDays.put(4, "FRI")
+    weekDays.put(5, "SAT")
+//
+//    var scheduleData: ArrayList<ScheduleData> = arrayListOf(
+//        ScheduleData(1, "Sejong Group 1", "Alisher", listOf<ScheduleTime>(
+//            ScheduleTime(301, 0, "12:00", "13:00"),
+//            ScheduleTime(301, 2, "12:00", "13:00"),
+//            ScheduleTime(301, 4, "12:00", "13:00"),
+//            )
+//        ),
+//        ScheduleData(2, "Sejong Group 2", "Anushervon", listOf<ScheduleTime>(
+//            ScheduleTime(301, 1, "12:00", "14:00"),
+//            ScheduleTime(301, 3, "12:00", "14:00"),
+//        )
+//    )
+//    )
+
+
 
     Column {
         //    The header with logo icon
@@ -111,14 +147,42 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        val sortedScheduleData: ArrayList<ScheduleData> = scheduleData
-        if  (selectedPage != 0) scheduleData.filter { it.book == scheduleData[selectedPage-1].book }
 
-        LazyColumn {
-            items(sortedScheduleData.size) { index ->
-                table(sortedScheduleData[index])
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = Color.White,
+                strokeWidth = 2.dp,
+                modifier = Modifier
+                    .height(20.dp)
+                    .size(24.dp)
+                    .padding(bottom = 2.dp, start = 1.dp)
+            )
+        }
+        else if (isSuccess){
+            var sortedScheduleData: ArrayList<ScheduleData> = arrayListOf<ScheduleData>()
+
+            if  (selectedPage == 0) sortedScheduleData.addAll(scheduleResult.value)
+            else {
+                Log.i(TAG, "selected page is $selectedPage" )
+                scheduleResult.value.forEach{item ->
+                    if (item.book == selectedPage) {
+                        sortedScheduleData.add(item)
+                    }
+                }
+                Log.i(TAG, "sorted data is $sortedScheduleData")
+
+            }
+
+            LazyColumn(
+                modifier = Modifier.padding(bottom = 105.dp)
+            ) {
+                items(sortedScheduleData.size) { index ->
+                    table(sortedScheduleData[index])
+                }
             }
         }
+
+
 
 
     }
@@ -242,7 +306,7 @@ fun table(scheduleData: ScheduleData) {
             }
 
             scheduleData.time.forEach { time ->
-                TableRowElements(time.day.toString(), time.start_time + "-" + time.end_time)
+                TableRowElements(weekDays[time.day].toString(), time.start_time + "-" + time.end_time)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -306,5 +370,5 @@ fun TableRowElements(day: String, time: String){
 @Preview(showSystemUi = true)
 @Composable()
 private fun Preview() {
-    Async.Schedule()
+    Schedule()
 }
