@@ -9,8 +9,6 @@ import retrofit2.http.Query
 
 interface ScheduleApi {
     @GET("schedules/")
-    suspend fun getSchedules(
-        @Query("token") token: tokenData
-    ): Response<ArrayList<ScheduleData>>
+    suspend fun getSchedules(): Response<ArrayList<ScheduleData>>
 
 }

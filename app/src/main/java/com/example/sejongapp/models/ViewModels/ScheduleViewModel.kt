@@ -23,13 +23,12 @@ class ScheduleViewModel: ViewModel() {
     val scheduleResult : MutableLiveData<NetworkResponse<ArrayList<ScheduleData>>> = _scheduleResult
 
 
-    fun getAllSchedules(token: String){
+    fun getAllSchedules(){
         Log.i(TAG, "trying to fetch all schedules data")
-        Log.i(TAG, "the token is $token")
         _scheduleResult.value = NetworkResponse.Loading
 
         viewModelScope.launch {
-            val response = scheduleApi.getSchedules(tokenData(token))
+            val response = scheduleApi.getSchedules()
 
             try {
                 if (response.isSuccessful) {
