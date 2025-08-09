@@ -1,6 +1,6 @@
 package com.example.sejongapp.SpleshLoginPages
 
-import LocalToken
+import LocalData
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import android.content.Intent
@@ -77,10 +77,10 @@ fun LoginScreen () {
 
 
 
-    if (LocalToken.getSavedToken(context) != "null"){
+    if (LocalData.getSavedToken(context) != "null"){
 
-        Log.i(TAG, "The token is ${LocalToken.getSavedToken(context)}")
-        userViewModel.getUserData(LocalToken.getSavedToken(context))
+        Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
+
         val intent = Intent (context,MainActivity :: class.java)
         context.startActivity(intent)
     }
@@ -213,7 +213,7 @@ fun LoginScreen () {
                         Log.i(TAG,"user result $token")
 
                         val intent = Intent(context,MainActivity :: class.java)
-                        LocalToken.setToken(context,(userTokenResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
+                        LocalData.setToken(context,(userTokenResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
 
                         userViewModel.resetUserResult()
                     }
@@ -252,6 +252,10 @@ fun LoginScreen () {
 
         }
     }
+
+}
+
+fun GetAndSaveUserData(){
 
 }
 

@@ -1,5 +1,5 @@
 package com.example.sejongapp.Pages
-import LocalToken
+import LocalData
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -44,7 +44,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.models.DataClasses.ScheduleData
@@ -66,13 +65,11 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
     val scheduleResult = scheduleViewModel.scheduleResult.observeAsState(NetworkResponse.Idle)
 
     val context = LocalContext.current
-    val isLoading = scheduleResult.value is NetworkResponse.Loading
-    val isSuccess = scheduleResult.value is NetworkResponse.Success <*>
 
     var selectedPage by remember { mutableStateOf(0) }
 
-    if (LocalToken.getSavedToken(context) == "null"){
-        Log.i(com.example.sejongapp.SpleshLoginPages.TAG, "The token is ${LocalToken.getSavedToken(context)}")
+    if (LocalData.getSavedToken(context) == "null"){
+        Log.i(com.example.sejongapp.SpleshLoginPages.TAG, "The token is ${LocalData.getSavedToken(context)}")
         val intent = Intent (context, SplashLoginActivity :: class.java)
         context.startActivity(intent)
 
@@ -80,7 +77,7 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 //    Getting all the schedule data from the server db
     LaunchedEffect(selectedPage) {
-    scheduleViewModel.getAllSchedules(LocalToken.getSavedToken(context))
+    scheduleViewModel.getAllSchedules()
     }
 
     weekDays.put(0, "MON")
