@@ -13,7 +13,7 @@ object LocalData {
         return prefs.getString("token", "null") ?: "null"
     }
 
-    fun setToken(context: Context,token: String, intent: Intent) {
+    fun setToken(context: Context,token: String) {
 
         Log.i("Token_TAG", "Trying to save the token! token = $token")
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
@@ -21,7 +21,7 @@ object LocalData {
         editor.putString("token", token)
         editor.apply()
 
-        startActivity(context, intent, null)
+//        startActivity(context, intent, null)
     }
 
     fun deletToken (context: Context) {
@@ -41,10 +41,6 @@ object LocalData {
 
     fun getUserData(context: Context): UserData {
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
-        if (prefs.getString("username", "null") != "null"){
-            return UserData("NUL", "NUL","NUL","NUL","NUL", arrayListOf(),)
-        }
-
         return UserData(
             prefs.getString("username", "null") ?: "null",
             prefs.getString("avatar", "null") ?: "null",

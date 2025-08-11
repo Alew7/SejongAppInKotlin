@@ -77,10 +77,13 @@ class UserViewModel: ViewModel() {
                         _userDataResult.value = Success(it)
                     }
                 } else {
+
+                    Log.i(TAG, "the response is not successful the response is ${response.message()}")
                     Log.e(TAG, response.message().toString())
                 }
             }
             catch (e: Exception){
+                Log.e(TAG, "Some error occurred")
                 Log.e(TAG, e.message.toString())
             }
         }

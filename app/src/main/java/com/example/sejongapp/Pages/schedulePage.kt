@@ -75,6 +75,9 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
     }
 
+    Log.i(TAG, "Ther user's token is ${LocalData.getSavedToken(context)}")
+    Log.i(TAG, "The user data here is ${LocalData.getUserData(context)}")
+
 //    Getting all the schedule data from the server db
     LaunchedEffect(selectedPage) {
     scheduleViewModel.getAllSchedules()

@@ -1,6 +1,7 @@
 package com.example.sejongapp.SpleshLoginPages
 
 import LocalData
+import android.content.Context
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import android.content.Intent
@@ -56,6 +57,8 @@ import com.example.sejongapp.ui.theme.primaryColor
 
 const val TAG = "Login_TAG"
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen () {
@@ -64,7 +67,6 @@ fun LoginScreen () {
 //    val userViewModel = UserViewModel()
     val userViewModel : UserViewModel = viewModel()
     val userTokenResult = userViewModel.userTokenResult.observeAsState(NetworkResponse.Idle)
-    val userDataResult = userViewModel.userDataResult.observeAsState(NetworkResponse.Idle)
     val context = LocalContext.current
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -76,14 +78,15 @@ fun LoginScreen () {
 
 
 
+    LaunchedEffect(Unit) {
+        if (LocalData.getSavedToken(context) != "null"){
+            Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
 
-    if (LocalData.getSavedToken(context) != "null"){
+            getAndSaveUserData(userViewModel, context)
 
-        Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
-
-        val intent = Intent (context,MainActivity :: class.java)
-        context.startActivity(intent)
+        }
     }
+
 
 
 
@@ -206,15 +209,16 @@ fun LoginScreen () {
             }
 
 
-                val token = (userTokenResult.value as? NetworkResponse.Success<tokenData>)?.data?.token
+                val token = (userTokenResult.value as? NetworkResponse.Success<tokenData>)?.data?.auth_token
                 LaunchedEffect  (token){
                     if (!token.isNullOrEmpty()) {
                         Log.i(TAG, "token was $token")
                         Log.i(TAG,"user result $token")
 
                         val intent = Intent(context,MainActivity :: class.java)
-                        LocalData.setToken(context,(userTokenResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
+                        LocalData.setToken(context,(userTokenResult.value as NetworkResponse.Success<tokenData>).data.auth_token)
 
+                        getAndSaveUserData(userViewModel = userViewModel, context = context)
                         userViewModel.resetUserResult()
                     }
                 }
@@ -255,9 +259,17 @@ fun LoginScreen () {
 
 }
 
-fun GetAndSaveUserData(){
-
+fun getAndSaveUserData(userViewModel: UserViewModel, context: Context) {
+    userViewModel.getUserData(LocalData.getSavedToken(context))
+    userViewModel.userDataResult.observeForever { result ->
+        if (result is NetworkResponse.Success) {
+            LocalData.setUserData(context, result.data)
+            val intent = Intent (context,MainActivity :: class.java)
+            context.startActivity(intent)
+        }
+    }
 }
+
 
 
 @Preview (showSystemUi = true, showBackground = true)

@@ -7,12 +7,13 @@ import com.example.sejongapp.models.DataClasses.tokenData
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface UserApi {
 
-    @POST("login/")
+    @POST("auth/token/login/")
     suspend fun loginUser(
         @Body request: loginRequestData
     ): Response<tokenData>
@@ -20,6 +21,6 @@ interface UserApi {
 
     @GET("profile/")
     suspend fun getUserData(
-        @Query("token") token: String
+        @Header("token") token: String
     ): Response<UserData>
 }
