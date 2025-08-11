@@ -33,11 +33,9 @@ class ScheduleViewModel: ViewModel() {
             try {
                 if (response.isSuccessful) {
                     Log.i(TAG, "data successfully taken " + response.body().toString())
+                    _scheduleResult.value = NetworkResponse.Success(response.body()!!)
+                    Log.i(TAG, "data successfully added to value " + response.body().toString())
 
-                    response.body()?.let {
-                        _scheduleResult.value = NetworkResponse.Success(it)
-                        Log.i(TAG, "data successfully added to value " + it.toString())
-                    }
                 }
                 else {
                     Log.e(TAG, response.message().toString())
