@@ -25,7 +25,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.R
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
@@ -66,7 +66,6 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
     val context = LocalContext.current
 
-    var selectedPage by remember { mutableStateOf(0) }
 
     if (LocalData.getSavedToken(context) == "null"){
         Log.i(com.example.sejongapp.SpleshLoginPages.TAG, "The token is ${LocalData.getSavedToken(context)}")
@@ -79,9 +78,8 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
     Log.i(TAG, "The user data here is ${LocalData.getUserData(context)}")
 
 //    Getting all the schedule data from the server db
-    LaunchedEffect(selectedPage) {
     scheduleViewModel.getAllSchedules()
-    }
+
 
     weekDays.put(0, "MON")
     weekDays.put(1, "TUE")
@@ -89,20 +87,6 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
     weekDays.put(3, "THU")
     weekDays.put(4, "FRI")
     weekDays.put(5, "SAT")
-//
-//    var scheduleData: ArrayList<ScheduleData> = arrayListOf(
-//        ScheduleData(1, "Sejong Group 1", "Alisher", listOf<ScheduleTime>(
-//            ScheduleTime(301, 0, "12:00", "13:00"),
-//            ScheduleTime(301, 2, "12:00", "13:00"),
-//            ScheduleTime(301, 4, "12:00", "13:00"),
-//            )
-//        ),
-//        ScheduleData(2, "Sejong Group 2", "Anushervon", listOf<ScheduleTime>(
-//            ScheduleTime(301, 1, "12:00", "14:00"),
-//            ScheduleTime(301, 3, "12:00", "14:00"),
-//        )
-//    )
-//    )
 
 
 
@@ -153,50 +137,7 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
         Spacer(modifier = Modifier.height(4.dp))
 
-
-        if (scheduleResult.value is NetworkResponse.Loading) {
-            Log.e(TAG, "the schedule result is Loading")
-            CircularProgressIndicator(
-                color = Color.White,
-                strokeWidth = 2.dp,
-                modifier = Modifier
-                    .height(20.dp)
-                    .size(24.dp)
-                    .padding(bottom = 2.dp, start = 1.dp)
-            )
-        }
-        else{
-
-            Log.i(TAG, "the schedule result is Successful")
-            Log.i(TAG, "the schedule result is $scheduleResult")
-
-            var scheduleData: ArrayList<ScheduleData> = arrayListOf()
-            val response = scheduleResult.value
-            if (response is NetworkResponse.Success<*>) {
-                scheduleData = response.data as? ArrayList<ScheduleData> ?: arrayListOf()
-                }
-
-            var sortedScheduleData: ArrayList<ScheduleData> = arrayListOf<ScheduleData>()
-            if  (selectedPage == 0) sortedScheduleData.addAll(scheduleData)
-            else {
-                Log.i(TAG, "selected page is $selectedPage" )
-                scheduleData.forEach{item ->
-                    if (item.book == selectedPage) {
-                        sortedScheduleData.add(item)
-                    }
-                }
-                Log.i(TAG, "sorted data is $sortedScheduleData")
-
-            }
-
-            LazyColumn(
-                modifier = Modifier.padding(bottom = 105.dp)
-            ) {
-                items(sortedScheduleData.size) { index ->
-                    table(sortedScheduleData[index])
-                }
-            }
-        }
+        ScheduleScreen(scheduleViewModel, selectedPage)
 
 
 
@@ -206,6 +147,53 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 
 }
+
+@Composable
+fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
+    val scheduleState by viewModel.scheduleResult.observeAsState()
+
+    when (val result = scheduleState) {
+        is NetworkResponse.Success -> {
+            Log.d(TAG, "the schedule result is Successful")
+            Log.i(TAG, "the schedule result is $result")
+
+            var scheduleData: ArrayList<ScheduleData> = arrayListOf()
+            scheduleData = result.data as? ArrayList<ScheduleData> ?: arrayListOf()
+
+            var sortedScheduleData: ArrayList<ScheduleData> = sortScheduleData(scheduleData)
+
+            LazyColumn(
+                modifier = Modifier.padding(bottom = 105.dp)
+            ) {
+                if (selectedPage != 0){
+                    items(sortedScheduleData.size) { index ->
+                        if (selectedPage == sortedScheduleData[index].book){
+                            table(sortedScheduleData[index])
+                        }
+                    }
+                }
+                else{
+                    items(sortedScheduleData.size) { index ->
+                        table(sortedScheduleData[index])
+                    }
+                }
+            }
+        }
+        is NetworkResponse.Error -> { /* show error */ }
+        is NetworkResponse.Loading -> {
+            Log.d(TAG, "the schedule result is Loading")
+            CircularProgressIndicator(
+                color = Color.White,
+                strokeWidth = 2.dp,
+                modifier = Modifier
+                    .height(20.dp)
+                    .size(24.dp)
+                    .padding(bottom = 2.dp, start = 1.dp)
+            ) }
+        else -> {}
+    }
+}
+
 
 // a compose func for pagination (the one that sorts data from all to the specific group)
 @Composable
@@ -277,7 +265,7 @@ fun table(scheduleData: ScheduleData) {
             Text(
                 text = scheduleData.group,
                 fontSize = 32.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 10.dp)
             )
 
             Row(
@@ -381,6 +369,37 @@ fun TableRowElements(day: String, time: String){
             )
         }
     }
+}
+
+
+
+fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData>{
+
+    Log.i(TAG, "starts soring the schedule data")
+    var sortedScheduleData: ArrayList<ScheduleData> = arrayListOf<ScheduleData>()
+    var i : Int = 0
+    sortedScheduleData.add(scheduleData.get(0))
+
+    scheduleData.forEach { item->
+
+        if (i == 0){
+            i++;
+            return@forEach
+        }
+
+        for (j in 0..sortedScheduleData.size-1){
+            if (item.book > sortedScheduleData[j].book){
+                sortedScheduleData.add(j, item)
+                return@forEach
+            }
+        }
+
+    }
+    Log.i(TAG, "the data is sorted")
+    sortedScheduleData.forEach { item->
+        Log.i(TAG, "the book : ${item.book}")
+    }
+    return sortedScheduleData;
 }
 
 @Preview(showSystemUi = true)
