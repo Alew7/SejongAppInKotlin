@@ -63,14 +63,12 @@ const val TAG = "Login_TAG"
 @Composable
 fun LoginScreen () {
 
-
-//    val userViewModel = UserViewModel()
     val userViewModel : UserViewModel = viewModel()
-    val userTokenResult = userViewModel.userTokenResult.observeAsState(NetworkResponse.Idle)
+    val userTokenResult = userViewModel.userTokenResult.observeAsState()
     val context = LocalContext.current
     var passwordVisible by remember { mutableStateOf(false) }
 
-    val isLoading = userTokenResult.value is NetworkResponse.Loading
+    var isLoading = userTokenResult.value is NetworkResponse.Loading
     val isSuccess = userTokenResult.value is NetworkResponse.Success <*>
 
 
@@ -82,8 +80,9 @@ fun LoginScreen () {
         if (LocalData.getSavedToken(context) != "null"){
             Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
 
-            getAndSaveUserData(userViewModel, context)
+//            getAndSaveUserData(userViewModel, context)
 
+            MoveToMainActivity(context)
         }
     }
 
@@ -208,66 +207,42 @@ fun LoginScreen () {
                 }
             }
 
+            when(userTokenResult.value){
+                is NetworkResponse.Error -> {}
+                NetworkResponse.Idle -> {}
+                NetworkResponse.Loading -> isLoading = true
+                is NetworkResponse.Success -> {
+                    isLoading = false
+                    Log.i(TAG, "token was ${(userTokenResult.value as NetworkResponse.Success<tokenData>).data}")
 
-                val token = (userTokenResult.value as? NetworkResponse.Success<tokenData>)?.data?.auth_token
-                LaunchedEffect  (token){
-                    if (!token.isNullOrEmpty()) {
-                        Log.i(TAG, "token was $token")
-                        Log.i(TAG,"user result $token")
+                    LocalData.setToken(context,(userTokenResult.value as NetworkResponse.Success<tokenData>).data.auth_token)
 
-                        val intent = Intent(context,MainActivity :: class.java)
-                        LocalData.setToken(context,(userTokenResult.value as NetworkResponse.Success<tokenData>).data.auth_token)
-
-                        getAndSaveUserData(userViewModel = userViewModel, context = context)
-                        userViewModel.resetUserResult()
-                    }
+                    getAndSaveUserData(userViewModel = userViewModel, context = context)
+                    userViewModel.resetUserResult()
                 }
-
-
-
-//            if (userResult.value is NetworkResponse.Success) {
-//
-//                Log.i(TAG, "NetWorkResponse is Successful")
-//
-//                if ((userResult.value as NetworkResponse.Success<tokenData>).data.token != null){
-//                    Log.i(TAG,"token was taken fine")
-//
-//                    Log.i(TAG,"user result ${(userResult.value as NetworkResponse.Success<tokenData>).data.token}")
-//                    val intent = Intent (context,MainActivity :: class.java)
-//
-//                    LocalToken.setToken(context, (userResult.value as NetworkResponse.Success<tokenData>).data.token,intent )
-//                }
-//                else{
-//                    Log.i(TAG,"Password or Login was incorrect!")
-//                    Text(
-//                        text = "Login or password is incorrect!"
-//                    )
-//                }
-//
-//
-//            }
-
-//            else{
-//                Text(
-//                    text = "Login please"
-//                )
-//            }
-
+                null -> {}
+            }
 
         }
     }
 
 }
 
+
+
 fun getAndSaveUserData(userViewModel: UserViewModel, context: Context) {
     userViewModel.getUserData(LocalData.getSavedToken(context))
     userViewModel.userDataResult.observeForever { result ->
         if (result is NetworkResponse.Success) {
             LocalData.setUserData(context, result.data)
-            val intent = Intent (context,MainActivity :: class.java)
-            context.startActivity(intent)
+            MoveToMainActivity(context)
         }
     }
+}
+
+fun MoveToMainActivity(context: Context){
+    val intent = Intent (context,MainActivity :: class.java)
+    context.startActivity(intent)
 }
 
 
