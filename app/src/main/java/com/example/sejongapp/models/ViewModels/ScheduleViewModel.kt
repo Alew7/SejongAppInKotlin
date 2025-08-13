@@ -5,9 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sejongapp.models.DataClasses.ScheduleData
-import com.example.sejongapp.models.DataClasses.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
-import com.example.sejongapp.retrofitAPI.NetworkResponse.Error
 import com.example.sejongapp.retrofitAPI.RetrofitInstance
 import kotlinx.coroutines.launch
 
@@ -28,9 +26,10 @@ class ScheduleViewModel: ViewModel() {
         _scheduleResult.value = NetworkResponse.Loading
 
         viewModelScope.launch {
-            val response = scheduleApi.getSchedules()
+
 
             try {
+                val response = scheduleApi.getSchedules()
                 if (response.isSuccessful) {
                     Log.i(TAG, "data successfully taken " + response.body().toString())
                     _scheduleResult.value = NetworkResponse.Success(response.body()!!)
@@ -39,12 +38,12 @@ class ScheduleViewModel: ViewModel() {
                 }
                 else {
                     Log.e(TAG, response.message().toString())
-                    _scheduleResult.value = Error("Failed to fetch data")
+                    _scheduleResult.value = NetworkResponse.Error("Failed to fetch data")
                 }
             }
             catch (e: Exception){
                 Log.e(TAG, e.message.toString())
-                _scheduleResult.value = Error("Exception: ${e.message}")
+                _scheduleResult.value = NetworkResponse.Error("Exception: ${e.message}")
 
             }
         }

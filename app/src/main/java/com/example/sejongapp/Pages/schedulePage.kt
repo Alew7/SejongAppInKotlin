@@ -184,7 +184,15 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
                 }
             }
         }
-        is NetworkResponse.Error -> { /* show error */ }
+        is NetworkResponse.Error -> {
+            Log.d(TAG, "the schedule result is Error")
+            Log.e(TAG, "the schedule result is ${result.message}")
+
+            Text(
+                text = result.message,
+                color = Color.Red
+            )
+        }
         is NetworkResponse.Loading -> {
             Log.d(TAG, "the schedule result is Loading")
 
@@ -386,10 +394,10 @@ fun TableRowElements(day: String, time: String){
 
 fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData>{
 
-    Log.i(TAG, "starts soring the schedule data")
+    Log.i(TAG, "starts soring the schedule data, the size of datas ${scheduleData.size}")
     var sortedScheduleData: ArrayList<ScheduleData> = arrayListOf<ScheduleData>()
     var i : Int = 0
-    sortedScheduleData.add(scheduleData.get(0))
+    sortedScheduleData.add(scheduleData[0])
 
     scheduleData.forEach { item->
 
@@ -399,9 +407,12 @@ fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleD
         }
 
         for (j in 0..sortedScheduleData.size-1){
-            if (item.book > sortedScheduleData[j].book){
+            if (item.book < sortedScheduleData[j].book){
                 sortedScheduleData.add(j, item)
                 return@forEach
+            }
+            else if (j == sortedScheduleData.size-1){
+                sortedScheduleData.add(item)
             }
         }
 
