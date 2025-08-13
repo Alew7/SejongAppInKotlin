@@ -1,8 +1,7 @@
 package com.example.sejongapp.ProfileActivity
 
+import LocalToken.getUserData
 import android.content.Intent
-import androidx.compose.animation.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,12 +17,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +34,7 @@ fun ProfilePage () {
 
     val text_size = 14.sp
     val context = LocalContext.current
+    val userData = remember { getUserData(context) }
 
 
 
@@ -50,8 +47,9 @@ fun ProfilePage () {
         Column {
             Row(
                 modifier = Modifier
+                .padding(start = 10.dp, top = 15.dp),
+                verticalAlignment = Alignment.CenterVertically
 
-                    .padding(start = 10.dp, top = 15.dp)
 
 
             ) {
@@ -59,8 +57,8 @@ fun ProfilePage () {
                     painter = painterResource(R.drawable.ic_back),
                     contentDescription = "ic_back",
                     modifier = Modifier
-                        .size(40.dp)
-                        .padding(top = 15.dp)
+                        .size(50.dp)
+                        .padding(top = 16.dp)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -71,11 +69,13 @@ fun ProfilePage () {
 
                         }
                 )
+
+                Spacer(modifier = Modifier.width(10.dp))
                 Text(
                     text = "Profile",
                     fontSize = 26.sp,
                     modifier = Modifier
-                        .padding(start = 15.dp, top = 13.dp )
+                        .padding(start = 15.dp, top = 15.dp )
 
 
                 )
@@ -96,7 +96,7 @@ fun ProfilePage () {
                 )
                 Column {
                     Text(
-                        text = "Full name",
+                        text = " ${userData.fullname}",
                         fontSize = 26.sp,
                         modifier = Modifier
                             .padding(start = 25.dp)
@@ -107,7 +107,7 @@ fun ProfilePage () {
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text (
-                        text = "Number: +992 000-33-90-66",
+                        text = "${userData.phone}",
                         fontSize = text_size,
                         modifier = Modifier
                             .padding(start = 25.dp)
