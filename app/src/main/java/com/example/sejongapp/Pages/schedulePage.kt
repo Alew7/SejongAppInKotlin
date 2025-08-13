@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -23,8 +24,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -78,7 +81,9 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
     Log.i(TAG, "The user data here is ${LocalData.getUserData(context)}")
 
 //    Getting all the schedule data from the server db
-    scheduleViewModel.getAllSchedules()
+    LaunchedEffect(Unit) {
+        scheduleViewModel.getAllSchedules()
+    }
 
 
     weekDays.put(0, "MON")
@@ -182,14 +187,20 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
         is NetworkResponse.Error -> { /* show error */ }
         is NetworkResponse.Loading -> {
             Log.d(TAG, "the schedule result is Loading")
-            CircularProgressIndicator(
-                color = Color.White,
-                strokeWidth = 2.dp,
+
+            Box(
                 modifier = Modifier
-                    .height(20.dp)
-                    .size(24.dp)
-                    .padding(bottom = 2.dp, start = 1.dp)
-            ) }
+                    .fillMaxWidth()
+                    .height(100.dp),
+                contentAlignment = Alignment.Center
+
+            ) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.secondary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+        }
         else -> {}
     }
 }
