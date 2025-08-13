@@ -1,6 +1,6 @@
 package com.example.sejongapp.ProfileActivity
 
-import LocalToken.getUserData
+import LocalData.getUserData
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import com.example.sejongapp.MainActivity
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.R
+import com.example.sejongapp.models.DataClasses.UserData
+
 
 @Composable
 fun ProfilePage () {
@@ -96,8 +98,8 @@ fun ProfilePage () {
                 )
                 Column {
                     Text(
-                        text = " ${userData.fullname}",
-                        fontSize = 26.sp,
+                        text = userData.fullname,
+                        fontSize = 22.sp,
                         modifier = Modifier
                             .padding(start = 25.dp)
 
@@ -106,17 +108,10 @@ fun ProfilePage () {
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    Text (
-                        text = "${userData.phone}",
-                        fontSize = text_size,
-                        modifier = Modifier
-                            .padding(start = 25.dp)
-                    )
 
-                    Spacer(modifier = Modifier.height(10.dp))
 
                     Text (
-                        text = "Email: ",
+                        text = userData.email,
                         fontSize = text_size,
                         modifier = Modifier
                             .padding(start = 25.dp)
@@ -128,12 +123,13 @@ fun ProfilePage () {
                     .padding(start = 50.dp, top = 35.dp)
             ) {
                 Text (
-                    text = "status: Student",
+                    text = "Status : ${userData.status}",
                     fontSize = text_size,
                 )
                 Spacer(modifier = Modifier.height(5.dp))
+
                 Text (
-                    text = "Groups: 3B",
+                    text = "Groups : ${userData.groups.joinToString(", ")}",
                     fontSize = text_size,
                 )
             }

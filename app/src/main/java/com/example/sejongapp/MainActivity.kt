@@ -1,6 +1,5 @@
 package com.example.sejongapp
 
-import LocalToken
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent

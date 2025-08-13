@@ -1,11 +1,11 @@
 package com.example.sejongapp.SpleshLoginPages
 
-import LocalToken
+import LocalData
+import android.content.Context
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
@@ -46,8 +45,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.WarmBeige
-import com.example.sejongapp.models.UserViewModel
-import com.example.sejongapp.models.tokenData
+import com.example.sejongapp.models.ViewModels.UserViewModel
+import com.example.sejongapp.models.DataClasses.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
@@ -58,34 +57,35 @@ import com.example.sejongapp.ui.theme.primaryColor
 
 const val TAG = "Login_TAG"
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen () {
 
-
-
     val userViewModel : UserViewModel = viewModel()
-    val userResult = userViewModel.userResult.observeAsState(NetworkResponse.Idle)  // добавил Network.Idle
+    val userTokenResult = userViewModel.userTokenResult.observeAsState()
     val context = LocalContext.current
     var passwordVisible by remember { mutableStateOf(false) }
 
-    val isLoading = userResult.value is NetworkResponse.Loading
-    val isScuccess = userResult.value is NetworkResponse.Success <*>
+    var isLoading = userTokenResult.value is NetworkResponse.Loading
+    val isSuccess = userTokenResult.value is NetworkResponse.Success <*>
 
 
 
 
 
 
+    LaunchedEffect(Unit) {
+        if (LocalData.getSavedToken(context) != "null"){
+            Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
 
+//            getAndSaveUserData(userViewModel, context)
 
-
-    if (LocalToken.getSavedToken(context) != "null"){
-        Log.i(TAG, "The token is ${LocalToken.getSavedToken(context)}")
-        val intent = Intent (context,MainActivity :: class.java)
-        context.startActivity(intent)
-
+            MoveToMainActivity(context)
+        }
     }
+
 
 
 
@@ -112,14 +112,11 @@ fun LoginScreen () {
         ){
             Image (
                 painter = painterResource(R.drawable.ic_sejong),
-                contentDescription = "ic_sejong",
-                modifier = Modifier
-                .then(Modifier.sizeIn(maxWidth = 220.dp))
+                contentDescription = "ic_sejong"
             )
-            Spacer(modifier = Modifier.height(20.dp))
-            // 35.dp < - this is a last dp
+            Spacer(modifier = Modifier.height(35.dp))
 
-            OutlinedTextField(value = username,  onValueChange= {
+            OutlinedTextField(value = username, onValueChange = {
                 username = it
 
             }, label = {
@@ -133,7 +130,7 @@ fun LoginScreen () {
 
                 ))
 
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(35.dp))
 
             OutlinedTextField(value = password, onValueChange = {
                 password = it
@@ -210,41 +207,44 @@ fun LoginScreen () {
                 }
             }
 
+            when(userTokenResult.value){
+                is NetworkResponse.Error -> {}
+                NetworkResponse.Idle -> {}
+                NetworkResponse.Loading -> isLoading = true
+                is NetworkResponse.Success -> {
+                    isLoading = false
+                    Log.i(TAG, "token was ${(userTokenResult.value as NetworkResponse.Success<tokenData>).data}")
 
+                    LocalData.setToken(context,(userTokenResult.value as NetworkResponse.Success<tokenData>).data.auth_token)
 
-                LaunchedEffect(userResult.value) {
-
-                    when (userResult.value) {
-                        is NetworkResponse.Error -> {
-                            Log.e (TAG,"Error")
-                            Toast.makeText(context,"Error, Username pr Password is oncorrect",Toast.LENGTH_SHORT).show()
-                        }
-                        is NetworkResponse.Success -> {
-                            Log.i(TAG, "The response is successful token is abtained")
-
-                            val token = (userResult.value as? NetworkResponse.Success<tokenData>)?.data?.token
-                            if (!token.isNullOrEmpty()) {
-                                Log.i(TAG, "token was $token")
-                                Log.i(TAG, "user result $token")
-
-                                val intent = Intent(context, MainActivity::class.java)
-                                LocalToken.setToken(
-                                    context,
-                                    (userResult.value as NetworkResponse.Success<tokenData>).data.token,
-                                    intent
-
-                                )
-                                userViewModel.resetUserResult()
-                            }
-
-                        }
-                        else ->  {  }
-                    }
+                    getAndSaveUserData(userViewModel = userViewModel, context = context)
+                    userViewModel.resetUserResult()
                 }
+                null -> {}
+            }
 
         }
     }
+
 }
+
+
+
+fun getAndSaveUserData(userViewModel: UserViewModel, context: Context) {
+    userViewModel.getUserData(LocalData.getSavedToken(context))
+    userViewModel.userDataResult.observeForever { result ->
+        if (result is NetworkResponse.Success) {
+            LocalData.setUserData(context, result.data)
+            MoveToMainActivity(context)
+        }
+    }
+}
+
+fun MoveToMainActivity(context: Context){
+    val intent = Intent (context,MainActivity :: class.java)
+    context.startActivity(intent)
+}
+
 
 
 @Preview (showSystemUi = true, showBackground = true)

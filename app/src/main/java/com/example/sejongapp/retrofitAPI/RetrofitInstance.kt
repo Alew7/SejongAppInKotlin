@@ -1,12 +1,13 @@
 package com.example.sejongapp.retrofitAPI
 
-import com.example.sejongapp.retrofitAPI.UserApi
+import com.example.sejongapp.retrofitAPI.api.ScheduleApi
+import com.example.sejongapp.retrofitAPI.api.UserApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
 
-    private const val baseUrl = "https://dushanbe3sejong.pythonanywhere.com/api/"
+    private const val baseUrl = "http://192.168.0.103:8000/api/"
 
     private fun getInstance(): Retrofit {
         return Retrofit.Builder()
@@ -17,5 +18,6 @@ object RetrofitInstance {
     }
 
     val userApi: UserApi = getInstance().create(UserApi::class.java)
+    val scheduleApi: ScheduleApi = getInstance().create(ScheduleApi::class.java)
 
 }
