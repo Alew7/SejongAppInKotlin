@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import com.example.sejongapp.MainActivity
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.R
-import com.example.sejongapp.models.DataClasses.UserData
 
 
 @Composable
@@ -37,9 +36,6 @@ fun ProfilePage () {
     val text_size = 14.sp
     val context = LocalContext.current
     val userData = remember { getUserData(context) }
-
-
-
 
     Box (
         modifier = Modifier
@@ -100,10 +96,10 @@ fun ProfilePage () {
                     Text(
                         text = userData.fullname,
                         fontSize = 22.sp,
+                        maxLines = 2,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         modifier = Modifier
                             .padding(start = 25.dp)
-
-
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))

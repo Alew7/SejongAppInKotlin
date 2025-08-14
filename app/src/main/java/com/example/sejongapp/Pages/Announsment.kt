@@ -18,7 +18,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sejongapp.R
@@ -27,6 +26,7 @@ import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
+import com.example.sejongapp.models.DataClasses.AnnouncementData
 import com.example.sejongapp.ui.theme.brightBackgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.utils.NavigationScreenEnum
@@ -40,6 +40,16 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
     val context = LocalContext.current
     var isSeraching by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
+
+    val announcementData: AnnouncementData = AnnouncementData(
+        author = "author",
+        content = "content",
+        custom_id = 1,
+        images = listOf(),
+        is_active = true,
+        time_posted = "time_posted",
+        title = "title"
+    )
 
 
 //    The header (with logo icon and search btn)
@@ -154,7 +164,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(10) { index ->
-                    AnnousmentCard {
+                    AnnousmentCard (announcementData){
                         val intent = Intent(context, AnnousmentActivity::class.java)
                         context.startActivity(intent)
                     }
@@ -166,7 +176,10 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
 
 @Composable
-fun AnnousmentCard(onClick: () -> Unit) {
+fun AnnousmentCard(announcementData: AnnouncementData, onClick: () -> Unit) {
+
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -191,7 +204,7 @@ fun AnnousmentCard(onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    text = "Announcment title",
+                    text = announcementData.title,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
