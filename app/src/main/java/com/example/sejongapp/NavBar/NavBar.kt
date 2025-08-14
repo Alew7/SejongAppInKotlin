@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.Pages.AnnousmentPage
+import com.example.sejongapp.Pages.ElectronicLibraryPage
 import com.example.sejongapp.Pages.HomePage
 import com.example.sejongapp.Pages.Schedule
 import com.example.sejongapp.ProfileActivity.ProfileActivity
@@ -207,13 +208,14 @@ fun NavBar(modifier: Modifier = Modifier) {
 }
 
 
+
 @Composable
 fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScreenEnum,onChangeScreen : (NavigationScreenEnum) -> Unit) {
     when(selectedIndex) {
         NavigationScreenEnum.ANNOUNCEMENTS -> AnnousmentPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
-        NavigationScreenEnum.LIBRARY -> TODO()
+        NavigationScreenEnum.LIBRARY -> ElectronicLibraryPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied
     }
 }

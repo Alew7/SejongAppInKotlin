@@ -15,6 +15,7 @@ class ScheduleViewModel: ViewModel() {
     }
 
 
+
     private val scheduleApi =  RetrofitInstance.scheduleApi
 
     private val _scheduleResult = MutableLiveData<NetworkResponse<ArrayList<ScheduleData>>>()
@@ -37,8 +38,8 @@ class ScheduleViewModel: ViewModel() {
 
                 }
                 else {
-                    Log.e(TAG, response.message().toString())
-                    _scheduleResult.value = NetworkResponse.Error("Failed to fetch data")
+                        Log.e(TAG, response.message().toString())
+                        _scheduleResult.value = NetworkResponse.Error("Failed to fetch data")
                 }
             }
             catch (e: Exception){
