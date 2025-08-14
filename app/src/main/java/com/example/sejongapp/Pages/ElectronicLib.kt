@@ -1,14 +1,8 @@
 package com.example.sejongapp.Pages
 
-import android.app.DownloadManager
-import android.content.Context
-import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.content.MediaType.Companion.Text
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,8 +28,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.booleanResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,19 +49,22 @@ import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.ElectronicBookData
 import com.example.sejongapp.models.ViewModels.ELibraryViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
-import com.example.sejongapp.ui.theme.backgroundColor
-import com.example.sejongapp.ui.theme.cardGreyBackground
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
+
+var chosenBook: ElectronicBookData = ElectronicBookData("", "", "", "","","","","")
 
 @Composable
 fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
     val eLibViewModel: ELibraryViewModel = viewModel()
 
+    val showOneBook = remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit){
         eLibViewModel.getAllBooks()
     }
+
 
 
     Column {
@@ -97,15 +96,23 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
                             indication = null
 
                         ) {
-                            onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+                            if (showOneBook.value){
+                                showOneBook.value = false
+                            }else{
+                                onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+                            }
                         }
                 )
             }
 
             /////////////////////////////////////   BODY  /////////////////////////////////////
 
-
-            getAndShowData(eLibViewModel)
+            if (showOneBook.value){
+                ShowBook(chosenBook)
+            }
+            else{
+                getAndShowData(eLibViewModel, showOneBook)
+            }
         }
     }
 }
@@ -113,9 +120,9 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 
 @Composable
-fun ElectronicBooksCard(book: ElectronicBookData){
+fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Boolean>){
 
-    val context = LocalContext.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -157,9 +164,14 @@ fun ElectronicBooksCard(book: ElectronicBookData){
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row {
+
                     Button(
-                        onClick = {downloadFile(url = book.file, context)},
+                        modifier = Modifier.width(100.dp).align(Alignment.End),
+
+                        onClick = {
+                            chosenBook = book
+                            showOneBook.value = true
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2B47C)), // gold color
                         shape = RoundedCornerShape(
                             topStart = 8.dp,
@@ -169,19 +181,6 @@ fun ElectronicBooksCard(book: ElectronicBookData){
                     ) {
                         Text("Read")
                     }
-
-                    Button(
-                        onClick = {  },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2B47C)),
-                        shape = RoundedCornerShape(
-                            topEnd = 8.dp,
-                            bottomEnd = 8.dp
-                        ),
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Menu")
-                    }
-                }
             }
         }
     }
@@ -189,7 +188,7 @@ fun ElectronicBooksCard(book: ElectronicBookData){
 
 
 @Composable
-fun getAndShowData(eLibViewModel: ELibraryViewModel){
+fun getAndShowData(eLibViewModel: ELibraryViewModel, showOneBook: MutableState<Boolean>){
 
     val Books by eLibViewModel.libResult.observeAsState()
 
@@ -220,12 +219,13 @@ fun getAndShowData(eLibViewModel: ELibraryViewModel){
                 )
             }
         }
+
         is NetworkResponse.Success -> {
             LazyColumn(
                 modifier = Modifier.padding(bottom = 105.dp)
             ) {
                 items(result.data.size) {
-                    ElectronicBooksCard(result.data[it])
+                    ElectronicBooksCard(result.data[it], showOneBook)
                 }
             }
         }
@@ -235,11 +235,3 @@ fun getAndShowData(eLibViewModel: ELibraryViewModel){
 
 
 
-fun downloadFile(url: String, context: Context){
-    var download= context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-    var PdfUri = Uri.parse(url)
-    var getPdf = DownloadManager.Request(PdfUri)
-    getPdf.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-    download.enqueue(getPdf)
-    Toast.makeText(context,"Download Started", Toast.LENGTH_LONG).show()
-}
