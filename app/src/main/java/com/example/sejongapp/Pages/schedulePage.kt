@@ -2,6 +2,8 @@ package com.example.sejongapp.Pages
 import LocalData
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.models.DataClasses.ScheduleData
@@ -75,6 +78,10 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
         val intent = Intent (context, SplashLoginActivity :: class.java)
         context.startActivity(intent)
 
+    }
+
+    BackHandler {
+        onChangeScreen(NavigationScreenEnum.HOMEPAGE)
     }
 
     Log.i(TAG, "Ther user's token is ${LocalData.getSavedToken(context)}")

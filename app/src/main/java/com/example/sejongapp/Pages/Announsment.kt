@@ -1,6 +1,7 @@
 package com.example.sejongapp.Pages
 
 import android.content.Intent
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,6 +42,9 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
     var isSeraching by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 
+    BackHandler {
+        onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+    }
 
 //    The header (with logo icon and search btn)
     BoxWithConstraints(

@@ -1,11 +1,13 @@
 package com.example.sejongapp.SpleshLoginPages
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.delay
 
 class SplashLoginActivity : ComponentActivity() {

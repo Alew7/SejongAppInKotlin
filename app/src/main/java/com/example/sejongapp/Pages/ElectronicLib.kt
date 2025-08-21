@@ -1,6 +1,7 @@
 package com.example.sejongapp.Pages
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberImagePainter
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.ElectronicBookData
 import com.example.sejongapp.models.ViewModels.ELibraryViewModel
@@ -63,6 +65,15 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
     LaunchedEffect(Unit){
         eLibViewModel.getAllBooks()
+    }
+
+    BackHandler {
+        if (showOneBook.value){
+            showOneBook.value = false
+        }
+        else{
+            onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+        }
     }
 
 
@@ -123,6 +134,8 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Boolean>){
 
 
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -137,7 +150,7 @@ fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Bool
         ) {
             // Book Image
             Image(
-                painter = painterResource(id = R.drawable.ic_book), // replace with your image
+                painter = rememberImagePainter(data = book.cover),
                 contentDescription = "Book cover",
                 modifier = Modifier
                     .size(60.dp)

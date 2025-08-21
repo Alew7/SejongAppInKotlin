@@ -1,6 +1,9 @@
 package com.example.sejongapp.Pages
 
 import android.content.Intent
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
 import com.example.sejongapp.R
 import androidx.compose.foundation.Image
@@ -26,10 +29,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.sejongapp.MainActivity
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
@@ -40,6 +45,29 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
     val scale = remember {
         androidx.compose.animation.core.Animatable(0.2f)
     }
+
+    var isClickedOnce by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isClickedOnce) {
+        Log.i(TAG, "the launch effect of isCLickedOnce is called with value $isClickedOnce")
+        if (isClickedOnce){
+            delay(2000)
+            isClickedOnce = false
+        }
+    }
+
+    BackHandler {
+        if (isClickedOnce) {
+            Log.i(TAG, "Now we are about to exit")
+            (context as MainActivity)?.finish()
+        }else{
+            isClickedOnce = true
+            Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
+
+        }
+
+    }
+
 
 //    Animation for scaling icons (btn icons)
     LaunchedEffect  (Unit){
@@ -108,7 +136,7 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
                     .padding(end = endPadding)
                     .scale(scale.value)
                     .size(iconSize)
-                    .clickable (
+                    .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
 
@@ -126,7 +154,7 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
                     .padding(start = startPadding)
                     .scale(scale.value)
                     .size(iconSize)
-                    .clickable (
+                    .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
 
@@ -141,9 +169,9 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
                 contentDescription = "ic_schedule",
                 modifier = Modifier
                     .padding(end = endPadding)
-                   .scale(scale.value)
+                    .scale(scale.value)
                     .size(iconSize)
-                    .clickable (
+                    .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
 
@@ -164,7 +192,7 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
-                        val intent = Intent (context,ProfileActivity :: class.java)
+                        val intent = Intent(context, ProfileActivity::class.java)
                         context.startActivity(intent)
                     }
 

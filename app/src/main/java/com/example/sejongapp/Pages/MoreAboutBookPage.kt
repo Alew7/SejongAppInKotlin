@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -37,15 +38,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.ElectronicBookData
 import com.example.sejongapp.ui.theme.primaryColor
+import com.example.sejongapp.utils.NavigationScreenEnum
 
 
 @Composable
 fun ShowBook(book: ElectronicBookData){
 
     val context = LocalContext.current
+
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -71,7 +77,7 @@ fun ShowBook(book: ElectronicBookData){
 
             // Book Image
             Image(
-                painter = painterResource(id = R.drawable.ic_book), // replace with your image
+                painter =  rememberImagePainter(data = book.cover),
                 contentDescription = "Book cover",
                 modifier = Modifier
                     .size(100.dp)

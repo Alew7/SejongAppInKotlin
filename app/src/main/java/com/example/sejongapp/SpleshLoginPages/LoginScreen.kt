@@ -69,22 +69,10 @@ fun LoginScreen () {
     var passwordVisible by remember { mutableStateOf(false) }
 
     var isLoading = userTokenResult.value is NetworkResponse.Loading
-    val isSuccess = userTokenResult.value is NetworkResponse.Success <*>
 
 
 
 
-
-
-    LaunchedEffect(Unit) {
-        if (LocalData.getSavedToken(context) != "null"){
-            Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
-
-//            getAndSaveUserData(userViewModel, context)
-
-            MoveToMainActivity(context)
-        }
-    }
 
 
 
@@ -242,6 +230,7 @@ fun getAndSaveUserData(userViewModel: UserViewModel, context: Context) {
 
 fun MoveToMainActivity(context: Context){
     val intent = Intent (context,MainActivity :: class.java)
+    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     context.startActivity(intent)
 }
 
