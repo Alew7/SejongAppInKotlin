@@ -62,11 +62,11 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
             (context as MainActivity)?.finish()
         }else{
             isClickedOnce = true
-            Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.press_again_to_exit), Toast.LENGTH_SHORT).show()
 
         }
-
     }
+
 
 
 //    Animation for scaling icons (btn icons)

@@ -102,7 +102,7 @@ fun ShowBook(book: ElectronicBookData){
                 shape = RoundedCornerShape(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
             ) {
-                Text("Download")
+                Text(context.getString(R.string.download))
             }
         }
     }

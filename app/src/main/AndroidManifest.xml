@@ -18,7 +18,7 @@
         <activity
             android:name=".AnnousmentActivity.AnnousmentActivity"
             android:exported="false"
-            android:label="@string/title_activity_annousment"
+            android:label="@string/title_activity_announcement"
             android:theme="@style/Theme.SejongApp" />
         <activity
             android:name=".ProfileActivity.ProfileActivity"

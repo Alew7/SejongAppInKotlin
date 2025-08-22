@@ -108,7 +108,7 @@ fun LoginScreen () {
                 username = it
 
             }, label = {
-                Text(text = "username")
+                Text(text = context.getString(R.string.username))
             },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                   focusedTextColor = Color.Black,
@@ -124,7 +124,7 @@ fun LoginScreen () {
                 password = it
 
             },label = {
-                Text(text = "password")
+                Text(text = context.getString(R.string.password))
 
             },
                 singleLine = true,
@@ -190,7 +190,7 @@ fun LoginScreen () {
                 }
                 else {
                     Text (
-                        text = "Sign In"
+                        text = context.getString(R.string.Log_in)
                     )
                 }
             }

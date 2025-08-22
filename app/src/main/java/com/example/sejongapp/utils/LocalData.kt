@@ -8,6 +8,9 @@ import com.example.sejongapp.models.DataClasses.UserData
 
 
 object LocalData {
+    private const val PREFS = "app_prefs"
+    private const val KEY_LANG = "app_lang"
+
     fun getSavedToken(context: Context): String {
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
         return prefs.getString("token", "null") ?: "null"
@@ -40,7 +43,17 @@ object LocalData {
     }
 
 
+    fun setLanguage(context: Context, lang: String) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_LANG, lang)
+            .apply()
+    }
 
+    fun getSavedLanguage(context: Context): String? {
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getString(KEY_LANG, null)
+    }
 
     fun getUserData(context: Context): UserData {
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)

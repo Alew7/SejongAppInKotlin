@@ -1,5 +1,6 @@
 package com.example.sejongapp.SpleshLoginPages
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -8,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import com.example.sejongapp.utils.LocaleHelper
 import kotlinx.coroutines.delay
 
 class SplashLoginActivity : ComponentActivity() {
@@ -17,6 +19,12 @@ class SplashLoginActivity : ComponentActivity() {
         setContent {
             SejongApp()
         }
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val lang = LocalData.getSavedLanguage(newBase) ?: "ENG" // store selected lang
+        val context = LocaleHelper.setLocale(newBase, lang)
+        super.attachBaseContext(context)
     }
 }
 

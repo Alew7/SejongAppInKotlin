@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Седжон</string>
+    <string name="title_activity_splash_login">Приложение Sejong</string>
+    <string name="title_activity_announcement">Объявления</string>
+    <string name="title_activity_profile">Профиль</string>
+
+    <!-- Main Activity -->
+    <string name="Announcement">Объявления</string>
+    <string name="ElectLib">Электронная библиотека</string>
+    <string name="schedule">Расписание</string>
+    <string name="Profile">Профиль</string>
+
+    <!--  Login Activity  -->
+    <string name="Log_in">Войти</string>
+
+    <!-- Common settings -->
+    <string name="username">Имя пользователя</string>
+    <string name="password">Пароль</string>
+    <string name="search">Поиск</string>
+    <string name="Language">Язык</string>
+    <string name="download">Скачать</string>
+
+    <!-- sidebar menu -->
+    <string name="Log_out">Выйти</string>
+
+    <!-- Schedule -->
+    <string name="All">Все</string>
+
+    <!-- Electronic Library -->
+    <string name="read">Читать</string>
+
+    <string name="press_again_to_exit">Нажмите ещё раз для выхода</string>
+</resources>

@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">세종</string>
+    <string name="title_activity_splash_login">세종앱</string>
+    <string name="title_activity_announcement">공지사항</string>
+    <string name="title_activity_profile">프로필</string>
+
+    <!-- Main Activity -->
+    <string name="Announcement">공지사항</string>
+    <string name="ElectLib">전자 도서관</string>
+    <string name="schedule">시간표</string>
+    <string name="Profile">프로필</string>
+
+    <!--  Login Activity  -->
+    <string name="Log_in">로그인</string>
+
+    <!-- Common settings -->
+    <string name="username">사용자 이름</string>
+    <string name="password">비밀번호</string>
+    <string name="search">검색</string>
+    <string name="Language">언어</string>
+    <string name="download">다운로드</string>
+
+    <!-- sidebar menu -->
+    <string name="Log_out">로그아웃</string>
+
+    <!-- Schedule -->
+    <string name="All">모두</string>
+
+    <!-- Electronic Library -->
+    <string name="read">읽기</string>
+
+    <string name="press_again_to_exit">한 번 더 누르면 종료됩니다</string>
+</resources>

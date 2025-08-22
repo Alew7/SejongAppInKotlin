@@ -80,6 +80,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                         .padding(start = 25.dp)
                 )
 
+//                    Search icon
                 Image (
                     painter = painterResource(R.drawable.ic_search),
                     contentDescription = "ic_search",

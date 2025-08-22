@@ -224,7 +224,7 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
 // a compose func for pagination (the one that sorts data from all to the specific group)
 @Composable
 fun PaginationSelector(
-    pages: List<String> = listOf("All", "1", "2", "3", "4","5","6","7"),
+    pages: List<String> = listOf(LocalContext.current.getString(R.string.All), "1", "2", "3", "4","5","6","7"),
     selectedIndex: Int,
     onSelected: (Int) -> Unit
 ) {
