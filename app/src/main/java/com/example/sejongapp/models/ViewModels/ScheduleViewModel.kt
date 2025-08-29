@@ -49,4 +49,8 @@ class ScheduleViewModel: ViewModel() {
             }
         }
     }
+
+    fun resetScheduleResult(){
+        _scheduleResult.value = NetworkResponse.Idle
+    }
 }

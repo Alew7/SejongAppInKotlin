@@ -52,4 +52,9 @@ class ELibraryViewModel: ViewModel() {
         }
     }
 
+
+    fun resetLibResult(){
+        _libResult.value = NetworkResponse.Idle
+    }
+
 }
