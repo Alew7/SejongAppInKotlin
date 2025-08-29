@@ -20,6 +20,10 @@
     <string name="search">Поиск</string>
     <string name="Language">Язык</string>
     <string name="download">Скачать</string>
+    <string name="error">Ошибка</string>
+
+    <string name="Error_fetching_data">Не удалось получить данные. Пожалуйста, попробуйте позже.</string>
+    <string name="Server_issue">Сервер временно недоступен. Пожалуйста, попробуйте позже</string>
 
     <!-- sidebar menu -->
     <string name="Log_out">Выйти</string>

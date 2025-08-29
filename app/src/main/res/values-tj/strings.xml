@@ -11,8 +11,10 @@
     <string name="schedule">Ҷадвал</string>
     <string name="Profile">Профил</string>
 
+
     <!--  Login Activity  -->
     <string name="Log_in">Даромадан</string>
+
 
     <!-- Common settings -->
     <string name="username">Номи корбар</string>
@@ -20,6 +22,11 @@
     <string name="search">Ҷустуҷӯ</string>
     <string name="Language">Забон</string>
     <string name="download">Баркаши кардан</string>
+    <string name="error">Хатогӣ</string>
+
+
+    <string name="Error_fetching_data">Маълумот дастрас нашуд. Лутфан баъдтар боз кӯшиш кунед.</string>
+    <string name="Server_issue">Сервер ҳоло дастрас нест. Лутфан баъдтар боз кӯшиш кунед.</string>
 
     <!-- sidebar menu -->
     <string name="Log_out">Баромадан</string>

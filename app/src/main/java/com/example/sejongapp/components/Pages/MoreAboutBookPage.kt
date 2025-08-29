@@ -1,4 +1,4 @@
-package com.example.sejongapp.Pages
+package com.example.sejongapp.components.Pages
 
 import android.app.DownloadManager
 import android.content.Context

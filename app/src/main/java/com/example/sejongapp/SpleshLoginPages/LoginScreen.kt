@@ -45,6 +45,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.WarmBeige
+import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.models.DataClasses.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
@@ -196,7 +197,15 @@ fun LoginScreen () {
             }
 
             when(userTokenResult.value){
-                is NetworkResponse.Error -> {}
+                is NetworkResponse.Error -> {
+                    Log.e(TAG, "${(userTokenResult.value as NetworkResponse.Error).message}")
+                    isLoading = false
+                    showError((userTokenResult.value as NetworkResponse.Error).toString()) {
+                        userViewModel.resetUserResult()
+                        username = ""
+                        password = ""
+                    }
+                }
                 NetworkResponse.Idle -> {}
                 NetworkResponse.Loading -> isLoading = true
                 is NetworkResponse.Success -> {

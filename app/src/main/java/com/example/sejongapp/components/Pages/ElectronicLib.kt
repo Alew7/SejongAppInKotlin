@@ -1,4 +1,4 @@
-package com.example.sejongapp.Pages
+package com.example.sejongapp.components.Pages
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.R
+import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.ElectronicBookData
 import com.example.sejongapp.models.ViewModels.ELibraryViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
@@ -309,16 +310,19 @@ fun getAndShowData(
 ){
 
     val Books by eLibViewModel.libResult.observeAsState()
+    val showDialog = remember { mutableStateOf(true) }
 
     when (val result = Books){
         is NetworkResponse.Error -> {
             Log.d(TAG, "the book result is Error")
             Log.e(TAG, "the book result is ${result.message}")
 
-            Text(
-                text = result.message,
-                color = Color.Red
-            )
+            if (showDialog.value){
+                showError(result.message){
+                    showDialog.value = false
+                }
+            }
+
         }
         NetworkResponse.Idle -> TODO()
         NetworkResponse.Loading -> {

@@ -21,6 +21,10 @@
     <string name="search">Search</string>
     <string name="Language">Language</string>
     <string name="download">Download</string>
+    <string name="error">Error</string>
+
+    <string name="Error_fetching_data">Unable to fetch data at the moment. Please try again later.</string>
+    <string name="Server_issue">The server is currently unavailable. Please try again later</string>
 
     <!-- sidebar menu-->
     <string name="Log_out">Log out</string>

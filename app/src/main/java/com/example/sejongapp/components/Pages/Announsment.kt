@@ -1,4 +1,4 @@
-package com.example.sejongapp.Pages
+package com.example.sejongapp.components.Pages
 
 import android.content.Intent
 import androidx.activity.compose.BackHandler

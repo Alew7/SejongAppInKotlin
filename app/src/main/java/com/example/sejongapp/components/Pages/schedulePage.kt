@@ -1,4 +1,4 @@
-package com.example.sejongapp.Pages
+package com.example.sejongapp.components.Pages
 import LocalData
 import android.content.Intent
 import android.util.Log

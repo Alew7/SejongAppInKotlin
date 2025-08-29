@@ -41,10 +41,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.MainActivity
-import com.example.sejongapp.Pages.AnnousmentPage
-import com.example.sejongapp.Pages.ElectronicLibraryPage
-import com.example.sejongapp.Pages.HomePage
-import com.example.sejongapp.Pages.Schedule
+import com.example.sejongapp.components.Pages.AnnousmentPage
+import com.example.sejongapp.components.Pages.ElectronicLibraryPage
+import com.example.sejongapp.components.Pages.HomePage
+import com.example.sejongapp.components.Pages.Schedule
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.SpleshLoginPages.MoveToMainActivity
