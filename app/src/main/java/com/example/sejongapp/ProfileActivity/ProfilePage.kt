@@ -1,222 +1,124 @@
 package com.example.sejongapp.ProfileActivity
 
 import LocalData.getUserData
-import android.content.Intent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sejongapp.MainActivity
-import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
-import com.example.sejongapp.R
 
 
 @Composable
-fun ProfilePage () {
-
-    val text_size = 14.sp
+fun ProfilePage() {
     val context = LocalContext.current
     val userData = remember { getUserData(context) }
 
-    Box (
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor)
+            .background(
+                brush = Brush.verticalGradient(
+                    listOf(Color(0xFFFDFCFB), Color(0xFFE2D1C3))
+                )
+            )
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column {
-            Row(
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Аватар с обводкой
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .shadow(8.dp, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
                 modifier = Modifier
-                .padding(start = 10.dp, top = 15.dp),
-                verticalAlignment = Alignment.CenterVertically
-
-
-
+                    .size(120.dp)
+                    .background(
+                        brush = Brush.linearGradient(
+                            listOf(Color.Magenta, Color.Red, Color.Yellow)
+                        ),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_back),
-                    contentDescription = "ic_back",
+                Box(
                     modifier = Modifier
-                        .size(50.dp)
-                        .padding(top = 16.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-
-                        ) {
-                            val intent = Intent(context, MainActivity::class.java)
-                            context.startActivity(intent)
-
-                        }
-                )
-
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text = "Profile",
-                    fontSize = 26.sp,
-                    modifier = Modifier
-                        .padding(start = 15.dp, top = 15.dp )
-
-
-                )
-            }
-            Row (
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(start = 50.dp, top = 20.dp)
-            ) {
-                Image (
-                    painter = painterResource(R.drawable.ic_profile),
-                    contentDescription = "ic_profile",
-                    modifier = Modifier
-                        .size(120.dp)
-                        .padding(end = 30.dp)
-
-
-                )
-                Column {
-                    Text(
-                        text = userData.fullname,
-                        fontSize = 22.sp,
-                        maxLines = 2,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .padding(start = 25.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-
-
-                    Text (
-                        text = userData.email,
-                        fontSize = text_size,
-                        modifier = Modifier
-                            .padding(start = 25.dp)
+                        .size(110.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Profile",
+                        tint = Color(0xFF333333),
+                        modifier = Modifier.size(64.dp)
                     )
                 }
             }
-            Column (
-                modifier = Modifier
-                    .padding(start = 50.dp, top = 35.dp)
-            ) {
-                Text (
-                    text = "Status : ${userData.status}",
-                    fontSize = text_size,
-                )
-                Spacer(modifier = Modifier.height(5.dp))
+        }
 
-                Text (
-                    text = "Groups : ${userData.groups.joinToString(", ")}",
-                    fontSize = text_size,
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Имя
+        Text(
+            text = userData.fullname ?: "Unknown User",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF222222)
+        )
+
+        // Email
+        Text(
+            text = userData.email ?: "email@example.com",
+            fontSize = 16.sp,
+            color = Color.Gray
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Карточка для Status и Groups
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(6.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Status: ${userData.status ?: "—"}",
+                    fontSize = 16.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Groups: ${userData.groups ?: "—"}",
+                    fontSize = 16.sp
                 )
             }
         }
-
     }
-
 }
 
-
-
-@Preview (showSystemUi = true, showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun Preview () {
-    ProfilePage()
-}
-
-
-@Preview(name = "Small Phone", widthDp = 320, heightDp = 640, showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewSmall() { ProfilePage() }
-
-@Preview(name = "Medium Phone", widthDp = 360, heightDp = 740, showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewMedium() { ProfilePage() }
-
-@Preview(name = "Large Phone", widthDp = 412, heightDp = 892, showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewLarge() { ProfilePage() }
-
-@Preview(name = "XL Phone", widthDp = 480, heightDp = 1000, showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewXL() { ProfilePage() }
-
-
-@Preview(
-    name = "📱 Small Phone",
-    showBackground = true,
-    showSystemUi = true,
-    widthDp = 320,
-    heightDp = 568
-)
-@Composable
-private fun PreviewSmallPhone() {
-    ProfilePage()
-}
-
-@Preview(
-    name = "📱 Standard Phone",
-    showBackground = true,
-    showSystemUi = true,
-    widthDp = 393,
-    heightDp = 851
-)
-@Composable
-private fun PreviewStandardPhone() {
-    ProfilePage()
-}
-
-@Preview(
-    name = "📱 Large Phone / Fold",
-    showBackground = true,
-    showSystemUi = true,
-    widthDp = 600,
-    heightDp = 960
-)
-@Composable
-private fun PreviewLargePhone() {
-    ProfilePage()
-}
-
-@Preview(
-    name = "💻 Tablet",
-    showBackground = true,
-    showSystemUi = true,
-    widthDp = 800,
-    heightDp = 1280
-)
-@Composable
-private fun PreviewTablet() {
-    ProfilePage()
-}
-
-@Preview (
-    name = "📱 Small Phone",
-    showBackground = true,
-    showSystemUi = true,
-    widthDp = 320,
-    heightDp = 568
-)
-@Composable
-private fun smallPreview() {
+fun ProfilePreview() {
     ProfilePage()
 }
