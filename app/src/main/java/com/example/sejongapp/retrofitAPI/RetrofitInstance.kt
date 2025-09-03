@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
 
-    private const val baseUrl = "https://sejong-backend.serveo.net/api/"
+    private const val baseUrl = "http://192.168.0.117:8000/admin/api/"
 
     private fun getInstance(): Retrofit {
         return Retrofit.Builder()
