@@ -1,5 +1,6 @@
 package com.example.sejongapp.retrofitAPI
 
+import com.example.sejongapp.retrofitAPI.api.ELibAPI
 import com.example.sejongapp.retrofitAPI.api.ScheduleApi
 import com.example.sejongapp.retrofitAPI.api.UserApi
 import retrofit2.Retrofit
@@ -7,17 +8,17 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
 
-    private const val baseUrl = "http://192.168.0.103:8000/api/"
+    private const val baseUrl = "http://100.94.33.2:8000/api/"
 
     private fun getInstance(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
     }
 
     val userApi: UserApi = getInstance().create(UserApi::class.java)
     val scheduleApi: ScheduleApi = getInstance().create(ScheduleApi::class.java)
+    val eLibApi: ELibAPI = getInstance().create(ELibAPI::class.java)
 
 }

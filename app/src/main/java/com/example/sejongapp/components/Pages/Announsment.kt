@@ -1,6 +1,7 @@
-package com.example.sejongapp.Pages
+package com.example.sejongapp.components.Pages
 
 import android.content.Intent
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,6 +42,9 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
     var isSeraching by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 
+    BackHandler {
+        onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+    }
 
 //    The header (with logo icon and search btn)
     BoxWithConstraints(
@@ -76,6 +80,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                         .padding(start = 25.dp)
                 )
 
+//                    Search icon
                 Image (
                     painter = painterResource(R.drawable.ic_search),
                     contentDescription = "ic_search",

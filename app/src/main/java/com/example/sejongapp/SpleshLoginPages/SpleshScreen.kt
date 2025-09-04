@@ -1,6 +1,7 @@
 package com.example.sejongapp.SpleshLoginPages
 
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -16,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.sejongapp.R
@@ -25,12 +27,18 @@ import com.example.sejongapp.ui.theme.backgroundColor
 @Composable
 fun SpleshScreen () {
 
+    val context = LocalContext.current
+
     val scale  = remember { Animatable(0.2f)}
     LaunchedEffect  (Unit){
         scale.animateTo(
             targetValue = 1f,
             animationSpec = tween(durationMillis = 800)
         )
+        if (LocalData.getSavedToken(context) != "null"){
+            Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
+            MoveToMainActivity(context)
+        }
     }
 
 
@@ -59,12 +67,6 @@ fun SpleshScreen () {
 
 }
 
-
-@Preview (showBackground = true, showSystemUi = true)
-@Composable
-fun Display () {
-    SpleshScreen()
-}
 
 
 

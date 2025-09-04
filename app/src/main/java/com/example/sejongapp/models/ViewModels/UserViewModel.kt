@@ -37,11 +37,10 @@ class UserViewModel: ViewModel() {
 
         viewModelScope.launch {
 
-            Log.i(TAG, "try to fetch to")
-            val response = userApi.loginUser(loginRequestData(username, password))
-
-
             try {
+                Log.i(TAG, "try to fetch to")
+                val response = userApi.loginUser(loginRequestData(username, password))
+
                 if (response.isSuccessful){
                     Log.i(TAG, "data successfully taken " + response.body().toString())
 
@@ -66,9 +65,10 @@ class UserViewModel: ViewModel() {
         _userDataResult.value = Loading
 
         viewModelScope.launch {
-            val response = userApi.getUserData(token)
+
 
             try {
+                val response = userApi.getUserData(token)
                 if (response.isSuccessful){
                     Log.i(TAG, "data successfully taken " + response.body().toString())
 
