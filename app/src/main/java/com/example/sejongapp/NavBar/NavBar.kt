@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -38,10 +40,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.sejongapp.Pages.AnnousmentPage
-import com.example.sejongapp.Pages.HomePage
-import com.example.sejongapp.Pages.Schedule
-import com.example.sejongapp.Pages.elaibaryPage
+import com.example.sejongapp.MainActivity
+import com.example.sejongapp.components.Pages.AnnousmentPage
+import com.example.sejongapp.components.Pages.ElectronicLibraryPage
+import com.example.sejongapp.components.Pages.HomePage
+import com.example.sejongapp.components.Pages.Schedule
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.SpleshLoginPages.MoveToMainActivity
@@ -53,6 +56,7 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 
 const val TAG = "TAG_NavBar"
@@ -94,8 +98,9 @@ fun NavBar(modifier: Modifier = Modifier) {
                 modifier = Modifier.width(300.dp),
                 drawerContainerColor = backgroundColor
             ) {
+                var expanded by remember { mutableStateOf(false) }
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = "Меню", style = MaterialTheme.typography.titleLarge)
+                    Text(text = context.getString(R.string.app_name), style = MaterialTheme.typography.titleLarge)
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
 
 //                   Profile icon btn
@@ -116,13 +121,52 @@ fun NavBar(modifier: Modifier = Modifier) {
                         Icon(
                             modifier = Modifier.size(iconSize),
                             painter = painterResource(R.drawable.ic_sejong_profile),
-                            contentDescription = "Профиль"
+                            contentDescription = "Profile"
 
                         )
                         Text(
-                            text = "Профиль",
+                            text = context.getString(R.string.Profile),
                             modifier = Modifier.padding(start = 8.dp)
                         )
+                    }
+
+                    // 🌍 Language row (click to expand dropdown)
+                    Row(
+                        modifier = Modifier
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                expanded = true
+                            }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(iconSize),
+                            painter = painterResource(R.drawable.ic_lang),
+                            contentDescription = "Change language"
+                        )
+                        Text(
+                            text = "${context.getString(R.string.Language)}: ${LocalData.getSavedLanguage(context)}",
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+
+                    // 🔽 Dropdown menu anchored to this drawer
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        listOf("KOR", "ENG", "RUS", "TAJ").forEach { lang ->
+                            DropdownMenuItem(
+                                text = { Text(lang) },
+                                onClick = {
+                                    expanded = false
+                                    changeAppLanguage(context, lang) // apply language change
+                                }
+                            )
+                        }
                     }
 
 //                   Exit icon btn
@@ -141,14 +185,17 @@ fun NavBar(modifier: Modifier = Modifier) {
                         Icon(
                             modifier = Modifier.size(iconSize),
                             painter = painterResource(R.drawable.ic_logout),
-                            contentDescription = "Выход",
+                            contentDescription = "Log out",
 
                         )
                         Text(
-                            text = "Выход",
+                            text = context.getString(R.string.Log_out),
                             modifier = Modifier.padding(start = 8.dp)
                         )
                     }
+
+
+
 
                 }
             }
@@ -208,13 +255,14 @@ fun NavBar(modifier: Modifier = Modifier) {
 }
 
 
+
 @Composable
 fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScreenEnum,onChangeScreen : (NavigationScreenEnum) -> Unit) {
     when(selectedIndex) {
         NavigationScreenEnum.ANNOUNCEMENTS -> AnnousmentPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
-        NavigationScreenEnum.LIBRARY -> elaibaryPage(onChangeScreen = onChangeScreen)
+        NavigationScreenEnum.LIBRARY -> ElectronicLibraryPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied
     }
 }
@@ -235,6 +283,14 @@ fun getAndSaveUserData(userViewModel: UserViewModel, context: Context) {
         }
     }
 }
+
+fun changeAppLanguage(context: Context, lang: String) {
+    LocalData.setLanguage(context, lang) // save language
+    val intent = Intent(context, MainActivity::class.java)
+    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    context.startActivity(intent)
+}
+
 
 
 

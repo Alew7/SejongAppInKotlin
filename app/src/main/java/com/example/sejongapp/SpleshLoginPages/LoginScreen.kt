@@ -45,6 +45,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.WarmBeige
+import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.models.DataClasses.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
@@ -69,22 +70,10 @@ fun LoginScreen () {
     var passwordVisible by remember { mutableStateOf(false) }
 
     var isLoading = userTokenResult.value is NetworkResponse.Loading
-    val isSuccess = userTokenResult.value is NetworkResponse.Success <*>
 
 
 
 
-
-
-    LaunchedEffect(Unit) {
-        if (LocalData.getSavedToken(context) != "null"){
-            Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
-
-//            getAndSaveUserData(userViewModel, context)
-
-            MoveToMainActivity(context)
-        }
-    }
 
 
 
@@ -120,7 +109,7 @@ fun LoginScreen () {
                 username = it
 
             }, label = {
-                Text(text = "username")
+                Text(text = context.getString(R.string.username))
             },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                   focusedTextColor = Color.Black,
@@ -136,7 +125,7 @@ fun LoginScreen () {
                 password = it
 
             },label = {
-                Text(text = "password")
+                Text(text = context.getString(R.string.password))
 
             },
                 singleLine = true,
@@ -202,13 +191,21 @@ fun LoginScreen () {
                 }
                 else {
                     Text (
-                        text = "Sign In"
+                        text = context.getString(R.string.Log_in)
                     )
                 }
             }
 
             when(userTokenResult.value){
-                is NetworkResponse.Error -> {}
+                is NetworkResponse.Error -> {
+                    Log.e(TAG, "${(userTokenResult.value as NetworkResponse.Error).message}")
+                    isLoading = false
+                    showError((userTokenResult.value as NetworkResponse.Error).toString()) {
+                        userViewModel.resetUserResult()
+                        username = ""
+                        password = ""
+                    }
+                }
                 NetworkResponse.Idle -> {}
                 NetworkResponse.Loading -> isLoading = true
                 is NetworkResponse.Success -> {
@@ -242,6 +239,7 @@ fun getAndSaveUserData(userViewModel: UserViewModel, context: Context) {
 
 fun MoveToMainActivity(context: Context){
     val intent = Intent (context,MainActivity :: class.java)
+    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     context.startActivity(intent)
 }
 

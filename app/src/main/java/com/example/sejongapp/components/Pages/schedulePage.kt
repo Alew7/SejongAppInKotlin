@@ -1,7 +1,9 @@
-package com.example.sejongapp.Pages
+package com.example.sejongapp.components.Pages
 import LocalData
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -23,8 +26,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.models.DataClasses.ScheduleData
@@ -74,11 +80,17 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
     }
 
+    BackHandler {
+        onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+    }
+
     Log.i(TAG, "Ther user's token is ${LocalData.getSavedToken(context)}")
     Log.i(TAG, "The user data here is ${LocalData.getUserData(context)}")
 
 //    Getting all the schedule data from the server db
-    scheduleViewModel.getAllSchedules()
+    LaunchedEffect(Unit) {
+        scheduleViewModel.getAllSchedules()
+    }
 
 
     weekDays.put(0, "MON")
@@ -179,17 +191,31 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
                 }
             }
         }
-        is NetworkResponse.Error -> { /* show error */ }
+        is NetworkResponse.Error -> {
+            Log.d(TAG, "the schedule result is Error")
+            Log.e(TAG, "the schedule result is ${result.message}")
+
+            Text(
+                text = result.message,
+                color = Color.Red
+            )
+        }
         is NetworkResponse.Loading -> {
             Log.d(TAG, "the schedule result is Loading")
-            CircularProgressIndicator(
-                color = Color.White,
-                strokeWidth = 2.dp,
+
+            Box(
                 modifier = Modifier
-                    .height(20.dp)
-                    .size(24.dp)
-                    .padding(bottom = 2.dp, start = 1.dp)
-            ) }
+                    .fillMaxWidth()
+                    .height(100.dp),
+                contentAlignment = Alignment.Center
+
+            ) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.secondary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+        }
         else -> {}
     }
 }
@@ -198,7 +224,7 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
 // a compose func for pagination (the one that sorts data from all to the specific group)
 @Composable
 fun PaginationSelector(
-    pages: List<String> = listOf("All", "1", "2", "3", "4","5","6","7"),
+    pages: List<String> = listOf(LocalContext.current.getString(R.string.All), "1", "2", "3", "4","5","6","7"),
     selectedIndex: Int,
     onSelected: (Int) -> Unit
 ) {
@@ -375,10 +401,10 @@ fun TableRowElements(day: String, time: String){
 
 fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData>{
 
-    Log.i(TAG, "starts soring the schedule data")
+    Log.i(TAG, "starts soring the schedule data, the size of datas ${scheduleData.size}")
     var sortedScheduleData: ArrayList<ScheduleData> = arrayListOf<ScheduleData>()
     var i : Int = 0
-    sortedScheduleData.add(scheduleData.get(0))
+    sortedScheduleData.add(scheduleData[0])
 
     scheduleData.forEach { item->
 
@@ -388,9 +414,12 @@ fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleD
         }
 
         for (j in 0..sortedScheduleData.size-1){
-            if (item.book > sortedScheduleData[j].book){
+            if (item.book < sortedScheduleData[j].book){
                 sortedScheduleData.add(j, item)
                 return@forEach
+            }
+            else if (j == sortedScheduleData.size-1){
+                sortedScheduleData.add(item)
             }
         }
 

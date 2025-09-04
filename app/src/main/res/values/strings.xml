@@ -1,6 +1,42 @@
 <resources>
     <string name="app_name">Sejong</string>
     <string name="title_activity_splash_login">SejongApp</string>
-    <string name="title_activity_profile">ProfileActivity</string>
-    <string name="title_activity_annousment">Annousment</string>
+    <string name="title_activity_announcement">Announcement</string>
+    <string name="title_activity_profile">Profile</string>
+
+
+    <!-- Main Activity -->
+    <string name="Announcement">Announcement</string>
+    <string name="ElectLib">Electronic Library</string>
+    <string name="schedule">Schedule</string>
+    <string name="Profile">Profile</string>
+
+
+    <!--  Login Activity  -->
+    <string name="Log_in">Log in</string>
+
+    <!--Common settings-->
+    <string name="username">username</string>
+    <string name="password">password</string>
+    <string name="search">Search</string>
+    <string name="Language">Language</string>
+    <string name="download">Download</string>
+    <string name="error">Error</string>
+
+    <string name="Error_fetching_data">Unable to fetch data at the moment. Please try again later.</string>
+    <string name="Server_issue">The server is currently unavailable. Please try again later</string>
+
+    <!-- sidebar menu-->
+    <string name="Log_out">Log out</string>
+
+
+    <!--Schedule-->
+    <string name="All">All</string>
+
+
+    <!--Electronic Library-->
+    <string name="read">Read</string>
+
+
+    <string name="press_again_to_exit">Press again to exit</string>
 </resources>
