@@ -18,11 +18,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
+import com.example.sejongapp.R
 
 @Composable
 fun ProfilePage() {
@@ -38,7 +40,7 @@ fun ProfilePage() {
     ) {
         // Заголовок
         Text(
-            text = "Profile",
+            text = context.getString(R.string.Profile),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF222222)
@@ -90,13 +92,13 @@ fun ProfilePage() {
             Column {
                 ProfileItem(
                     icon = Icons.Default.VerifiedUser,
-                    title = "Status",
+                    title = context.getString(R.string.status),
                     value = userData.status ?: "—"
                 )
                 Divider(color = Color(0xFFDDDDDD))
                 ProfileItem(
                     icon = Icons.Default.Group,
-                    title = "Groups",
+                    title = context.getString(R.string.Groups),
                     value = userData.groups ?.joinToString (", ") ?: "-"
                 )
 

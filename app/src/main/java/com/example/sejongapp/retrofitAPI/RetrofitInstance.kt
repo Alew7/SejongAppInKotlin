@@ -1,7 +1,9 @@
 package com.example.sejongapp.retrofitAPI
 
+import com.example.sejongapp.retrofitAPI.api.ELibAPI
 import com.example.sejongapp.retrofitAPI.api.ScheduleApi
 import com.example.sejongapp.retrofitAPI.api.UserApi
+import com.example.sejongapp.retrofitAPI.api.announcementsApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

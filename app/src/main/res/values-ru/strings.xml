@@ -34,5 +34,11 @@
     <!-- Electronic Library -->
     <string name="read">Читать</string>
 
+    <!--  Profile Activity -->
+
+    <string name="status">Статус</string>
+    <string name="Groups">Группа</string>
+    <string name="Student">Студент</string>
+
     <string name="press_again_to_exit">Нажмите ещё раз для выхода</string>
 </resources>

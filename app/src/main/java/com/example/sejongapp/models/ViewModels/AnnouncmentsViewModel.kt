@@ -25,9 +25,9 @@ class AnnouncmentsViewModel : ViewModel() {
         _announcments.value = NetworkResponse.Loading
 
         viewModelScope.launch {
-            val response = announcmentApi.getAnnouncements()
 
             try {
+            val response = announcmentApi.getAnnouncements()
                 if (response.isSuccessful) {
                     Log.i(TAG, "data successfully taken " + response.body().toString())
                     _announcments.value = NetworkResponse.Success(response.body()!!)
