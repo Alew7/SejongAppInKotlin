@@ -199,10 +199,6 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
             )
         }
     }
-
-
-
-
 }
 
 

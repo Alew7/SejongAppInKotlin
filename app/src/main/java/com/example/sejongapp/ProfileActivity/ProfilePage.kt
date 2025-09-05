@@ -1,162 +1,136 @@
 package com.example.sejongapp.ProfileActivity
 
-import android.content.Intent
-import androidx.compose.animation.Animatable
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
+import LocalData.getUserData
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sejongapp.MainActivity
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.R
 
 @Composable
-fun ProfilePage () {
-
+fun ProfilePage() {
     val context = LocalContext.current
-    val scale = remember { androidx.compose.animation.core.Animatable(0.2f) }
+    val userData = remember { getUserData(context) }
 
-    LaunchedEffect  (Unit){
-        scale.animateTo(
-                targetValue = 1.2f,
-                animationSpec = tween(durationMillis = 800)
-            )
-    }
-
-    Box (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .padding(start = 10.dp, top = 15.dp)
+        // Заголовок
+        Text(
+            text = context.getString(R.string.Profile),
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF222222)
+        )
 
+        Spacer(modifier = Modifier.height(24.dp))
 
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_back),
-                    contentDescription = "ic_back",
-                    modifier = Modifier
-                        .padding(top = 20.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-
-                        ) {
-                            val intent = Intent(context, MainActivity::class.java)
-                            context.startActivity(intent)
-
-                        }
-                )
-                Text(
-                    text = "Profile",
-                    fontSize = 25.sp,
-                    modifier = Modifier
-                        .padding(start = 15.dp, top = 30.dp)
-
-
-                )
-            }
-            Row (
-                modifier = Modifier
-                    .padding(start = 50.dp, top = 20.dp)
-            ) {
-                Image (
-                    painter = painterResource(R.drawable.ic_profile),
-                    contentDescription = "ic_profile",
-                    modifier = Modifier
-                        .padding(end = 5.dp)
-//                        .scale(scale.value)
-
-                )
-                Column {
-                    Text(
-                        text = "Full name",
-                        fontSize = 30.sp,
-                        modifier = Modifier
-                            .padding(start = 25.dp)
-
-
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text (
-                        text = "Number: +992 000-33-90-66",
-                        modifier = Modifier
-                            .padding(start = 25.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text (
-                        text = "Email: ",
-                        modifier = Modifier
-                            .padding(start = 25.dp)
-                    )
-                }
-            }
-            Column (
-                modifier = Modifier
-                    .padding(start = 50.dp, top = 40.dp)
-            ) {
-                Text (
-                    text = "status: Student"
-                )
-                Spacer(modifier = Modifier.height(5.dp))
-                Text (
-                    text = "Groups: 3B"
-
-                )
-            }
+        // Аватар
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .clip(CircleShape)
+                .background(Color.White)
+                .shadow(8.dp, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Profile",
+                tint = Color(0xFF555555),
+                modifier = Modifier.size(64.dp)
+            )
         }
 
-    }
+        Spacer(modifier = Modifier.height(16.dp))
 
+        // Имя и Email
+        Text(
+            text = userData.fullname ?: "Unknown User",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF111111)
+        )
+        Text(
+            text = userData.email ?: "email@example.com",
+            fontSize = 16.sp,
+            color = Color.Gray
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Карточка с информацией
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(4.dp)
+        ) {
+            Column {
+                ProfileItem(
+                    icon = Icons.Default.VerifiedUser,
+                    title = context.getString(R.string.status),
+                    value = userData.status ?: "—"
+                )
+                Divider(color = Color(0xFFDDDDDD))
+                ProfileItem(
+                    icon = Icons.Default.Group,
+                    title = context.getString(R.string.Groups),
+                    value = userData.groups ?.joinToString (", ") ?: "-"
+                )
+
+            }
+        }
+    }
 }
 
-
-
-@Preview (showSystemUi = true, showBackground = true)
 @Composable
-private fun Preview () {
+fun ProfileItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = title,
+            tint = Color(0xFF555555),
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text(text = title, fontSize = 14.sp, color = Color.Gray)
+            Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun ProfilePreview() {
     ProfilePage()
 }
-
-
-//@Preview(name = "Small Phone", widthDp = 320, heightDp = 640, showBackground = true, showSystemUi = true)
-//@Composable
-//fun PreviewSmall() { ProfilePage() }
-//
-//@Preview(name = "Medium Phone", widthDp = 360, heightDp = 740, showBackground = true, showSystemUi = true)
-//@Composable
-//fun PreviewMedium() { ProfilePage() }
-//
-//@Preview(name = "Large Phone", widthDp = 412, heightDp = 892, showBackground = true, showSystemUi = true)
-//@Composable
-//fun PreviewLarge() { ProfilePage() }
-//
-//@Preview(name = "XL Phone", widthDp = 480, heightDp = 1000, showBackground = true, showSystemUi = true)
-//@Composable
-//fun PreviewXL() { ProfilePage() }

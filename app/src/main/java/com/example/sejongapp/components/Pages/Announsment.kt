@@ -1,4 +1,4 @@
-package com.example.sejongapp.components.Pages
+package com.example.sejongapp.Pages
 
 import android.content.Intent
 import androidx.activity.compose.BackHandler
@@ -19,7 +19,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sejongapp.R
@@ -28,6 +27,7 @@ import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
+import com.example.sejongapp.models.DataClasses.AnnouncementData
 import com.example.sejongapp.ui.theme.brightBackgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.utils.NavigationScreenEnum
@@ -42,9 +42,20 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
     var isSeraching by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 
+    val announcementData: AnnouncementData = AnnouncementData(
+        author = "author",
+        content = "content",
+        custom_id = 1,
+        images = listOf(),
+        is_active = true,
+        time_posted = "time_posted",
+        title = "title"
+    )
+
     BackHandler {
-        onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+        onChangeScreen(NavigationScreenEnum.HOMEPAGE);
     }
+
 
 //    The header (with logo icon and search btn)
     BoxWithConstraints(
@@ -80,7 +91,6 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                         .padding(start = 25.dp)
                 )
 
-//                    Search icon
                 Image (
                     painter = painterResource(R.drawable.ic_search),
                     contentDescription = "ic_search",
@@ -154,12 +164,12 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 150.dp),
+                    .padding(top = 110.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(10) { index ->
-                    AnnousmentCard {
+                    AnnousmentCard (announcementData){
                         val intent = Intent(context, AnnousmentActivity::class.java)
                         context.startActivity(intent)
                     }
@@ -171,7 +181,10 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
 
 @Composable
-fun AnnousmentCard(onClick: () -> Unit) {
+fun AnnousmentCard(announcementData: AnnouncementData, onClick: () -> Unit) {
+
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -196,7 +209,7 @@ fun AnnousmentCard(onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    text = "Announcment title",
+                    text = announcementData.title,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -215,12 +228,12 @@ fun AnnousmentCard(onClick: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun Preview() {
-    AnnousmentPage()
-}
-
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//private fun Preview() {
+//    AnnousmentPage()
+//}
+//
 //
 //@Preview(
 //    name = "📱 Small Phone",

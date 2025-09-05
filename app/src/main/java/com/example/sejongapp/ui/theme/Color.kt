@@ -22,7 +22,8 @@ val WarmBeige  = Color(0xffE1DFD8)
 val brightBackgroundColor = Color(0xFFFFFDF5)
 
 
-       /// настояший проект
+val totalWhite = Color(0xffF2F0E5)
+
 
 
 
