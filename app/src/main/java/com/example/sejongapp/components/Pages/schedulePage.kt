@@ -52,6 +52,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
+import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.ScheduleData
 import com.example.sejongapp.models.ViewModels.ScheduleViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
@@ -195,10 +196,9 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
             Log.d(TAG, "the schedule result is Error")
             Log.e(TAG, "the schedule result is ${result.message}")
 
-            Text(
-                text = result.message,
-                color = Color.Red
-            )
+            showError(result.message){
+                viewModel.resetScheduleResult()
+            }
         }
         is NetworkResponse.Loading -> {
             Log.d(TAG, "the schedule result is Loading")

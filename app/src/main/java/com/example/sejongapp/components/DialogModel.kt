@@ -24,6 +24,13 @@ import com.example.sejongapp.ui.theme.primaryColor
 
 @Composable
 fun showError(errorMessage: String, onDismiss: () -> Unit) {
+    var theMessage: String
+    if (errorMessage.contains("Failed to connect")){
+        theMessage = LocalContext.current.getString(R.string.Server_issue)
+    }
+    else{
+        theMessage = LocalContext.current.getString(R.string.Error_fetching_data)
+    }
     AlertDialog(
         onDismissRequest = { },
         containerColor = backgroundColor, // soft background
@@ -39,7 +46,7 @@ fun showError(errorMessage: String, onDismiss: () -> Unit) {
         },
         text = {
             Text(
-                text = errorMessage,
+                text = theMessage,
                 fontSize = 16.sp,
                 color = darkGray,
                 lineHeight = 20.sp
