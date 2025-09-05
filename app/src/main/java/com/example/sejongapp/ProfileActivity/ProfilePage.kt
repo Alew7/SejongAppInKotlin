@@ -36,7 +36,7 @@ fun ProfilePage() {
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
-            .padding(16.dp),
+            .padding(30.dp),    /// 16.dp
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Заголовок
@@ -97,13 +97,24 @@ fun ProfilePage() {
                     value = userData.status ?: "—"
                 )
                 Divider(color = Color(0xFFDDDDDD))
+
+
+                val groupsValue = userData.groups
+                    ?.toString()
+                    ?.replace("[", "")
+                    ?.replace("]", "")
+                    ?: "-"
+
                 ProfileItem(
                     icon = Icons.Default.Group,
                     title = context.getString(R.string.Groups),
-                    value = userData.groups ?.joinToString (", ") ?: "-"
+                    value = groupsValue
+
                 )
 
                 Divider(color = Color(0xFFDDDDDD))
+
+
                 ProfileItem(
                     icon = Icons.Filled.Email,
                     title = context.getString(R.string.Email),

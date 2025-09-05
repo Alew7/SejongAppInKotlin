@@ -12,14 +12,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sejongapp.R
+import com.example.sejongapp.components.ImageGalleryDialog
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
@@ -41,6 +42,16 @@ fun AnnousmentDetailPage() {
     val text_size = 15.sp
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+
+
+    val images = listOf(
+        R.drawable.annousment_img,
+        R.drawable.annousment_img,
+        R.drawable.annousment_img,
+        R.drawable.annousment_img,
+        R.drawable.annousment_img
+    )
+    var showDialog by remember { mutableStateOf(false) }
 
 
 
@@ -73,6 +84,7 @@ fun AnnousmentDetailPage() {
                         )
                     }
             ) {
+
                 Image(
                     painter = painterResource(R.drawable.ic_head),
                     contentDescription = "ic_had",
@@ -149,6 +161,7 @@ fun AnnousmentDetailPage() {
                     contentDescription = "annousment_img",
                     modifier = Modifier
                         .size(350.dp)
+                        .clickable { showDialog = true }
 
                 )
                 Text (
@@ -159,6 +172,10 @@ fun AnnousmentDetailPage() {
 
             }
         }
+    }
+
+    if (showDialog) { 
+        ImageGalleryDialog(images  = images, onDismiss = {showDialog = false})
     }
 }
 

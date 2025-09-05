@@ -8,7 +8,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -42,6 +44,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
     var isSeraching by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 
+
     val announcementData: AnnouncementData = AnnouncementData(
         author = "author",
         content = "content",
@@ -51,6 +54,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
         time_posted = "time_posted",
         title = "title"
     )
+
 
     BackHandler {
         onChangeScreen(NavigationScreenEnum.HOMEPAGE);
@@ -65,7 +69,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
     ) {
         val screenWidth = maxWidth
 
-        Column {
+        Column  {
 
             Box(
                 modifier = Modifier
