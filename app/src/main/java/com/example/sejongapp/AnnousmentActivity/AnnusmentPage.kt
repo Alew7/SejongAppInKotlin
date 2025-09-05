@@ -1,8 +1,10 @@
 package com.example.sejongapp.AnnousmentActivity
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -10,14 +12,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,8 +36,14 @@ import com.example.sejongapp.ui.theme.primaryColor
 
 
 @Composable
+fun AnnousmentDetailPage() {
 
-fun AnnousmentDetailPage () {
+    val text_size = 15.sp
+    val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+
+
     BoxWithConstraints  (
         modifier = Modifier
             .fillMaxSize()
@@ -40,9 +53,13 @@ fun AnnousmentDetailPage () {
         val startPadding = screenWidth * 0.5f
         val endPadding = screenWidth * 0.5f
 
-        Column {
+        Column  (
+            modifier = Modifier
+                .verticalScroll(scrollState)
+        ){
             Box(
                 modifier = Modifier
+
                     .fillMaxWidth()
                     .padding(top = 25.dp)
                     .drawBehind {
@@ -60,20 +77,50 @@ fun AnnousmentDetailPage () {
                     painter = painterResource(R.drawable.ic_head),
                     contentDescription = "ic_had",
                     modifier = Modifier
-                        .size(65.dp)
+                        .size(32.dp)  /// 65.dp old
                         .align(Alignment.TopEnd)
                         .padding(end = 25.dp)
                 )
-                Image(
-                    painter = painterResource(R.drawable.ic_back),
-                    contentDescription = "ic_back",
+
+                Box(
                     modifier = Modifier
-                        .padding(top = 10.dp)
-                        .clickable {
+                        .size(48.dp)
+                        .padding(top = 20.dp, start = 10.dp)
+                        .clickable  (
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
 
-                    }
+                        ){
+                            (context as? ComponentActivity)?.finish()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image (
+                        painter = painterResource(R.drawable.ic_back),
+                        contentDescription = "ic_back",
+                        modifier = Modifier
+                            .size(30.dp)
 
-                )
+                    )
+                }
+
+//                Image(
+//                    painter = painterResource(R.drawable.ic_back),
+//                    contentDescription = "ic_back",
+//                    modifier = Modifier
+//                        .size(55.dp)
+//                        .padding(top = 20.dp, start = 10.dp)
+//                        .clickable  (
+//                            interactionSource = remember { MutableInteractionSource() },
+//                            indication = null
+//                        )
+//                        {
+//                            (context as? ComponentActivity)?.finish()
+//                        }
+//                )
+
+
+
             }
             Text(
                 text = "11.02.2025",
@@ -93,8 +140,8 @@ fun AnnousmentDetailPage () {
                     .padding(bottom = 40.dp)
                     .fillMaxWidth()
                     .fillMaxHeight(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
                 Image(
@@ -105,8 +152,10 @@ fun AnnousmentDetailPage () {
 
                 )
                 Text (
-                    text = "In the heart of Dushanbe, the Dushanbe 3 Sejong\nInstitute stands as a vibrant center for the promotion\nof Korean language and culture, fostering a deeper\nunderstanding between Tajikistan and South Korea.\nSince its establishment,the instite has witnessed\n a remarkable surge in interest, with students of all ages\neagerto explore the rich tapestry of Korean\ntraditions.\n   The institute's comprehensive curreculum extends\nbeyond basic language instruction, offering a diverse\nrange of programs that delve  into the intricaries of\nKorean history, art, and contemporary culture.From\ntraditional calligraphy and cooking classes to modern\nK-pop dance workshops,the Sejong Institute\nprovides a holistic cultural experience."
-                )
+                    text = "In the heart of Dushanbe, the Dushanbe 3 Sejong\nInstitute stands as a vibrant center for the promotion\nof Korean language and culture, fostering a deeper\nunderstanding between Tajikistan and South Korea.\nSince its establishment,the instite has witnessed\n a remarkable surge in interest, with students of all ages\neagerto explore the rich tapestry of Korean\ntraditions.\n   The institute's comprehensive curreculum extends\nbeyond basic language instruction, offering a diverse\nrange of programs that delve  into the intricaries of\nKorean history, art, and contemporary culture.From\ntraditional calligraphy and cooking classes to modern\nK-pop dance workshops,the Sejong Institute\nprovides a holistic cultural experience.",
+                    fontSize = text_size,
+
+                    )
 
             }
         }
@@ -115,7 +164,8 @@ fun AnnousmentDetailPage () {
 
 
 
-@Preview (showBackground = true, showSystemUi = true)
+
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun Preview () {
     AnnousmentDetailPage()

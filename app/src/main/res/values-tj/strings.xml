@@ -37,5 +37,11 @@
     <!-- Electronic Library -->
     <string name="read">Хондан</string>
 
+
+    <!--  Profile Activity -->
+    <string name="status">ҳолат</string>
+    <string name="Groups">Гурух</string>
+    <string name="Student">Донишчу</string>
+
     <string name="press_again_to_exit">Барои баромадан боз як бор пахш кунед</string>
 </resources>

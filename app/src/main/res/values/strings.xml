@@ -38,5 +38,10 @@
     <string name="read">Read</string>
 
 
+    <!--  Profile Activity -->
+
+    <string name="status">Status</string>
+    <string name="Groups">Groups</string>
+    <string name="Student">Student</string>
     <string name="press_again_to_exit">Press again to exit</string>
 </resources>

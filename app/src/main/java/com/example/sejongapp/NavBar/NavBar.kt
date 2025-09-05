@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.MainActivity
-import com.example.sejongapp.components.Pages.AnnousmentPage
+import com.example.sejongapp.Pages.AnnousmentPage
 import com.example.sejongapp.components.Pages.ElectronicLibraryPage
 import com.example.sejongapp.components.Pages.HomePage
 import com.example.sejongapp.components.Pages.Schedule
