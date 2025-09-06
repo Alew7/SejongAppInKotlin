@@ -60,6 +60,7 @@ class UserViewModel: ViewModel() {
     }
 
 
+
     fun getUserData(token: String){
         Log.i(TAG, "trying to get user data")
         _userDataResult.value = Loading
@@ -87,6 +88,35 @@ class UserViewModel: ViewModel() {
                 Log.e(TAG, e.message.toString())
             }
         }
+    }
+
+    fun changeUserData(token: String, userData: UserData){
+        Log.i(TAG, "trying to change user data")
+        _userDataResult.value = Loading
+
+        viewModelScope.launch {
+
+            try {
+                val response = userApi.changeUserData(token, userData)
+                if (response.isSuccessful){
+                    Log.i(TAG, "data successfully changed " + response.body().toString())
+
+
+                    response.body()?.let {
+                        _userDataResult.value = Success(it)
+                    }
+                } else {
+
+                    Log.i(TAG, "the response is not successful, Couldn;t change the user data. the response is ${response.message()}")
+                    Log.e(TAG, response.message().toString())
+                }
+            }
+            catch (e: Exception){
+                Log.e(TAG, "Some error occurred")
+                Log.e(TAG, e.message.toString())
+            }
+        }
+
     }
 
     fun resetUserResult(){
