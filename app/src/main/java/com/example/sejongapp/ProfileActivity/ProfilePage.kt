@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Person
@@ -39,6 +40,17 @@ fun ProfilePage() {
             .padding(30.dp),    /// 16.dp
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        IconButton (onClick = {}) {
+            Icon (
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "ic_back",
+                tint = Color.Black,
+                modifier = Modifier
+                    .padding(end = 15.dp)
+                    .size(30.dp)
+            )
+        }
+
         // Заголовок
         Text(
             text = context.getString(R.string.Profile),

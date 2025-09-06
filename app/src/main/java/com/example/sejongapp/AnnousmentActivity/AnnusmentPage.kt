@@ -9,11 +9,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -156,14 +160,43 @@ fun AnnousmentDetailPage() {
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-                Image(
-                    painter = painterResource(R.drawable.annousment_img),
-                    contentDescription = "annousment_img",
-                    modifier = Modifier
-                        .size(350.dp)
-                        .clickable { showDialog = true }
+                Row (
 
-                )
+                ) {
+
+                    Image(
+                        painter = painterResource(R.drawable.annousment_img),
+                        contentDescription = "annousment_img",
+                        modifier = Modifier
+                            .size(100.dp) /// 350.dp
+                            .padding(end = 5.dp)
+                            .clickable { showDialog = true }
+
+                    )
+
+                    Column {
+
+                        Image(
+                            painter = painterResource(R.drawable.annousment_img),
+                            contentDescription = "annousment_img",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clickable { showDialog = true }
+
+                        )
+
+                        Image(
+                            painter = painterResource(R.drawable.annousment_img),
+                            contentDescription = "annousment_img",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clickable { showDialog = true }
+
+                        )
+                    }
+
+
+                }
                 Text (
                     text = "In the heart of Dushanbe, the Dushanbe 3 Sejong\nInstitute stands as a vibrant center for the promotion\nof Korean language and culture, fostering a deeper\nunderstanding between Tajikistan and South Korea.\nSince its establishment,the instite has witnessed\n a remarkable surge in interest, with students of all ages\neagerto explore the rich tapestry of Korean\ntraditions.\n   The institute's comprehensive curreculum extends\nbeyond basic language instruction, offering a diverse\nrange of programs that delve  into the intricaries of\nKorean history, art, and contemporary culture.From\ntraditional calligraphy and cooking classes to modern\nK-pop dance workshops,the Sejong Institute\nprovides a holistic cultural experience.",
                     fontSize = text_size,
