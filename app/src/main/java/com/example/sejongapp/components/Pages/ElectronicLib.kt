@@ -317,14 +317,14 @@ fun getAndShowData(
             Log.d(TAG, "the book result is Error")
             Log.e(TAG, "the book result is ${result.message}")
 
-            if (showDialog.value){
-                showError(result.message){
-                    showDialog.value = false
-                }
+            showError(result.message){
+               eLibViewModel.resetLibResult()
             }
 
         }
-        NetworkResponse.Idle -> TODO()
+        NetworkResponse.Idle -> {
+            Log.d(TAG, "the book result is Idle")
+        }
         NetworkResponse.Loading -> {
             Log.d(TAG, "the book result is Loading")
 

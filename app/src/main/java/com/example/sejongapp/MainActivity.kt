@@ -1,5 +1,6 @@
 package com.example.sejongapp
 
+import LocalData
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,6 +17,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             NavBar()
         }
+
+        LocalData.getSavedToken(this)
     }
 
     override fun attachBaseContext(newBase: Context) {

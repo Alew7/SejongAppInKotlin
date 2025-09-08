@@ -1,6 +1,7 @@
 package com.example.sejongapp.Pages
 
 import android.content.Intent
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,13 +9,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -28,32 +28,35 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
+import com.example.sejongapp.components.Pages.TAG
+import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.AnnouncementData
+import com.example.sejongapp.models.ViewModels.AnnouncmentsViewModel
+import com.example.sejongapp.models.ViewModels.UserViewModel
+import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.brightBackgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.utils.NavigationScreenEnum
 
 
+const val TAG = "AnnouncmentsViewModel_TAG"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
-
+    val announcementView : AnnouncmentsViewModel = viewModel()
     val context = LocalContext.current
     var isSeraching by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 
 
-    val announcementData: AnnouncementData = AnnouncementData(
-        author = "author",
-        content = "content",
-        custom_id = 1,
-        images = listOf(),
-        is_active = true,
-        time_posted = "time_posted",
-        title = "title"
-    )
+    LaunchedEffect(Unit) {
+        Log.i(TAG, "AnnouncementPage: Starting to fetch data")
+        announcementView.getAllannouncments()
+    }
 
 
     BackHandler {
@@ -69,7 +72,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
     ) {
         val screenWidth = maxWidth
 
-        Column  {
+        Column {
 
             Box(
                 modifier = Modifier
@@ -162,7 +165,39 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
     }
 
 
+    val result by announcementView.announcments.observeAsState(NetworkResponse.Idle)
 
+    when(result){
+        is NetworkResponse.Error -> {
+            Log.e(TAG, "AnnouncementPage: Got an error in fetching data")
+            showError((result as NetworkResponse.Error).message){
+                announcementView.resetAnnouncments()
+            }
+        }
+
+        NetworkResponse.Idle -> {}
+        NetworkResponse.Loading -> {
+            Log.d(TAG, "AnnouncementPage: Loading the data")
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 100.dp),
+                contentAlignment = Alignment.Center
+
+            ) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.secondary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+        }
+        is NetworkResponse.Success -> {
+            Log.v(TAG, "AnnouncementPage: Success got data!")
+            Log.i(TAG, "AnnouncementPage: the fetched data is ${(result as NetworkResponse.Success<ArrayList<AnnouncementData>>).data}")
+
+            val announcementData: ArrayList<AnnouncementData> = (result as NetworkResponse.Success<ArrayList<AnnouncementData>>).data
+            Log.i(TAG, "AnnouncementPage: the data is in the var and its $announcementData")
+            Log.i(TAG, "AnnouncementPage: the data size is ${announcementData.size}")
 
             // Список карточек
             LazyColumn(
@@ -172,20 +207,24 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(10) { index ->
-                    AnnousmentCard (announcementData){
+                items(announcementData.size-1) { index ->
+                    AnnousmentCard (announcementData[index]){
                         val intent = Intent(context, AnnousmentActivity::class.java)
                         context.startActivity(intent)
                     }
                 }
             }
+        }
+    }
+
+
 
 }
 
 
 
 @Composable
-fun AnnousmentCard(announcementData: AnnouncementData, onClick: () -> Unit) {
+fun AnnousmentCard(annData: AnnouncementData, onClick: () -> Unit) {
 
 
 
@@ -213,17 +252,17 @@ fun AnnousmentCard(announcementData: AnnouncementData, onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    text = announcementData.title,
+                    text = annData.title ?: "",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "part of content\nLorem ipsum dolor sit amet,\nconsenctetur adiposcing elit...",
+                    text = annData.content ?: "",
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 Text(
-                    text = "11.02.2025",
+                    text = annData.time_posted ?: "",
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 8.dp)
                 )

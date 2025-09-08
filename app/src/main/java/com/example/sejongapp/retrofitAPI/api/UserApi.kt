@@ -23,4 +23,12 @@ interface UserApi {
     suspend fun getUserData(
         @Header("token") token: String
     ): Response<UserData>
+
+
+
+    @POST("change_info/")
+    suspend fun changeUserData(
+        @Header("token") token: String,
+        @Body request: UserData
+    ):Response<tokenData>
 }
