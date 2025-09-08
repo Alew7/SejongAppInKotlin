@@ -30,6 +30,15 @@
 
     <!-- Schedule -->
     <string name="All">Все</string>
+    <string name="TIME">Время</string>
+    <string name="DAY">День</string>
+    <string-array name="week_days">
+        <item>Пн</item>
+        <item>Вт</item>
+        <item>Ср</item>
+        <item>Чт</item>
+        <item>Пт</item>
+    </string-array>
 
     <!-- Electronic Library -->
     <string name="read">Читать</string>

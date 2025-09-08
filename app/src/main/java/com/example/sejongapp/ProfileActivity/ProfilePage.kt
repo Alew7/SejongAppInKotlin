@@ -40,14 +40,15 @@ fun ProfilePage() {
             .padding(30.dp),    /// 16.dp
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        IconButton (onClick = {}) {
+        IconButton (onClick = {
+            (context as? ProfileActivity)?.finish()
+        }, modifier = Modifier.align(Alignment.Start)) {
             Icon (
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "ic_back",
                 tint = Color.Black,
                 modifier = Modifier
-                    .padding(end = 15.dp)
-                    .size(30.dp)
+                    .size(35.dp)
             )
         }
 

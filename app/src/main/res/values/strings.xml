@@ -32,6 +32,16 @@
 
     <!--Schedule-->
     <string name="All">All</string>
+    <string name="TIME">TIME</string>
+    <string name="DAY">DAY</string>
+    <string-array name="week_days">
+        <item>MON</item>
+        <item>TUE</item>
+        <item>WED</item>
+        <item>THU</item>
+        <item>FRI</item>
+        <item>SAT</item>
+    </string-array>
 
 
     <!--Electronic Library-->
