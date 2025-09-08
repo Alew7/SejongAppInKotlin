@@ -2,7 +2,10 @@ package com.example.sejongapp.ProfileActivity
 
 import LocalData
 import LocalData.getUserData
+import android.app.Activity
+import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -30,7 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
+import androidx.core.app.ActivityCompat.recreate
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.ProfileActivity.ui.theme.secondaryColor
@@ -144,7 +147,7 @@ fun ProfilePage() {
             colors = ButtonDefaults.buttonColors(containerColor = secondaryColor) // Golden color
         ) {
             Text(
-                text = "Change Profile",
+                text = LocalContext.current.getString(R.string.Edit_profile),
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -154,8 +157,9 @@ fun ProfilePage() {
 
 
 
-//        The dialogs!
+//---------------------    The dialogs!  ---------------------//
 
+        //        Edit dialog. For making changes of the user
         if (showEditDialog){
             EditUserDialog(
                 userData = userData,
@@ -169,6 +173,8 @@ fun ProfilePage() {
             )
         }
 
+
+        //     Loading dialogs for showing and handling the user changing requests
         if(showLoadingDialog){
             val result by userViewModel.userChangeResult.observeAsState(NetworkResponse.Idle)
 
@@ -180,7 +186,7 @@ fun ProfilePage() {
                     }
                 NetworkResponse.Idle -> {}
                 NetworkResponse.Loading -> {
-                            LoadingDialog("Applying changes")
+                            LoadingDialog(LocalContext.current.getString(R.string.applying_changes))
                     }
                 is NetworkResponse.Success ->{
                     val token = (result as NetworkResponse.Success<tokenData>).data.auth_token
@@ -194,7 +200,7 @@ fun ProfilePage() {
                         fetchingNewUserData = true
                         showLoadingDialog = false
 
-                        startActivity(context, Intent(context, ProfileActivity::class.java), null)
+
                     }
 
 
@@ -203,6 +209,7 @@ fun ProfilePage() {
             }
         }
 
+        //     Loading dialogs for showing and handing the new user data that was changed
         if(fetchingNewUserData){
             val result by userViewModel.userDataResult.observeAsState(NetworkResponse.Idle)
             when (result) {
@@ -213,17 +220,21 @@ fun ProfilePage() {
                 }
                 NetworkResponse.Idle -> {}
                 NetworkResponse.Loading -> {
-                        LoadingDialog("Fetching New User Data")
+                        LoadingDialog(LocalContext.current.getString(R.string.refreshing_data))
 
                 }
                 is NetworkResponse.Success ->{
-                        Log.d(TAG, "Success on  fetching the data ${(result as NetworkResponse.Success<UserData>).data}")
-                        LocalData.setUserData(LocalContext.current,
-                            (result as NetworkResponse.Success<UserData>).data
-                        )
-                        Toast.makeText(LocalContext.current, "The data has been successfully updated", Toast.LENGTH_LONG)
-                        fetchingNewUserData = false
+                    Log.d(TAG, "Success on  fetching the data ${(result as NetworkResponse.Success<UserData>).data}")
+                    LocalData.setUserData(LocalContext.current,
+                        (result as NetworkResponse.Success<UserData>).data
+                    )
+                    Toast.makeText(LocalContext.current, "The data has been successfully updated", Toast.LENGTH_LONG)
+                    fetchingNewUserData = false
 
+                    val context = LocalContext.current
+                    if (context is Activity) {
+                        context.recreate()
+                    }
 
                 }
                 else ->{}

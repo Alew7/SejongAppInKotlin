@@ -42,6 +42,9 @@
     <string name="status">ҳолат</string>
     <string name="Groups">Гурух</string>
     <string name="Student">Донишчу</string>
+    <string name="Edit_profile">Таҳрири профил</string>
+    <string name="applying_changes">татбиқи тағйирот</string>
+    <string name="refreshing_data">навсозии маълумот</string>
 
     <string name="press_again_to_exit">Барои баромадан боз як бор пахш кунед</string>
 </resources>

@@ -33,15 +33,28 @@
     <!--Schedule-->
     <string name="All">All</string>
 
+    <string-array name="week_days">
+        <item>MON</item>
+        <item>TUE</item>
+        <item>WED</item>
+        <item>THU</item>
+        <item>FRI</item>
+        <item>SAT</item>
+    </string-array>
+
 
     <!--Electronic Library-->
     <string name="read">Read</string>
 
 
     <!--  Profile Activity -->
-
     <string name="status">Status</string>
     <string name="Groups">Groups</string>
     <string name="Student">Student</string>
+    <string name="Edit_profile">Edit Profile</string>
+    <string name="applying_changes">applying changes</string>
+    <string name="refreshing_data">refreshing data</string>
+
+
     <string name="press_again_to_exit">Press again to exit</string>
 </resources>
