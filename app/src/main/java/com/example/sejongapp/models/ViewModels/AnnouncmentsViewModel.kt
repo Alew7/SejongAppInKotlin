@@ -27,7 +27,9 @@ class AnnouncmentsViewModel : ViewModel() {
         viewModelScope.launch {
 
             try {
-            val response = announcmentApi.getAnnouncements()
+
+                val response = announcmentApi.getAnnouncements()
+
                 if (response.isSuccessful) {
                     Log.i(TAG, "data successfully taken " + response.body().toString())
                     _announcments.value = NetworkResponse.Success(response.body()!!)
@@ -43,6 +45,10 @@ class AnnouncmentsViewModel : ViewModel() {
                 _announcments.value = NetworkResponse.Error("Exception: ${e.message}")
             }
         }
+    }
+
+    fun resetAnnouncments() {
+        _announcments.value = NetworkResponse.Idle
     }
 }
 

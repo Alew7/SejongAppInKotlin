@@ -22,6 +22,9 @@ class UserViewModel: ViewModel() {
     private val _userTokenResult = MutableLiveData<NetworkResponse<tokenData>>()
     val userTokenResult : LiveData<NetworkResponse<tokenData>> = _userTokenResult
 
+    private val _userChangeResult = MutableLiveData<NetworkResponse<tokenData>>()
+    val userChangeResult : LiveData<NetworkResponse<tokenData>> = _userChangeResult
+
 
     private val _userDataResult = MutableLiveData<NetworkResponse<UserData>>()
     val userDataResult : LiveData<NetworkResponse<UserData>> = _userDataResult
@@ -62,7 +65,7 @@ class UserViewModel: ViewModel() {
 
 
     fun getUserData(token: String){
-        Log.i(TAG, "trying to get user data")
+        Log.i(TAG, "getUserData: trying to get user data. Token is ${token}")
         _userDataResult.value = Loading
 
         viewModelScope.launch {
@@ -71,48 +74,57 @@ class UserViewModel: ViewModel() {
             try {
                 val response = userApi.getUserData(token)
                 if (response.isSuccessful){
-                    Log.i(TAG, "data successfully taken " + response.body().toString())
+                    Log.i(TAG, "getUserData: data successfully taken " + response.body().toString())
 
 
                     response.body()?.let {
                         _userDataResult.value = Success(it)
                     }
                 } else {
-
-                    Log.i(TAG, "the response is not successful the response is ${response.message()}")
+                    response.body()?.let {
+                        _userDataResult.value = Error(response.message().toString())
+                    }
+                    Log.i(TAG, "getUserData: the response is not successful the response is ${response.message()}")
                     Log.e(TAG, response.message().toString())
                 }
             }
             catch (e: Exception){
-                Log.e(TAG, "Some error occurred")
+                _userTokenResult.value = Error(e.message.toString())
+                Log.e(TAG, "getUserData: Some error occurred")
                 Log.e(TAG, e.message.toString())
             }
         }
     }
 
     fun changeUserData(token: String, userData: UserData){
-        Log.i(TAG, "trying to change user data")
-        _userDataResult.value = Loading
+        Log.i(TAG, "ChangeUserData: trying to change user data")
+        _userChangeResult.value = Loading
 
         viewModelScope.launch {
 
             try {
                 val response = userApi.changeUserData(token, userData)
                 if (response.isSuccessful){
-                    Log.i(TAG, "data successfully changed " + response.body().toString())
+                    Log.i(TAG, "ChangeUserData: data successfully changed " + response.body().toString())
+
 
 
                     response.body()?.let {
-                        _userDataResult.value = Success(it)
+                        _userChangeResult.value = Success(it)
                     }
                 } else {
+                    response.body()?.let {
+                        Log.e(TAG, "ChangeUserData failed! Error is ${response.message()}")
+                        _userChangeResult.value = Error(response.message().toString())
+                    }
 
-                    Log.i(TAG, "the response is not successful, Couldn;t change the user data. the response is ${response.message()}")
+                    Log.i(TAG, "ChangeUserData: the response is not successful, Couldn't change the user data. the response is ${response.message()}")
                     Log.e(TAG, response.message().toString())
                 }
             }
             catch (e: Exception){
-                Log.e(TAG, "Some error occurred")
+                _userChangeResult.value = Error(e.message.toString())
+                Log.e(TAG, "ChangeUserData: Some error occurred")
                 Log.e(TAG, e.message.toString())
             }
         }

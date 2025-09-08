@@ -100,8 +100,8 @@ fun EditUserDialog(
     onSave: (UserData) -> Unit
 ) {
     var UsernameState by remember { mutableStateOf(userData.username) }
-    var FullNameState by remember { mutableStateOf(userData.fullname) }
     var emailState by remember { mutableStateOf(userData.email) }
+
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -120,13 +120,7 @@ fun EditUserDialog(
             Column(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                OutlinedTextField(
-                    value = FullNameState,
-                    onValueChange = { FullNameState = it },
-                    label = { Text("Fullname") },
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true
-                )
+
                 OutlinedTextField(
                     value = UsernameState,
                     onValueChange = { UsernameState = it },
@@ -152,8 +146,7 @@ fun EditUserDialog(
                         status = userData.status,
                         groups = userData.groups,
                         avatar = userData.avatar,
-//                        fullname = userData.fullname
-                        fullname = FullNameState
+                        fullname = userData.fullname
                     )
                     onSave(newUserData)
                 },

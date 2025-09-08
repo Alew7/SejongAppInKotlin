@@ -103,6 +103,9 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 
 
+
+
+
     Column {
         //    The header with logo icon
         Column {
@@ -436,3 +439,27 @@ fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleD
 private fun Preview() {
     Schedule()
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

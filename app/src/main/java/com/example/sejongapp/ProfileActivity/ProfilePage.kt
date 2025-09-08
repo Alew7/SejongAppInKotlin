@@ -1,6 +1,8 @@
 package com.example.sejongapp.ProfileActivity
 
+import LocalData
 import LocalData.getUserData
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -24,13 +26,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.sejongapp.NavBar.TAG
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.ProfileActivity.ui.theme.secondaryColor
 import com.example.sejongapp.R
@@ -38,8 +39,11 @@ import com.example.sejongapp.components.EditUserDialog
 import com.example.sejongapp.components.LoadingDialog
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.UserData
+import com.example.sejongapp.models.DataClasses.tokenData
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
+
+const val TAG = "TAG_ProfilePage"
 
 @Composable
 fun ProfilePage() {
@@ -48,6 +52,7 @@ fun ProfilePage() {
     val userData = remember { getUserData(context) }
     var showEditDialog by remember { mutableStateOf(false) }
     var showLoadingDialog by remember { mutableStateOf(false) }
+    var fetchingNewUserData by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -146,6 +151,11 @@ fun ProfilePage() {
             )
         }
 
+
+
+
+//        The dialogs!
+
         if (showEditDialog){
             EditUserDialog(
                 userData = userData,
@@ -160,26 +170,64 @@ fun ProfilePage() {
         }
 
         if(showLoadingDialog){
-            val result by userViewModel.userDataResult.observeAsState(NetworkResponse.Idle)
+            val result by userViewModel.userChangeResult.observeAsState(NetworkResponse.Idle)
 
-                when (result) {
-                    is NetworkResponse.Error -> {
+            when (result) {
+                is NetworkResponse.Error -> {
                         showError((result as NetworkResponse.Error).message) {
                             showLoadingDialog = false
                         }
                     }
-                    NetworkResponse.Idle -> {}
-                    NetworkResponse.Loading -> {
-                        LoadingDialog("waiting for the response")
+                NetworkResponse.Idle -> {}
+                NetworkResponse.Loading -> {
+                            LoadingDialog("Applying changes")
                     }
-                    is NetworkResponse.Success ->{
-                        Log.d(TAG, "Success on  changing the data ${(result as NetworkResponse.Success<UserData>).data}")
-                        LocalData.setUserData(LocalContext.current, (result as NetworkResponse.Success<UserData>).data)
-                        Toast.makeText(LocalContext.current, "The data has been successfully changed", Toast.LENGTH_LONG)
+                is NetworkResponse.Success ->{
+                    val token = (result as NetworkResponse.Success<tokenData>).data.auth_token
+                    Log.v(TAG, "ProfileChangeDialog : The token is $token")
+                    if (token.isNullOrBlank()) {
+                            // treat as error
+                        showError("Server returned null token") { fetchingNewUserData = false }
+                    } else {
+                        LocalData.setToken(context, token)
+                        userViewModel.getUserData(token)
+                        fetchingNewUserData = true
+                        showLoadingDialog = false
 
+                        startActivity(context, Intent(context, ProfileActivity::class.java), null)
                     }
-                    else ->{}
+
+
                 }
+                else ->{}
+            }
+        }
+
+        if(fetchingNewUserData){
+            val result by userViewModel.userDataResult.observeAsState(NetworkResponse.Idle)
+            when (result) {
+                is NetworkResponse.Error -> {
+                    showError((result as NetworkResponse.Error).message) {
+                        fetchingNewUserData = false
+                    }
+                }
+                NetworkResponse.Idle -> {}
+                NetworkResponse.Loading -> {
+                        LoadingDialog("Fetching New User Data")
+
+                }
+                is NetworkResponse.Success ->{
+                        Log.d(TAG, "Success on  fetching the data ${(result as NetworkResponse.Success<UserData>).data}")
+                        LocalData.setUserData(LocalContext.current,
+                            (result as NetworkResponse.Success<UserData>).data
+                        )
+                        Toast.makeText(LocalContext.current, "The data has been successfully updated", Toast.LENGTH_LONG)
+                        fetchingNewUserData = false
+
+
+                }
+                else ->{}
+            }
         }
     }
 }
