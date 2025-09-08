@@ -52,6 +52,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
+import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.ScheduleData
 import com.example.sejongapp.models.ViewModels.ScheduleViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
@@ -84,7 +85,7 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
         onChangeScreen(NavigationScreenEnum.HOMEPAGE)
     }
 
-    Log.i(TAG, "Ther user's token is ${LocalData.getSavedToken(context)}")
+    Log.i(TAG, "The user's token is ${LocalData.getSavedToken(context)}")
     Log.i(TAG, "The user data here is ${LocalData.getUserData(context)}")
 
 //    Getting all the schedule data from the server db
@@ -92,13 +93,15 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
         scheduleViewModel.getAllSchedules()
     }
 
+    context.resources.getStringArray(R.array.week_days).forEachIndexed { index, day ->
 
-    weekDays.put(0, "MON")
-    weekDays.put(1, "TUE")
-    weekDays.put(2, "WED")
-    weekDays.put(3, "THU")
-    weekDays.put(4, "FRI")
-    weekDays.put(5, "SAT")
+        weekDays.put(index, day)
+    }
+
+
+
+
+
 
 
 
@@ -195,10 +198,9 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
             Log.d(TAG, "the schedule result is Error")
             Log.e(TAG, "the schedule result is ${result.message}")
 
-            Text(
-                text = result.message,
-                color = Color.Red
-            )
+            showError(result.message){
+                viewModel.resetScheduleResult()
+            }
         }
         is NetworkResponse.Loading -> {
             Log.d(TAG, "the schedule result is Loading")
@@ -266,6 +268,7 @@ fun PaginationSelector(
 
 @Composable()
 fun table(scheduleData: ScheduleData) {
+    scheduleData.time[0].day
     ElevatedCard (
         modifier = Modifier
             .fillMaxWidth()
@@ -303,6 +306,7 @@ fun table(scheduleData: ScheduleData) {
                         val stroke = 2.dp.toPx()
                         val borderColor = Color.Black
 
+
 //                        Right border
                         drawLine(borderColor, Offset(size.width, 0f), Offset(size.width, size.height), stroke/2)
 
@@ -337,6 +341,7 @@ fun table(scheduleData: ScheduleData) {
 
             scheduleData.time.forEach { time ->
                 TableRowElements(weekDays[time.day].toString(), time.start_time + "-" + time.end_time)
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -436,3 +441,27 @@ fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleD
 private fun Preview() {
     Schedule()
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
