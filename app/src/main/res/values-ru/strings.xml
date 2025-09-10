@@ -32,6 +32,7 @@
     <string name="All">Все</string>
     <string name="TIME">Время</string>
     <string name="DAY">День</string>
+    <string name="CLASSROOM">класс</string>
     <string-array name="week_days">
         <item>Пн</item>
         <item>Вт</item>
@@ -48,6 +49,8 @@
     <string name="status">Статус</string>
     <string name="Groups">Группа</string>
     <string name="Student">Студент</string>
+    <string name="Edit_profile">Редактировать профиль</string>
+
 
     <string name="press_again_to_exit">Нажмите ещё раз для выхода</string>
 </resources>

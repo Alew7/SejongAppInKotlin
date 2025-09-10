@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -153,12 +154,7 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
         ScheduleScreen(scheduleViewModel, selectedPage)
 
 
-
-
     }
-  
-
-
 }
 
 @Composable
@@ -311,6 +307,13 @@ fun table(scheduleData: ScheduleData) {
                     fontSize = 16.sp,
                     color = Color.Gray
                 )
+                Text (
+                    text = context.getString(R.string.CLASSROOM),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+
 
             }
 
@@ -321,16 +324,21 @@ fun table(scheduleData: ScheduleData) {
             )
 
             // Список дней
-            scheduleData.time.forEachIndexed { index, time ->
+            scheduleData.time.forEachIndexed { index, time,  ->
                 TableRowElements(
                     day = weekDays[time.day].toString(),
-                    time = "${time.start_time} - ${time.end_time}"
+                    time = "${time.start_time} - ${time.end_time}",
+                    classRoom = "${time.classroom}"
+
+
                 )
 
                 if (index != scheduleData.time.lastIndex) {
                     Divider(color = Color(0xFFE0E0E0), thickness = 1.dp)
                 }
             }
+
+
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -349,7 +357,7 @@ fun table(scheduleData: ScheduleData) {
 }
 
 @Composable
-fun TableRowElements(day: String, time: String) {
+fun TableRowElements(day: String, time: String,classRoom: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -364,6 +372,11 @@ fun TableRowElements(day: String, time: String) {
         )
         Text(
             text = time,
+            fontSize = 16.sp,
+            color = Color(0xFF424242)
+        )
+        Text (
+            text = classRoom,
             fontSize = 16.sp,
             color = Color(0xFF424242)
         )

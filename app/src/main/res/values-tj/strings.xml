@@ -35,6 +35,7 @@
     <string name="All">Ҳама</string>
     <string name="TIME">Вакт</string>
     <string name="DAY">Руз</string>
+    <string name="CLASSROOM">Синф</string>
     <string-array name="week_days">
         <item>Дш</item>
         <item>Сш</item>
@@ -52,6 +53,10 @@
     <string name="Groups">Гурӯҳ</string>
     <string name="Student">донишҷӯ</string>
     <string name="Email">почтаи электронӣ</string>
+    <string name="Edit_profile">Таҳрир кардани профил</string>
+
+
+
 
     <string name="press_again_to_exit">Барои баромадан боз як бор пахш кунед</string>
 </resources>

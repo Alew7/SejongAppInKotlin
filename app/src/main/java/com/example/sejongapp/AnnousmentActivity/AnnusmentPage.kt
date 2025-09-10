@@ -207,8 +207,8 @@ fun AnnousmentDetailPage() {
         }
     }
 
-    if (showDialog) { 
-        ImageGalleryDialog(images  = images, onDismiss = {showDialog = false})
+    if (showDialog) {
+        ImageGalleryDialog(images = images, onDismiss = { showDialog = false })
     }
 }
 
