@@ -1,7 +1,7 @@
 package com.example.sejongapp.NavBar
 
 
-import LocalData.deletToken
+import LocalData.deleteToken
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -47,8 +46,6 @@ import com.example.sejongapp.components.Pages.HomePage
 import com.example.sejongapp.components.Pages.Schedule
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
-import com.example.sejongapp.SpleshLoginPages.MoveToMainActivity
-import com.example.sejongapp.models.DataClasses.UserData
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.WarmBeige
@@ -56,7 +53,6 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 
 const val TAG = "TAG_NavBar"
@@ -177,7 +173,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                                 interactionSource = remember { MutableInteractionSource() }
                             )
                             {
-                                deletToken(context)
+                                deleteToken(context)
                             }
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically

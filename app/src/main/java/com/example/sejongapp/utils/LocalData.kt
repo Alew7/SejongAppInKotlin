@@ -2,7 +2,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.util.Log
-import androidx.core.content.ContextCompat.startActivity
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.models.DataClasses.UserData
 
@@ -27,7 +26,7 @@ object LocalData {
 //        startActivity(context, intent, null)
     }
 
-    fun deletToken (context: Context) {
+    fun deleteToken (context: Context) {
         Log.i("Token_TAG", "Trying to delete the token!")
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
         val editor = prefs.edit()

@@ -164,6 +164,9 @@ fun ProfilePage() {
             EditUserDialog(
                 userData = userData,
                 onDismiss = { showEditDialog = false },
+                onError = { errorMessage ->
+
+                },
                 onSave = { newUserData ->
                     Log.d(TAG, "The UserData was changed to ${newUserData}")
                     userViewModel.changeUserData(LocalData.getSavedToken(context),newUserData)

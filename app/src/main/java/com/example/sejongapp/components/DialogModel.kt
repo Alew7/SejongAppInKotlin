@@ -1,14 +1,20 @@
 package com.example.sejongapp.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -29,8 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.UserData
-import com.example.sejongapp.models.ViewModels.UserViewModel
-import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.ui.theme.deepBlack
@@ -97,11 +101,14 @@ fun showError(errorMessage: String, onDismiss: () -> Unit) {
 fun EditUserDialog(
     userData: UserData,
     onDismiss: () -> Unit,
-    onSave: (UserData) -> Unit
+    onSave: (UserData) -> Unit,
+    onError: (String) -> Unit
 ) {
     var UsernameState by remember { mutableStateOf(userData.username) }
     var emailState by remember { mutableStateOf(userData.email) }
-
+    var oldPassword by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
+    var changePasswordCheckedState by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -110,7 +117,7 @@ fun EditUserDialog(
         tonalElevation = 8.dp,
         title = {
             Text(
-                text = "Edit User Info",
+                text = LocalContext.current.getString(R.string.Edit_profile),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = deepBlack
@@ -120,14 +127,15 @@ fun EditUserDialog(
             Column(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-
+//                Username
                 OutlinedTextField(
                     value = UsernameState,
                     onValueChange = { UsernameState = it },
-                    label = { Text("Username") },
+                    label = { Text(LocalContext.current.getString(R.string.username)) },
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true
                 )
+//                Email
                 OutlinedTextField(
                     value = emailState,
                     onValueChange = { emailState = it },
@@ -135,11 +143,61 @@ fun EditUserDialog(
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true
                 )
+
+
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { changePasswordCheckedState = !changePasswordCheckedState }
+                        .padding(vertical = 8.dp, horizontal = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = changePasswordCheckedState,
+                        onCheckedChange = { changePasswordCheckedState = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.primary,
+                            uncheckedColor = Color.Gray
+                        )
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Change password",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+
+                if (changePasswordCheckedState){
+
+//                 Old Password
+                    OutlinedTextField(
+                        value = oldPassword,
+                        onValueChange = { oldPassword = it },
+                        label = { Text("Your old password") },
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true
+                    )
+//                    NewPassword
+                    OutlinedTextField(
+                        value = newPassword,
+                        onValueChange = { newPassword = it },
+                        label = { Text("Your new password") },
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true
+                    )
+                }
+
             }
         },
         confirmButton = {
             Button(
                 onClick = {
+
+
                     val newUserData = UserData(
                         username = UsernameState,
                         email = emailState,
@@ -148,7 +206,18 @@ fun EditUserDialog(
                         avatar = userData.avatar,
                         fullname = userData.fullname
                     )
-                    onSave(newUserData)
+
+                    if (changePasswordCheckedState){
+                        if (oldPassword.isEmpty() || newPassword.isEmpty()){
+                            onError("Please fill all the fields")
+                        }
+                        else{
+                            onSave(newUserData)
+                        }
+                    }
+                    else{
+                        onSave(newUserData)
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = primaryColor,
