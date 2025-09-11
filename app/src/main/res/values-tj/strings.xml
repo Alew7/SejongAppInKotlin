@@ -35,7 +35,7 @@
     <string name="All">Ҳама</string>
     <string name="TIME">Вакт</string>
     <string name="DAY">Руз</string>
-    <string name="CLASSROOM">Синф</string>
+    <string name="CLASS">Синф</string>
     <string-array name="week_days">
         <item>Дш</item>
         <item>Сш</item>

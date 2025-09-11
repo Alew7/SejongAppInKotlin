@@ -34,7 +34,7 @@
     <string name="All">All</string>
     <string name="TIME">TIME</string>
     <string name="DAY">DAY</string>
-    <string name="CLASSROOM">CLASSROOM</string>
+    <string name="CLASS">CLASS</string>
     
     <string-array name="week_days">
         <item>MON</item>

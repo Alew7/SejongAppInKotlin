@@ -308,7 +308,7 @@ fun table(scheduleData: ScheduleData) {
                     color = Color.Gray
                 )
                 Text (
-                    text = context.getString(R.string.CLASSROOM),
+                    text = context.getString(R.string.CLASS),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                     color = Color.Gray

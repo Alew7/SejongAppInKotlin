@@ -31,7 +31,7 @@
     <string name="All">모두</string>
     <string name = "DAY">날</string>
     <string name="TIME">시간</string>
-    <string name="CLASSROOM">교실</string>
+    <string name="CLASS">교실</string>
     <string-array name="week_days">
         <item>월</item>
         <item>화</item>

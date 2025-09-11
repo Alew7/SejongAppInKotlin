@@ -28,6 +28,7 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
 import com.example.sejongapp.components.Pages.TAG
@@ -271,12 +272,12 @@ fun AnnousmentCard(annData: AnnouncementData, onClick: () -> Unit) {
     }
 }
 
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//private fun Preview() {
-//    AnnousmentPage()
-//}
-//
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun Preview() {
+    AnnousmentPage()
+}
+
 //
 //@Preview(
 //    name = "📱 Small Phone",
