@@ -40,12 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sejongapp.R
 import com.example.sejongapp.components.ImageGalleryDialog
+import com.example.sejongapp.models.DataClasses.AnnouncementData
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
 
 @Composable
-fun AnnousmentDetailPage() {
+fun AnnousmentDetailPage(annData : AnnouncementData) {
 
     val text_size = 15.sp
     val scrollState = rememberScrollState()
@@ -118,31 +119,14 @@ fun AnnousmentDetailPage() {
                     }
                 }
 
-//                Image(
-//                    painter = painterResource(R.drawable.ic_back),
-//                    contentDescription = "ic_back",
-//                    modifier = Modifier
-//                        .size(55.dp)
-//                        .padding(top = 20.dp, start = 10.dp)
-//                        .clickable  (
-//                            interactionSource = remember { MutableInteractionSource() },
-//                            indication = null
-//                        )
-//                        {
-//                            (context as? ComponentActivity)?.finish()
-//                        }
-//                )
-
-
-
             }
             Text(
-                text = "11.02.2025",
+                text = annData.time_posted,
                 modifier = Modifier
                     .padding(top = 10.dp,start = 15.dp)
             )
             Text (
-                text = "Dushanbe 3 Sejong Institute: A\nHub of Cultural Exchange and\nLanguage Mastery",
+                text = annData.title?: "NULL",
                 fontWeight = FontWeight.Bold,
                 fontSize = 25.sp,
                 modifier = Modifier
@@ -196,7 +180,7 @@ fun AnnousmentDetailPage() {
 
                 }
                 Text (
-                    text = "In the heart of Dushanbe, the Dushanbe 3 Sejong\nInstitute stands as a vibrant center for the promotion\nof Korean language and culture, fostering a deeper\nunderstanding between Tajikistan and South Korea.\nSince its establishment,the instite has witnessed\n a remarkable surge in interest, with students of all ages\neagerto explore the rich tapestry of Korean\ntraditions.\n   The institute's comprehensive curreculum extends\nbeyond basic language instruction, offering a diverse\nrange of programs that delve  into the intricaries of\nKorean history, art, and contemporary culture.From\ntraditional calligraphy and cooking classes to modern\nK-pop dance workshops,the Sejong Institute\nprovides a holistic cultural experience.",
+                    text = annData.content?: "NULL",
                     fontSize = text_size,
 
                     )
@@ -213,11 +197,11 @@ fun AnnousmentDetailPage() {
 
 
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun Preview () {
-    AnnousmentDetailPage()
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//private fun Preview () {
+//    AnnousmentDetailPage()
+//}
 
 
 
