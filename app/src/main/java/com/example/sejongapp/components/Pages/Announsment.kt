@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -208,15 +209,18 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(announcementData.size) { index ->
-                    AnnousmentCard (announcementData[index]){
+                items(
+                    items = announcementData,
+                    key = { it.custom_id ?: "" }
+                ) { ann ->
+                    AnnousmentCard(ann) {
                         val intent = Intent(context, AnnousmentActivity::class.java)
-                        Log.i(TAG, "AnnouncementPage: the data is in the var and its ${announcementData[index]}")
-                        intent.putExtra("AnnData", (announcementData[index]))
+                        intent.putExtra("AnnData", ann)
                         context.startActivity(intent)
                     }
                 }
             }
+
         }
     }
 
@@ -260,12 +264,12 @@ fun AnnousmentCard(annData: AnnouncementData, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = annData.content ?: "",
+                    text = annData.content ?.substring(0,50)?: "",
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 Text(
-                    text = annData.time_posted ?: "",
+                    text = annData.time_posted ?.substring(0,10) ?: "",
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 8.dp)
                 )

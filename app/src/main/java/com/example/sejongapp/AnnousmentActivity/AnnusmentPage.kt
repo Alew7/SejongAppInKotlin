@@ -121,7 +121,7 @@ fun AnnousmentDetailPage(annData : AnnouncementData) {
 
             }
             Text(
-                text = annData.time_posted,
+                text = annData.time_posted?.substring(0,10) ?: "NULL",
                 modifier = Modifier
                     .padding(top = 10.dp,start = 15.dp)
             )
@@ -182,7 +182,8 @@ fun AnnousmentDetailPage(annData : AnnouncementData) {
                 Text (
                     text = annData.content?: "NULL",
                     fontSize = text_size,
-
+                    modifier = Modifier
+                        .padding(start = 15.dp, end = 15.dp)
                     )
 
             }
