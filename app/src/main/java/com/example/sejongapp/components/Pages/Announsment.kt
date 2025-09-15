@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberImagePainter
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
 import com.example.sejongapp.components.Pages.TAG
 import com.example.sejongapp.components.showError
@@ -44,6 +45,8 @@ import com.example.sejongapp.utils.NavigationScreenEnum
 
 
 const val TAG = "AnnouncmentsViewModel_TAG"
+const val BASE_URL = "http://192.168.0.110:8000/media/announcementimage/"
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -252,7 +255,7 @@ fun AnnousmentCard(annData: AnnouncementData, onClick: () -> Unit) {
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
             Image(
-                painter = painterResource(R.drawable.annousment_img),
+                painter = rememberImagePainter(BASE_URL + (annData.images.firstOrNull() ?: "")),
                 contentDescription = "annousment_img",
                 modifier = Modifier.size(64.dp)
             )
