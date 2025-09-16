@@ -254,8 +254,9 @@ fun AnnousmentCard(annData: AnnouncementData, onClick: () -> Unit) {
         )
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
+            val firstImage = annData.images?.firstOrNull()?.let { fixGoogleDriveLink(it) }
             Image(
-                painter = rememberImagePainter(BASE_URL + (annData.images.firstOrNull() ?: "")),
+                painter = rememberImagePainter(firstImage),
                 contentDescription = "annousment_img",
                 modifier = Modifier.size(64.dp)
             )
@@ -286,6 +287,16 @@ fun AnnousmentCard(annData: AnnouncementData, onClick: () -> Unit) {
 private fun Preview() {
     AnnousmentPage()
 }
+
+fun fixGoogleDriveLink(url: String): String {
+    return if (url.contains("drive.google.com/thumbnail?id=")) {
+        val id = url.substringAfter("id=")
+        "https://drive.google.com/uc?id=$id"
+    } else {
+        url
+    }
+}
+
 
 //
 //@Preview(
