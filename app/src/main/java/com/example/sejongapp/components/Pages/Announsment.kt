@@ -37,7 +37,6 @@ import com.example.sejongapp.components.Pages.TAG
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.AnnouncementData
 import com.example.sejongapp.models.ViewModels.AnnouncmentsViewModel
-import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.brightBackgroundColor
 import com.example.sejongapp.ui.theme.darkGray
@@ -45,7 +44,7 @@ import com.example.sejongapp.utils.NavigationScreenEnum
 
 
 const val TAG = "AnnouncmentsViewModel_TAG"
-const val BASE_URL = "http://192.168.0.110:8000/media/announcementimage/"
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -296,53 +295,3 @@ fun fixGoogleDriveLink(url: String): String {
         url
     }
 }
-
-
-//
-//@Preview(
-//    name = "📱 Small Phone",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 320,
-//    heightDp = 568
-//)
-//@Composable
-//private fun PreviewSmallPhone() {
-//    AnnousmentPage()
-//}
-//
-//@Preview(
-//    name = "📱 Standard Phone",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 393,
-//    heightDp = 851
-//)
-//@Composable
-//private fun PreviewStandardPhone() {
-//    AnnousmentPage()
-//}
-//
-//@Preview(
-//    name = "📱 Large Phone / Fold",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 600,
-//    heightDp = 960
-//)
-//@Composable
-//private fun PreviewLargePhone() {
-//    AnnousmentPage()
-//}
-//
-//@Preview(
-//    name = "💻 Tablet",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 800,
-//    heightDp = 1280
-//)
-//@Composable
-//private fun PreviewTablet() {
-//    AnnousmentPage()
-//}
