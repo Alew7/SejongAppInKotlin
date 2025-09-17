@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -40,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import coil.compose.rememberImagePainter
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.UserData
 import com.example.sejongapp.models.ViewModels.UserViewModel
@@ -241,38 +245,20 @@ fun LoadingDialog(
 
 
 
-    @Composable
-    fun ImageGalleryDialog(images: List<Int>, onDismiss: () -> Unit) {
-        Dialog(onDismissRequest = onDismiss) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                IconButton(onClick = onDismiss) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = "Close",
-                        tint = Color.White
-                    )
-                }
-
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-
-                ) {
-                    itemsIndexed(images) { index, img ->
-                        Image(
-                            painter = painterResource(img),
-                            contentDescription = "gallery_img $index",
-                            modifier = Modifier.size(200.dp)
-                        )
-                    }
-                }
-
+@Composable
+fun ImageGalleryDialog(images: List<String>, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = { onDismiss() }) {
+        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+            items(images) { url ->
+                Image(
+                    painter = rememberImagePainter(url),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(150.dp)
+                        .padding(8.dp)
+                )
             }
-
-
         }
     }
+}
+

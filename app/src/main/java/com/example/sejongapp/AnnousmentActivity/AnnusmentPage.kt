@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import com.example.sejongapp.R
 import com.example.sejongapp.components.ImageGalleryDialog
 import com.example.sejongapp.models.DataClasses.AnnouncementData
 import com.example.sejongapp.ui.theme.backgroundColor
@@ -33,34 +32,25 @@ import com.example.sejongapp.ui.theme.primaryColor
 
 @Composable
 fun AnnousmentDetailPage(annData: AnnouncementData) {
-
     val textSize = 15.sp
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val images = annData.images ?: emptyList()
 
-    val image = listOf(
-        R.drawable.annousment_img,
-        R.drawable.annousment_img,
-        R.drawable.annousment_img,
-        R.drawable.annousment_img,
-        R.drawable.annousment_img
-    )
-
     var showDialog by remember { mutableStateOf(false) }
+    var selectedImage by remember { mutableStateOf<String?>(null) }
 
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor)
+            .background(backgroundColor) // твой фон, я не трогаю
     ) {
-        // Адаптивное количество колонок
         val columns = if (maxWidth < 400.dp) 2 else 3
 
         Column(
             modifier = Modifier.verticalScroll(scrollState)
         ) {
-            // Верхняя панель с кнопкой назад
+            // Верхняя панель
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -113,7 +103,7 @@ fun AnnousmentDetailPage(annData: AnnouncementData) {
                 modifier = Modifier.padding(start = 15.dp)
             )
 
-            // Галерея картинок
+            // Галерея
             if (images.isNotEmpty()) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(columns),
@@ -128,7 +118,10 @@ fun AnnousmentDetailPage(annData: AnnouncementData) {
                             modifier = Modifier
                                 .size(120.dp)
                                 .padding(5.dp)
-                                .clickable { showDialog = true }
+                                .clickable {
+                                    selectedImage = url
+                                    showDialog = true
+                                }
                         )
                     }
                 }
@@ -143,8 +136,8 @@ fun AnnousmentDetailPage(annData: AnnouncementData) {
         }
     }
 
-    // Диалог с просмотром фото
-    if (showDialog) {
-        ImageGalleryDialog(images = image, onDismiss = { showDialog = false })
+    // Диалог
+    if (showDialog && selectedImage != null) {
+        ImageGalleryDialog(images = images, onDismiss = { showDialog = false })
     }
 }
