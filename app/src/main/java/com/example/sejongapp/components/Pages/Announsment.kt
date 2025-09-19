@@ -171,6 +171,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
     val result by announcementView.announcments.observeAsState(NetworkResponse.Idle)
 
+
     when(result){
         is NetworkResponse.Error -> {
             Log.e(TAG, "AnnouncementPage: Got an error in fetching data")
@@ -203,27 +204,61 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
             Log.i(TAG, "AnnouncementPage: the data is in the var and its $announcementData")
             Log.i(TAG, "AnnouncementPage: the data size is ${announcementData.size}")
 
-            // Список карточек
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 110.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(
-                    items = announcementData,
-                    key = { it.custom_id ?: "" }
-                ) { ann ->
-                    AnnousmentCard(ann) {
-                        val intent = Intent(context, AnnousmentActivity::class.java)
-                        intent.putExtra("AnnData", ann)
-                        context.startActivity(intent)
+            val filteredList = if (searchText.isNotBlank()) {
+                announcementData.filter { ann ->
+                    ann.title.contains(searchText, ignoreCase = true) ||
+                            ann.content.contains(searchText, ignoreCase = true)
+                }
+            } else {
+                announcementData
+            }
+            if (filteredList.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 100.dp),
+                        contentAlignment = Alignment.Center )
+                {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_search),
+                            contentDescription = null,
+                            tint = Color.Gray,
+                            modifier = Modifier.size(64.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "Ничего не найдено",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Gray
+                        )
                     }
                 }
-            }
+            } else {
+                // Список карточек
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 110.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(
+                        items = announcementData,
+                        key = { it.custom_id ?: "" }
+                    ) { ann ->
+                        AnnousmentCard(ann) {
+                            val intent = Intent(context, AnnousmentActivity::class.java)
+                            intent.putExtra("AnnData", ann)
+                            context.startActivity(intent)
+                        }
+                    }
+                }
 
+            }
         }
+
     }
 
 
