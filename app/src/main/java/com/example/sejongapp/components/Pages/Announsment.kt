@@ -33,9 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
-import com.example.sejongapp.components.Pages.TAG
 import com.example.sejongapp.components.showError
-import com.example.sejongapp.models.DataClasses.AnnouncementData
+import com.example.sejongapp.models.DataClasses.AnnouncementData_old
 import com.example.sejongapp.models.ViewModels.AnnouncmentsViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.brightBackgroundColor
@@ -198,9 +197,9 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
         }
         is NetworkResponse.Success -> {
             Log.v(TAG, "AnnouncementPage: Success got data!")
-            Log.i(TAG, "AnnouncementPage: the fetched data is ${(result as NetworkResponse.Success<ArrayList<AnnouncementData>>).data}")
+            Log.i(TAG, "AnnouncementPage: the fetched data is ${(result as NetworkResponse.Success<ArrayList<AnnouncementData_old>>).data}")
 
-            val announcementData: ArrayList<AnnouncementData> = (result as NetworkResponse.Success<ArrayList<AnnouncementData>>).data
+            val announcementData: ArrayList<AnnouncementData_old> = (result as NetworkResponse.Success<ArrayList<AnnouncementData_old>>).data
             Log.i(TAG, "AnnouncementPage: the data is in the var and its $announcementData")
             Log.i(TAG, "AnnouncementPage: the data size is ${announcementData.size}")
 
@@ -268,7 +267,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
 
 @Composable
-fun AnnousmentCard(annData: AnnouncementData, onClick: () -> Unit) {
+fun AnnousmentCard(annData: AnnouncementData_old, onClick: () -> Unit) {
 
 
 

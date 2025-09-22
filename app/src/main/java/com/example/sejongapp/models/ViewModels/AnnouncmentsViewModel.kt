@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sejongapp.models.DataClasses.AnnouncementData
+
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.retrofitAPI.RetrofitInstance
 import kotlinx.coroutines.launch
@@ -16,8 +17,8 @@ class AnnouncmentsViewModel : ViewModel() {
 
     private val announcmentApi = RetrofitInstance.AnnouncementsApi
 
-    private val _announcments = MutableLiveData<NetworkResponse<ArrayList<AnnouncementData>>>()
-    val announcments: MutableLiveData<NetworkResponse<ArrayList<AnnouncementData>>> = _announcments
+    private val _announcments = MutableLiveData<NetworkResponse<AnnouncementData>>()
+    val announcments: MutableLiveData<NetworkResponse<AnnouncementData>> = _announcments
 
 
     fun getAllannouncments() {

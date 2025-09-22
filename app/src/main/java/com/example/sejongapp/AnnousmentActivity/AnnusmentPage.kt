@@ -26,13 +26,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.components.ImageGalleryDialog
-import com.example.sejongapp.models.DataClasses.AnnouncementData
+import com.example.sejongapp.models.DataClasses.AnnouncementData_old
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
 @Composable
-fun AnnousmentDetailPage(annData: AnnouncementData) {
+fun AnnousmentDetailPage(annData: AnnouncementData_old) {
     val textSize = 15.sp
+//    val imgSize = 120.dp
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val images = annData.images ?: emptyList()
@@ -115,9 +116,11 @@ fun AnnousmentDetailPage(annData: AnnouncementData) {
                         Image(
                             painter = rememberImagePainter(url),
                             contentDescription = "announcment_img",
+//                            contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .size(120.dp)
                                 .padding(5.dp)
+//                                .clip(RoundedCornerShape(8.dp))
                                 .clickable {
                                     selectedImage = url
                                     showDialog = true

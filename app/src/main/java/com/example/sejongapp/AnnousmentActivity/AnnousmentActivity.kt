@@ -5,8 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.sejongapp.SpleshLoginPages.LoginScreen
-import com.example.sejongapp.models.DataClasses.AnnouncementData
+import com.example.sejongapp.models.DataClasses.AnnouncementData_old
 
 const val TAG = "AnnousmentActivity_TAG"
 
@@ -15,7 +14,7 @@ class AnnousmentActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         Log.i(TAG, "onCreate: Got the intent");
-        val annData = intent.getParcelableExtra<AnnouncementData>("AnnData")
+        val annData = intent.getParcelableExtra<AnnouncementData_old>("AnnData")
 
         Log.i(TAG, "onCreate: Got the intent with data $annData");
 
