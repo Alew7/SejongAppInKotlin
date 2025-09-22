@@ -26,12 +26,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.components.ImageGalleryDialog
-import com.example.sejongapp.models.DataClasses.AnnouncementData_old
+import com.example.sejongapp.models.DataClasses.AnnouncementDateItem
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
 @Composable
-fun AnnousmentDetailPage(annData: AnnouncementData_old) {
+fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
     val textSize = 15.sp
 //    val imgSize = 120.dp
     val scrollState = rememberScrollState()
@@ -99,7 +99,7 @@ fun AnnousmentDetailPage(annData: AnnouncementData_old) {
 
             // Заголовок
             Text(
-                text = annData.title ?: "NULL",
+                text = annData.title.rus ?: "NULL",
                 fontSize = 25.sp,
                 modifier = Modifier.padding(start = 15.dp)
             )
@@ -132,7 +132,7 @@ fun AnnousmentDetailPage(annData: AnnouncementData_old) {
 
             // Контент
             Text(
-                text = annData.content ?: "NULL",
+                text = annData.content.rus ?: "NULL",
                 fontSize = textSize,
                 modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp)
             )

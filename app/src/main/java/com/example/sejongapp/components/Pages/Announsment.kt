@@ -34,7 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
 import com.example.sejongapp.components.showError
-import com.example.sejongapp.models.DataClasses.AnnouncementData_old
+import com.example.sejongapp.models.DataClasses.AnnouncementDateItem
 import com.example.sejongapp.models.ViewModels.AnnouncmentsViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.brightBackgroundColor
@@ -197,44 +197,12 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
         }
         is NetworkResponse.Success -> {
             Log.v(TAG, "AnnouncementPage: Success got data!")
-            Log.i(TAG, "AnnouncementPage: the fetched data is ${(result as NetworkResponse.Success<ArrayList<AnnouncementData_old>>).data}")
+            Log.i(TAG, "AnnouncementPage: the fetched data is ${(result as NetworkResponse.Success<AnnouncementDateItem>).data}")
 
-            val announcementData: ArrayList<AnnouncementData_old> = (result as NetworkResponse.Success<ArrayList<AnnouncementData_old>>).data
+            val announcementData: List<AnnouncementDateItem> = (result as NetworkResponse.Success<List<AnnouncementDateItem>>).data
             Log.i(TAG, "AnnouncementPage: the data is in the var and its $announcementData")
             Log.i(TAG, "AnnouncementPage: the data size is ${announcementData.size}")
 
-            val filteredList = if (searchText.isNotBlank()) {
-                announcementData.filter { ann ->
-                    ann.title.contains(searchText, ignoreCase = true) ||
-                            ann.content.contains(searchText, ignoreCase = true)
-                }
-            } else {
-                announcementData
-            }
-            if (filteredList.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 100.dp),
-                        contentAlignment = Alignment.Center )
-                {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_search),
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.size(64.dp)
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = "Ничего не найдено",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.Gray
-                        )
-                    }
-                }
-            } else {
                 // Список карточек
                 LazyColumn(
                     modifier = Modifier
@@ -245,7 +213,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                 ) {
                     items(
                         items = announcementData,
-                        key = { it.custom_id ?: "" }
+                        key = { it.custom_id}
                     ) { ann ->
                         AnnousmentCard(ann) {
                             val intent = Intent(context, AnnousmentActivity::class.java)
@@ -255,7 +223,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                     }
                 }
 
-            }
+
         }
 
     }
@@ -267,7 +235,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
 
 @Composable
-fun AnnousmentCard(annData: AnnouncementData_old, onClick: () -> Unit) {
+fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
 
 
 
@@ -295,18 +263,19 @@ fun AnnousmentCard(annData: AnnouncementData_old, onClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
+
                 Text(
-                    text = annData.title ?: "",
+                    text = annData.title.rus ?: "",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = annData.content ?.substring(0,50)?: "",
+                    text = annData.content.rus,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 Text(
-                    text = annData.time_posted ?.substring(0,10) ?: "",
+                    text = annData.time_posted,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 8.dp)
                 )
