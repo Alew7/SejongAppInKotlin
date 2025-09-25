@@ -208,8 +208,8 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 110.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(top = 110.dp), // 110
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp,  bottom = 100.dp), // 80
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(
@@ -244,6 +244,7 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(8.dp)
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
@@ -274,7 +275,10 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
                 Text(
                     text = annData.content.getLocalized(context),
                     fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = 4.dp),
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+
                 )
                 Text(
                     text = annData.time_posted,
