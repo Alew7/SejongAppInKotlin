@@ -117,11 +117,10 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                         Image(
                             painter = rememberImagePainter(url),
                             contentDescription = "announcment_img",
-//                            contentScale = ContentScale.Crop,
+
                             modifier = Modifier
                                 .size(120.dp)
                                 .padding(5.dp)
-//                                .clip(RoundedCornerShape(8.dp))
                                 .clickable {
                                     selectedImage = url
                                     showDialog = true
