@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.components.ImageGalleryDialog
 import com.example.sejongapp.models.DataClasses.AnnouncementDateItem
 import com.example.sejongapp.ui.theme.backgroundColor
@@ -44,7 +45,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor) // твой фон, я не трогаю
+            .background(backgroundColor)
     ) {
         val columns = if (maxWidth < 400.dp) 2 else 3
 
@@ -99,7 +100,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
 
             // Заголовок
             Text(
-                text = annData.title.rus ?: "NULL",
+                text = annData.title.getLocalized(context) ?: "NULL",
                 fontSize = 25.sp,
                 modifier = Modifier.padding(start = 15.dp)
             )
@@ -132,7 +133,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
 
             // Контент
             Text(
-                text = annData.content.rus ?: "NULL",
+                text = annData.content.getLocalized(context) ?: "NULL",
                 fontSize = textSize,
                 modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp)
             )

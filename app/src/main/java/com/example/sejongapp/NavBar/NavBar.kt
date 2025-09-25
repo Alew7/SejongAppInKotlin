@@ -48,6 +48,8 @@ import com.example.sejongapp.components.Pages.Schedule
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.SpleshLoginPages.MoveToMainActivity
+import com.example.sejongapp.models.DataClasses.Content
+import com.example.sejongapp.models.DataClasses.Title
 import com.example.sejongapp.models.DataClasses.UserData
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
@@ -290,6 +292,27 @@ fun changeAppLanguage(context: Context, lang: String) {
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     context.startActivity(intent)
 }
+
+fun Title.getLocalized(context: Context): String {
+    return when (LocalData.getSavedLanguage(context)) {
+        "RUS" -> this.rus
+        "ENG" -> this.eng
+        "KOR" -> this.kor
+        "TAJ" -> this.taj
+        else -> this.rus // по умолчанию русский
+    }
+}
+
+fun Content.getLocalized(context: Context): String {
+    return when (LocalData.getSavedLanguage(context)) {
+        "RUS" -> this.rus
+        "ENG" -> this.eng
+        "KOR" -> this.kor
+        "TAJ" -> this.taj
+        else -> this.rus
+    }
+}
+
 
 
 

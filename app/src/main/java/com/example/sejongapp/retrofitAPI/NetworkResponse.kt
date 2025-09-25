@@ -1,7 +1,5 @@
 package com.example.sejongapp.retrofitAPI
 
-import com.example.sejongapp.models.DataClasses.ScheduleData
-
 
 sealed class NetworkResponse<out T> {
     data class Success<out T>(val data: T): NetworkResponse<T>()

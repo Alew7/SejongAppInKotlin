@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
+import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.AnnouncementDateItem
 import com.example.sejongapp.models.ViewModels.AnnouncmentsViewModel
@@ -238,6 +239,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
 
 
+    val context = LocalContext.current
 
     Card(
         modifier = Modifier
@@ -265,12 +267,12 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
             Column {
 
                 Text(
-                    text = annData.title.rus ?: "",
+                    text = annData.title.getLocalized(context),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = annData.content.rus,
+                    text = annData.content.getLocalized(context),
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 4.dp)
                 )
