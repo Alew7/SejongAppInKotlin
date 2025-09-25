@@ -210,7 +210,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                         .fillMaxSize()
                         .padding(top = 110.dp), // 110
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp,  bottom = 100.dp), // 80
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(5.dp) // 16.dp
                 ) {
                     items(
                         items = announcementData,
