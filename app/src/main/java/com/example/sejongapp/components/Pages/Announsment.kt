@@ -263,6 +263,8 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
                 painter = rememberImagePainter(firstImage),
                 contentDescription = "annousment_img",
                 modifier = Modifier.size(64.dp)
+
+
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {

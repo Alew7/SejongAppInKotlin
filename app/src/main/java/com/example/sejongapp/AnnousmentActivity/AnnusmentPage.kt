@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -106,6 +107,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
             )
 
             // Галерея
+
             if (images.isNotEmpty()) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(columns),
@@ -114,21 +116,30 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                         .heightIn(max = 400.dp)
                 ) {
                     items(images) { url ->
-                        Image(
-                            painter = rememberImagePainter(url),
-                            contentDescription = "announcment_img",
-
+                        Card(
                             modifier = Modifier
-                                .size(120.dp)
                                 .padding(5.dp)
+                                .size(120.dp)
                                 .clickable {
                                     selectedImage = url
                                     showDialog = true
-                                }
-                        )
+                                },
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                            colors = androidx.compose.material3.CardDefaults.cardColors(
+                                containerColor = androidx.compose.ui.graphics.Color.White // белая карточка
+                            ),
+                            elevation = androidx.compose.material3.CardDefaults.cardElevation(4.dp) // лёгкая тень
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(url),
+                                contentDescription = "announcement_img",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
                 }
             }
+
 
             // Контент
             Text(
