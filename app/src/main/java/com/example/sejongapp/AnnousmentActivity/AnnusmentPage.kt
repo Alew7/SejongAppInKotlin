@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
@@ -109,13 +111,17 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
             // Галерея
 
             if (images.isNotEmpty()) {
+                val maxVisible = if (images.size > 3) 3 else images.size
+
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(columns),
                     modifier = Modifier
                         .padding(10.dp)
                         .heightIn(max = 400.dp)
                 ) {
-                    items(images) { url ->
+                    items(maxVisible) { index ->
+                        val url = images[index]
+
                         Card(
                             modifier = Modifier
                                 .padding(5.dp)
@@ -124,17 +130,42 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                                     selectedImage = url
                                     showDialog = true
                                 },
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(12.dp),
                             colors = androidx.compose.material3.CardDefaults.cardColors(
-                                containerColor = androidx.compose.ui.graphics.Color.White // белая карточка
+                                containerColor = androidx.compose.ui.graphics.Color.White
                             ),
-                            elevation = androidx.compose.material3.CardDefaults.cardElevation(4.dp) // лёгкая тень
+                            elevation = androidx.compose.material3.CardDefaults.cardElevation(4.dp)
                         ) {
-                            Image(
-                                painter = rememberImagePainter(url),
-                                contentDescription = "announcement_img",
-                                modifier = Modifier.fillMaxSize()
-                            )
+                            Box {
+                                Image(
+                                    painter = rememberImagePainter(url),
+                                    contentDescription = "announcement_img",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(RoundedCornerShape(12.dp)),
+                                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                )
+
+                                // Если это последняя карточка и картинок > 3
+                                if (images.size > 3 && index == 2) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(
+                                                androidx.compose.ui.graphics.Color.Black
+                                                .copy(alpha = 0.5f),
+                                                shape = RoundedCornerShape(12.dp)
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = "+${images.size - 3}",
+                                            color = androidx.compose.ui.graphics.Color.White,
+                                            fontSize = 24.sp
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

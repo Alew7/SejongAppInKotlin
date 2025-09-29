@@ -28,6 +28,7 @@ import com.example.sejongapp.R
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -240,6 +241,7 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
 
 
     val context = LocalContext.current
+    val imgSize = 64.dp
 
     Card(
         modifier = Modifier
@@ -262,7 +264,8 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
             Image(
                 painter = rememberImagePainter(firstImage),
                 contentDescription = "annousment_img",
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(imgSize)
+                    .clip(RoundedCornerShape(15.dp))
 
 
             )
