@@ -110,7 +110,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                 // Дата
                 Text(
                     text = annData.time_posted?.substring(0, 10) ?: "NULL",
-                    fontFamily = FontFamily(Font(R.font.variablefont_wght)),
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 10.dp, start = 15.dp)
                 )
@@ -120,7 +120,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                 // Заголовок
                 Text(
                     text = annData.title.getLocalized(context) ?: "NULL",
-                    fontFamily = FontFamily(Font(R.font.variablefont_wght)),
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
                     fontWeight = FontWeight.Bold,
                     fontSize = 25.sp,
                     modifier = Modifier.padding(start = 15.dp)
@@ -228,7 +228,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                 // Контент (длинный текст)
                 Text(
                     text = annData.content.getLocalized(context) ?: "NULL",
-                    fontFamily = FontFamily(Font(R.font.variablefont_wght)),
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
                     fontWeight = FontWeight.Bold,
                     fontSize = textSize,
                     modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 20.dp)

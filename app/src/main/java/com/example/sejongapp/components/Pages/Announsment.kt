@@ -279,14 +279,14 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
 
                 Text(
                     text = annData.title.getLocalized(context),
-                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = annData.content.getLocalized(context),
                     fontSize = 12.sp,
-                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 4.dp),
                     maxLines = 1,
@@ -295,7 +295,7 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
                 )
                 Text(
                     text = annData.time_posted,
-                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
                     fontWeight = FontWeight.Bold,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 8.dp)
