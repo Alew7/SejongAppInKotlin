@@ -74,7 +74,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                             drawLine(
                                 color = primaryColor,
                                 start = Offset(0f, y),
-                                 end = Offset(size.width y),
+                                 end = Offset(size.widthgit   y),
                                 strokeWidth = strokeWidth
                             )
                         }
