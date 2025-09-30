@@ -88,4 +88,13 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.3.2")
 
 
+
+    // build.gradle (app)
+
+        implementation ("com.google.accompanist:accompanist-pager:0.31.5-beta") // последняя версия
+        implementation ("com.google.accompanist:accompanist-pager-indicators:0.31.5-beta")
+
+
+
+
 }

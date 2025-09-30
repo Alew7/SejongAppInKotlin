@@ -1,35 +1,31 @@
 package com.example.sejongapp.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -45,21 +41,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.UserData
-import com.example.sejongapp.models.ViewModels.UserViewModel
-import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.ui.theme.deepBlack
 import com.example.sejongapp.ui.theme.primaryColor
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.draw.clip
+import com.google.accompanist.pager.*
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
+
 
 
 @Composable
@@ -253,41 +261,136 @@ fun LoadingDialog(
 
 
 
+
+
+
+
+
+
+
 @Composable
 fun ImageGalleryDialog(images: List<String>, onDismiss: () -> Unit) {
-    var selectedImage by remember { mutableStateOf<String?>(null) }
+    var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
 
+    // Сетка миниатюр
     Dialog(onDismissRequest = { onDismiss() }) {
-        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ) {
             items(images) { url ->
-                Image(
-                    painter = rememberImagePainter(url),
-                    contentDescription = null,
+                Card(
                     modifier = Modifier
-                        .size(150.dp)
-                        .padding(8.dp)
-                        .clickable { selectedImage = url } // при клике выбираем изображение
-                )
+                        .padding(6.dp)
+                        .size(120.dp)
+                        .clickable { selectedImageIndex = images.indexOf(url) },
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(6.dp)
+                ) {
+                    Image(
+                        painter = rememberImagePainter(url),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
         }
     }
 
-    // Полноэкранное изображение
-    if (selectedImage != null) {
-        Dialog(onDismissRequest = { selectedImage = null }) {
+    // Полноэкранный просмотр с миниатюрами снизу
+    if (selectedImageIndex != null) {
+        val pagerState = rememberPagerState(initialPage = selectedImageIndex!!)
+
+        Dialog(
+            onDismissRequest = { selectedImageIndex = null },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(Color.Black.copy(alpha = 0.95f))
             ) {
-                ZoomableImage(url = selectedImage!!) // отдельная функция для зума
+                // Горизонтальный Pager для свайпа картинок
+                HorizontalPager(
+                    count = images.size,
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    ZoomableImage(
+                        url = images[page],
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.85f)
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                }
+
+                // Индикатор страницы сверху
+                Text(
+                    text = "${pagerState.currentPage + 1} / ${images.size}",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 24.dp)
+                )
+
+                // Кнопка закрытия
+                IconButton(
+                    onClick = { selectedImageIndex = null },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Close",
+                        tint = Color.White
+                    )
+                }
+
+                // Горизонтальный скролл миниатюр снизу
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 24.dp)
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    images.forEachIndexed { index, url ->
+                        Card(
+                            shape = RoundedCornerShape(50), // круглая миниатюра
+                            border = if (pagerState.currentPage == index) BorderStroke(2.dp, Color.White) else null,
+                            modifier = Modifier
+                                .size(60.dp)
+                                .clickable {
+                                    selectedImageIndex = index
+
+                                }
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(url),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
+                }
+                LaunchedEffect(selectedImageIndex) {
+                    selectedImageIndex?.let { pagerState.scrollToPage(it) }
+                }
             }
         }
     }
 }
 
 @Composable
-fun ZoomableImage(url: String) {
+fun ZoomableImage(url: String, modifier: Modifier = Modifier) {
     var scale by remember { mutableStateOf(1f) }
     val state = rememberTransformableState { zoomChange, _, _ ->
         scale *= zoomChange
@@ -296,16 +399,14 @@ fun ZoomableImage(url: String) {
     Image(
         painter = rememberImagePainter(url),
         contentDescription = null,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .transformable(state = state) // позволяет зумить
+        contentScale = ContentScale.Fit,
+        modifier = modifier
+            .transformable(state = state)
             .graphicsLayer(
                 scaleX = maxOf(1f, scale),
                 scaleY = maxOf(1f, scale)
             ),
-        contentScale = ContentScale.Fit
+
     )
 }
-
 

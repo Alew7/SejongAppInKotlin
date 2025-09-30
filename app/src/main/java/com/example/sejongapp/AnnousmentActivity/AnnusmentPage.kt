@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -74,7 +73,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                             drawLine(
                                 color = primaryColor,
                                 start = Offset(0f, y),
-                                 end = Offset(size.widthgit   y),
+                                 end = Offset(size.width, y),
                                 strokeWidth = strokeWidth
                             )
                         }
