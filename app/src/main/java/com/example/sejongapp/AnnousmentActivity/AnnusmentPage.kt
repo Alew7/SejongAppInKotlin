@@ -162,7 +162,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
 
                         }
                     } else {
-                        // 📋 Несколько элементов — сетка
+                        //asd
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(columns),
                             modifier = Modifier
@@ -225,7 +225,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
 
 
             item {
-                // Контент (длинный текст)
+
                 Text(
                     text = annData.content.getLocalized(context) ?: "NULL",
                     fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
