@@ -8,7 +8,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -37,7 +36,6 @@ import com.example.sejongapp.ui.theme.primaryColor
 @Composable
 fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
     val textSize = 15.sp
-//    val imgSize = 120.dp
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val images = annData.images ?: emptyList()

@@ -1,9 +1,15 @@
 package com.example.sejongapp.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +42,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -247,6 +255,8 @@ fun LoadingDialog(
 
 @Composable
 fun ImageGalleryDialog(images: List<String>, onDismiss: () -> Unit) {
+    var selectedImage by remember { mutableStateOf<String?>(null) }
+
     Dialog(onDismissRequest = { onDismiss() }) {
         LazyVerticalGrid(columns = GridCells.Fixed(2)) {
             items(images) { url ->
@@ -256,9 +266,46 @@ fun ImageGalleryDialog(images: List<String>, onDismiss: () -> Unit) {
                     modifier = Modifier
                         .size(150.dp)
                         .padding(8.dp)
+                        .clickable { selectedImage = url } // при клике выбираем изображение
                 )
             }
         }
     }
+
+    // Полноэкранное изображение
+    if (selectedImage != null) {
+        Dialog(onDismissRequest = { selectedImage = null }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+            ) {
+                ZoomableImage(url = selectedImage!!) // отдельная функция для зума
+            }
+        }
+    }
 }
+
+@Composable
+fun ZoomableImage(url: String) {
+    var scale by remember { mutableStateOf(1f) }
+    val state = rememberTransformableState { zoomChange, _, _ ->
+        scale *= zoomChange
+    }
+
+    Image(
+        painter = rememberImagePainter(url),
+        contentDescription = null,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .transformable(state = state) // позволяет зумить
+            .graphicsLayer(
+                scaleX = maxOf(1f, scale),
+                scaleY = maxOf(1f, scale)
+            ),
+        contentScale = ContentScale.Fit
+    )
+}
+
 
