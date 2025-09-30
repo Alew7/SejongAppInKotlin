@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
@@ -52,126 +53,132 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
             .fillMaxSize()
             .background(backgroundColor),
 
-    ) {
+        ) {
         val columns = if (maxWidth < 400.dp) 2 else 3
 
-        Column(
-            modifier = Modifier.verticalScroll(scrollState)
-
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor),
+            contentPadding = PaddingValues(bottom = 100.dp)
         ) {
-            // Верхняя панель
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 25.dp)
-                    .drawBehind {
-                        val strokeWidth = 2.dp.toPx()
-                        val y = size.height - strokeWidth / 2
-                        drawLine(
-                            color = primaryColor,
-                            start = Offset(0f, y),
-                            end = Offset(size.width, y),
-                            strokeWidth = strokeWidth
-                        )
-                    }
-            ) {
+            item {
+                // Верхняя панель
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
-                        .padding(top = 20.dp, start = 10.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            (context as? ComponentActivity)?.finish()
-                        },
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .padding(top = 25.dp)
+                        .drawBehind {
+                            val strokeWidth = 2.dp.toPx()
+                            val y = size.height - strokeWidth / 2
+                            drawLine(
+                                color = primaryColor,
+                                start = Offset(0f, y),
+                                end = Offset(size.width, y),
+                                strokeWidth = strokeWidth
+                            )
+                        }
                 ) {
-                    IconButton(onClick = {
-                        (context as? AnnousmentActivity)?.finish()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "ic_back",
-                            modifier = Modifier.align(Alignment.TopStart)
-                        )
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .padding(top = 20.dp, start = 10.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                (context as? ComponentActivity)?.finish()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(onClick = {
+                            (context as? AnnousmentActivity)?.finish()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "ic_back",
+                                modifier = Modifier.align(Alignment.TopStart)
+                            )
+                        }
                     }
                 }
             }
 
-            // Дата
-            Text(
-                text = annData.time_posted?.substring(0, 10) ?: "NULL",
-               fontFamily = FontFamily(Font(R.font.variablefont_wght)),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 10.dp, start = 15.dp)
-            )
+            item {
+                // Дата
+                Text(
+                    text = annData.time_posted?.substring(0, 10) ?: "NULL",
+                    fontFamily = FontFamily(Font(R.font.variablefont_wght)),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 10.dp, start = 15.dp)
+                )
+            }
 
-            // Заголовок
-            Text(
-                text = annData.title.getLocalized(context) ?: "NULL",
-                fontFamily = FontFamily(Font(R.font.variablefont_wght)),
-                fontWeight = FontWeight.Bold,
-                fontSize = 25.sp,
-                modifier = Modifier.padding(start = 15.dp)
-            )
-
-            // Галерея
+            item {
+                // Заголовок
+                Text(
+                    text = annData.title.getLocalized(context) ?: "NULL",
+                    fontFamily = FontFamily(Font(R.font.variablefont_wght)),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 25.sp,
+                    modifier = Modifier.padding(start = 15.dp)
+                )
+            }
 
             if (images.isNotEmpty()) {
                 val maxVisible = if (images.size > 3) 3 else images.size
+                item {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(columns),
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .heightIn(max = 400.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        items(maxVisible) { index ->
+                            val url = images[index]
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(columns),
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .heightIn(max = 400.dp),
-
-                ) {
-                    items(maxVisible) { index ->
-                        val url = images[index]
-
-                        Card(
-                            modifier = Modifier
-                                .padding(5.dp)
-                                .size(120.dp)
-                                .clickable {
-                                    selectedImage = url
-                                    showDialog = true
-                                },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = androidx.compose.material3.CardDefaults.cardColors(
-                                containerColor = androidx.compose.ui.graphics.Color.White
-                            ),
-                            elevation = androidx.compose.material3.CardDefaults.cardElevation(4.dp)
-                        ) {
-                            Box {
-                                Image(
-                                    painter = rememberImagePainter(url),
-                                    contentDescription = "announcement_img",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(RoundedCornerShape(12.dp)),
-                                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                                )
-
-                                // Если это последняя карточка и картинок > 3
-                                if (images.size > 3 && index == 2) {
-                                    Box(
+                            Card(
+                                modifier = Modifier
+                                    .padding(5.dp)
+                                    .size(120.dp)
+                                    .clickable {
+                                        selectedImage = url
+                                        showDialog = true
+                                    },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = androidx.compose.material3.CardDefaults.cardColors(
+                                    containerColor = androidx.compose.ui.graphics.Color.White
+                                ),
+                                elevation = androidx.compose.material3.CardDefaults.cardElevation(4.dp)
+                            ) {
+                                Box {
+                                    Image(
+                                        painter = rememberImagePainter(url),
+                                        contentDescription = "announcement_img",
                                         modifier = Modifier
                                             .fillMaxSize()
-                                            .background(
-                                                androidx.compose.ui.graphics.Color.Black
-                                                .copy(alpha = 0.5f),
-                                                shape = RoundedCornerShape(12.dp)
-                                            ),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = "+${images.size - 3}",
-                                            color = androidx.compose.ui.graphics.Color.White,
-                                            fontSize = 24.sp
-                                        )
+                                            .clip(RoundedCornerShape(12.dp)),
+                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                    )
+
+                                    if (images.size > 3 && index == 2) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(
+                                                    androidx.compose.ui.graphics.Color.Black
+                                                        .copy(alpha = 0.5f),
+                                                    shape = RoundedCornerShape(12.dp)
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = "+${images.size - 3}",
+                                                color = androidx.compose.ui.graphics.Color.White,
+                                                fontSize = 24.sp
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -180,20 +187,22 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                 }
             }
 
+            item {
+                // Контент (длинный текст)
+                Text(
+                    text = annData.content.getLocalized(context) ?: "NULL",
+                    fontFamily = FontFamily(Font(R.font.variablefont_wght)),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = textSize,
+                    modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp)
+                )
+            }
+        }
 
-            // Контент
-            Text(
-                text = annData.content.getLocalized(context) ?: "NULL",
-                fontFamily = FontFamily(Font(R.font.variablefont_wght)),
-                fontWeight = FontWeight.Bold,
-                fontSize = textSize,
-                modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp)
-            )
+        // Диалог
+        if (showDialog && selectedImage != null) {
+            ImageGalleryDialog(images = images, onDismiss = { showDialog = false })
         }
     }
-
-    // Диалог
-    if (showDialog && selectedImage != null) {
-        ImageGalleryDialog(images = images, onDismiss = { showDialog = false })
-    }
 }
+
