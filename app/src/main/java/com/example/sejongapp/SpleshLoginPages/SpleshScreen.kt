@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.sejongapp.R
 import com.example.sejongapp.ui.theme.backgroundColor
 
@@ -59,7 +58,6 @@ fun SpleshScreen () {
                 contentDescription = "ic_sejong",
                 modifier = Modifier
                     .scale(scale.value)
-
 
             )
         }

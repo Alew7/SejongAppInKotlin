@@ -1,8 +1,10 @@
 package com.example.sejongapp.Pages
 
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,7 +32,8 @@ import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
@@ -48,6 +51,7 @@ const val TAG = "AnnouncmentsViewModel_TAG"
 
 
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
@@ -236,6 +240,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
 
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
 
@@ -274,12 +279,15 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
 
                 Text(
                     text = annData.title.getLocalized(context),
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = annData.content.getLocalized(context),
                     fontSize = 12.sp,
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 4.dp),
                     maxLines = 1,
                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
@@ -287,6 +295,8 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
                 )
                 Text(
                     text = annData.time_posted,
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontWeight = FontWeight.Bold,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 8.dp)
                 )
@@ -295,11 +305,11 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun Preview() {
-    AnnousmentPage()
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//private fun Preview() {
+//    AnnousmentPage()
+//}
 
 fun fixGoogleDriveLink(url: String): String {
     return if (url.contains("drive.google.com/thumbnail?id=")) {

@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -23,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -122,61 +125,94 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                     fontSize = 25.sp,
                     modifier = Modifier.padding(start = 15.dp)
                 )
+
+                Spacer(modifier = Modifier.height(20.dp))
             }
+
 
             if (images.isNotEmpty()) {
                 val maxVisible = if (images.size > 3) 3 else images.size
-                item {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(columns),
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .heightIn(max = 400.dp),
-                        contentPadding = PaddingValues(bottom = 16.dp)
-                    ) {
-                        items(maxVisible) { index ->
-                            val url = images[index]
 
-                            Card(
+                item {
+                    if (images.size == 1) {
+
+                        val url = images[0]
+
+                        Box (
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(url),
+                                contentDescription = "announcement_img",
                                 modifier = Modifier
-                                    .padding(5.dp)
-                                    .size(120.dp)
+                                    .align(Alignment.BottomCenter)
+                                    .width(280.dp)
+                                    .height(280.dp)
+                                    .clip(RoundedCornerShape(12.dp))
                                     .clickable {
                                         selectedImage = url
                                         showDialog = true
                                     },
-                                shape = RoundedCornerShape(12.dp),
-                                colors = androidx.compose.material3.CardDefaults.cardColors(
-                                    containerColor = androidx.compose.ui.graphics.Color.White
-                                ),
-                                elevation = androidx.compose.material3.CardDefaults.cardElevation(4.dp)
-                            ) {
-                                Box {
-                                    Image(
-                                        painter = rememberImagePainter(url),
-                                        contentDescription = "announcement_img",
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .clip(RoundedCornerShape(12.dp)),
-                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                                    )
+                                contentScale = ContentScale.Crop,
 
-                                    if (images.size > 3 && index == 2) {
-                                        Box(
+                                )
+
+                        }
+                    } else {
+                        // 📋 Несколько элементов — сетка
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(columns),
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .heightIn(max = 400.dp),
+                            contentPadding = PaddingValues(bottom = 16.dp)
+                        ) {
+                            items(maxVisible) { index ->
+                                val url = images[index]
+
+                                Card(
+                                    modifier = Modifier
+                                        .padding(5.dp)
+                                        .size(120.dp)
+                                        .clickable {
+                                            selectedImage = url
+                                            showDialog = true
+                                        },
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color.White
+                                    ),
+                                    elevation = CardDefaults.cardElevation(4.dp)
+                                ) {
+                                    Box {
+                                        Image(
+                                            painter = rememberImagePainter(url),
+                                            contentDescription = "announcement_img",
                                             modifier = Modifier
                                                 .fillMaxSize()
-                                                .background(
-                                                    androidx.compose.ui.graphics.Color.Black
-                                                        .copy(alpha = 0.5f),
-                                                    shape = RoundedCornerShape(12.dp)
-                                                ),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = "+${images.size - 3}",
-                                                color = androidx.compose.ui.graphics.Color.White,
-                                                fontSize = 24.sp
-                                            )
+                                                .clip(RoundedCornerShape(12.dp)),
+                                            contentScale = ContentScale.Crop
+                                        )
+
+                                        if (images.size > 3 && index == 2) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .background(
+                                                        Color.Black.copy(alpha = 0.5f),
+                                                        shape = RoundedCornerShape(12.dp)
+                                                    ),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = "+${images.size - 3}",
+                                                    color = Color.White,
+                                                    fontSize = 24.sp
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -186,6 +222,8 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                 }
             }
 
+
+
             item {
                 // Контент (длинный текст)
                 Text(
@@ -193,7 +231,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                     fontFamily = FontFamily(Font(R.font.variablefont_wght)),
                     fontWeight = FontWeight.Bold,
                     fontSize = textSize,
-                    modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp)
+                    modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 20.dp)
                 )
             }
         }
