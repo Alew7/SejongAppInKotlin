@@ -272,7 +272,7 @@ fun LoadingDialog(
 fun ImageGalleryDialog(images: List<String>, onDismiss: () -> Unit) {
     var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
 
-    // Сетка миниатюр
+    // Сетка
     Dialog(onDismissRequest = { onDismiss() }) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -300,7 +300,7 @@ fun ImageGalleryDialog(images: List<String>, onDismiss: () -> Unit) {
         }
     }
 
-    // Полноэкранный просмотр с миниатюрами снизу
+
     if (selectedImageIndex != null) {
         val pagerState = rememberPagerState(initialPage = selectedImageIndex!!)
 
@@ -352,7 +352,7 @@ fun ImageGalleryDialog(images: List<String>, onDismiss: () -> Unit) {
                     )
                 }
 
-                // Горизонтальный скролл миниатюр снизу
+
                 Row(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -363,7 +363,7 @@ fun ImageGalleryDialog(images: List<String>, onDismiss: () -> Unit) {
                 ) {
                     images.forEachIndexed { index, url ->
                         Card(
-                            shape = RoundedCornerShape(50), // круглая миниатюра
+                            shape = RoundedCornerShape(50),
                             border = if (pagerState.currentPage == index) BorderStroke(2.dp, Color.White) else null,
                             modifier = Modifier
                                 .size(60.dp)
