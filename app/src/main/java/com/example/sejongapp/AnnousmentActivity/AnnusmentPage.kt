@@ -24,10 +24,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.NavBar.getLocalized
+import com.example.sejongapp.R
 import com.example.sejongapp.components.ImageGalleryDialog
 import com.example.sejongapp.models.DataClasses.AnnouncementDateItem
 import com.example.sejongapp.ui.theme.backgroundColor
@@ -46,12 +50,14 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor)
+            .background(backgroundColor),
+
     ) {
         val columns = if (maxWidth < 400.dp) 2 else 3
 
         Column(
             modifier = Modifier.verticalScroll(scrollState)
+
         ) {
             // Верхняя панель
             Box(
@@ -96,12 +102,16 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
             // Дата
             Text(
                 text = annData.time_posted?.substring(0, 10) ?: "NULL",
+               fontFamily = FontFamily(Font(R.font.variablefont_wght)),
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 10.dp, start = 15.dp)
             )
 
             // Заголовок
             Text(
                 text = annData.title.getLocalized(context) ?: "NULL",
+                fontFamily = FontFamily(Font(R.font.variablefont_wght)),
+                fontWeight = FontWeight.Bold,
                 fontSize = 25.sp,
                 modifier = Modifier.padding(start = 15.dp)
             )
@@ -115,7 +125,8 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                     columns = GridCells.Fixed(columns),
                     modifier = Modifier
                         .padding(10.dp)
-                        .heightIn(max = 400.dp)
+                        .heightIn(max = 400.dp),
+
                 ) {
                     items(maxVisible) { index ->
                         val url = images[index]
@@ -173,6 +184,8 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
             // Контент
             Text(
                 text = annData.content.getLocalized(context) ?: "NULL",
+                fontFamily = FontFamily(Font(R.font.variablefont_wght)),
+                fontWeight = FontWeight.Bold,
                 fontSize = textSize,
                 modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp)
             )
