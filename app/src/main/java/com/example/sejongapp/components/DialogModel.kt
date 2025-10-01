@@ -15,9 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -57,12 +54,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.draw.clip
-import com.google.accompanist.pager.*
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
@@ -267,121 +262,94 @@ fun LoadingDialog(
 
 
 @Composable
-fun ImageGalleryDialog(images: List<String>, onDismiss: () -> Unit) {
-    var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
+fun ImageGalleryDialog(
+    images: List<String>,
+    startIndex: Int = 0,
+    onDismiss: () -> Unit
+) {
+    var selectedImageIndex by remember { mutableStateOf(startIndex) }
+    val pagerState = rememberPagerState(initialPage = selectedImageIndex)
 
-    // Сетка
-    Dialog(onDismissRequest = { onDismiss() }) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+    Dialog(
+        onDismissRequest = { onDismiss() },
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
             modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth()
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.95f))
         ) {
-            items(images) { url ->
-                Card(
+
+            HorizontalPager(
+                count = images.size,
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                ZoomableImage(
+                    url = images[page],
                     modifier = Modifier
-                        .padding(6.dp)
-                        .size(120.dp)
-                        .clickable { selectedImageIndex = images.indexOf(url) },
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(6.dp)
-                ) {
-                    Image(
-                        painter = rememberImagePainter(url),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-        }
-    }
-
-
-    if (selectedImageIndex != null) {
-        val pagerState = rememberPagerState(initialPage = selectedImageIndex!!)
-
-        Dialog(
-            onDismissRequest = { selectedImageIndex = null },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.95f))
-            ) {
-                // Горизонтальный Pager для свайпа картинок
-                HorizontalPager(
-                    count = images.size,
-                    state = pagerState,
-                    modifier = Modifier.fillMaxSize()
-                ) { page ->
-                    ZoomableImage(
-                        url = images[page],
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(0.85f)
-                            .clip(RoundedCornerShape(12.dp))
-                    )
-                }
-
-                // Индикатор страницы сверху
-                Text(
-                    text = "${pagerState.currentPage + 1} / ${images.size}",
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 24.dp)
-                )
-
-                // Кнопка закрытия
-                IconButton(
-                    onClick = { selectedImageIndex = null },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Close",
-                        tint = Color.White
-                    )
-                }
-
-
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 24.dp)
                         .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    images.forEachIndexed { index, url ->
-                        Card(
-                            shape = RoundedCornerShape(50),
-                            border = if (pagerState.currentPage == index) BorderStroke(2.dp, Color.White) else null,
-                            modifier = Modifier
-                                .size(60.dp)
-                                .clickable {
-                                    selectedImageIndex = index
+                        .fillMaxHeight(0.85f)
+                        .clip(RoundedCornerShape(12.dp))
+                )
+            }
 
-                                }
-                        ) {
-                            Image(
-                                painter = rememberImagePainter(url),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
+
+            Text(
+                text = "${pagerState.currentPage + 1} / ${images.size}",
+                color = Color.White,
+                fontSize = 18.sp,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 24.dp)
+            )
+
+
+            IconButton(
+                onClick = { onDismiss() },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Close",
+                    tint = Color.White
+                )
+            }
+
+
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp)
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                images.forEachIndexed { index, url ->
+                    Card(
+                        shape = RoundedCornerShape(50),
+                        border = if (pagerState.currentPage == index) BorderStroke(2.dp, Color.White) else null,
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clickable {
+                                selectedImageIndex = index
+                            }
+                    ) {
+                        Image(
+                            painter = rememberImagePainter(url),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
                 }
-                LaunchedEffect(selectedImageIndex) {
-                    selectedImageIndex?.let { pagerState.scrollToPage(it) }
-                }
+            }
+
+
+            LaunchedEffect(selectedImageIndex) {
+                pagerState.scrollToPage(selectedImageIndex)
             }
         }
     }
@@ -403,8 +371,7 @@ fun ZoomableImage(url: String, modifier: Modifier = Modifier) {
             .graphicsLayer(
                 scaleX = maxOf(1f, scale),
                 scaleY = maxOf(1f, scale)
-            ),
-
+            )
     )
 }
 

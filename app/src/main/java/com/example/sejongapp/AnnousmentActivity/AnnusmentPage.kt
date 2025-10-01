@@ -117,7 +117,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
             }
 
             item {
-                // Заголовок
+
                 Text(
                     text = annData.title.getLocalized(context) ?: "NULL",
                     fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
