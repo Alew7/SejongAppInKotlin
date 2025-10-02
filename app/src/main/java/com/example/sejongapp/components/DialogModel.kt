@@ -252,15 +252,6 @@ fun LoadingDialog(
     )
 }
 
-
-
-
-
-
-
-
-
-
 @Composable
 fun ImageGalleryDialog(
     images: List<String>,

@@ -4,20 +4,20 @@ package com.example.sejongapp.NavBar
 import LocalData.deletToken
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Divider
+import androidx.compose.material3.Card
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -30,14 +30,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.MainActivity
@@ -47,10 +45,8 @@ import com.example.sejongapp.components.Pages.HomePage
 import com.example.sejongapp.components.Pages.Schedule
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
-import com.example.sejongapp.SpleshLoginPages.MoveToMainActivity
 import com.example.sejongapp.models.DataClasses.Content
 import com.example.sejongapp.models.DataClasses.Title
-import com.example.sejongapp.models.DataClasses.UserData
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.WarmBeige
@@ -58,13 +54,13 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 
 const val TAG = "TAG_NavBar"
 
 
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun NavBar(modifier: Modifier = Modifier) {
     val iconSize = 40.dp
@@ -100,105 +96,130 @@ fun NavBar(modifier: Modifier = Modifier) {
                 modifier = Modifier.width(300.dp),
                 drawerContainerColor = backgroundColor
             ) {
-                var expanded by remember { mutableStateOf(false) }
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = context.getString(R.string.app_name), style = MaterialTheme.typography.titleLarge)
-                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    // Заголовок
+                    Text(
+                        text = "SejongApp",
+                        style = MaterialTheme.typography.titleLarge
+                    )
 
-//                   Profile icon btn
-                    Row(
+                    // ---------- Profile ----------
+                    Card(
                         modifier = Modifier
-                            .clickable  (
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ){
-                                val intent = Intent(context,ProfileActivity :: class.java)
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable {
+                                val intent = Intent(context, ProfileActivity::class.java)
                                 context.startActivity(intent)
-                            }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            },
+                        shape = MaterialTheme.shapes.medium
                     ) {
-
-//
-                        Icon(
-                            modifier = Modifier.size(iconSize),
-                            painter = painterResource(R.drawable.ic_sejong_profile),
-                            contentDescription = "Profile"
-
-                        )
-                        Text(
-                            text = context.getString(R.string.Profile),
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-
-                    // 🌍 Language row (click to expand dropdown)
-                    Row(
-                        modifier = Modifier
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) {
-                                expanded = true
-                            }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(iconSize),
-                            painter = painterResource(R.drawable.ic_lang),
-                            contentDescription = "Change language"
-                        )
-                        Text(
-                            text = "${context.getString(R.string.Language)}: ${LocalData.getSavedLanguage(context)}",
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-
-                    // 🔽 Dropdown menu anchored to this drawer
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        listOf("KOR", "ENG", "RUS", "TAJ").forEach { lang ->
-                            DropdownMenuItem(
-                                text = { Text(lang) },
-                                onClick = {
-                                    expanded = false
-                                    changeAppLanguage(context, lang) // apply language change
-                                }
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_sejong_profile),
+                                contentDescription = "Profile",
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Text(
+                                text = context.getString(R.string.Profile),
+                                modifier = Modifier.padding(start = 12.dp)
                             )
                         }
                     }
 
-//                   Exit icon btn
-                    Row(
+                    // ---------- Language ----------
+                    Card(
                         modifier = Modifier
-                            .clickable (
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            )
-                            {
-                                deletToken(context)
-                            }
+                            .fillMaxWidth()
                             .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        shape = MaterialTheme.shapes.medium
                     ) {
-                        Icon(
-                            modifier = Modifier.size(iconSize),
-                            painter = painterResource(R.drawable.ic_logout),
-                            contentDescription = "Log out",
-
-                        )
-                        Text(
-                            text = context.getString(R.string.Log_out),
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_flag_kor),
+                                contentDescription = "Language",
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Text(
+                                text = context.getString(R.string.Language),
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
+                        }
                     }
 
+                    // ---------- List of languages ----------
+                    val languages = listOf(
+                        "KOR" to R.drawable.ic_flag_kor,
+                        "ENG" to R.drawable.ic_flag_eng,
+                        "RUS" to R.drawable.ic_flag_rus,
+                        "TAJ" to R.drawable.ic_flag_taj
+                    )
 
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Column {
+                            languages.forEach { (lang, flagRes) ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { changeAppLanguage(context, lang) }
+                                        .padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(flagRes),
+                                        contentDescription = lang,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                    Text(
+                                        text = lang,
+                                        modifier = Modifier.padding(start = 12.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
 
+                    Spacer(modifier = Modifier.weight(1f))
 
+                    // ---------- Log out ----------
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable { deletToken(context) },
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_logout),
+                                contentDescription = "Log out",
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Text(
+                                text = context.getString(R.string.Log_out),
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -258,6 +279,7 @@ fun NavBar(modifier: Modifier = Modifier) {
 
 
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScreenEnum,onChangeScreen : (NavigationScreenEnum) -> Unit) {
     when(selectedIndex) {
@@ -318,8 +340,8 @@ fun Content.getLocalized(context: Context): String {
 
 
 
-@Preview (showBackground = true, showSystemUi = true)
-@Composable
-private  fun Preview () {
-    NavBar()
-}
+//@Preview (showBackground = true, showSystemUi = true)
+//@Composable
+//private  fun Preview () {
+//    NavBar()
+//}
