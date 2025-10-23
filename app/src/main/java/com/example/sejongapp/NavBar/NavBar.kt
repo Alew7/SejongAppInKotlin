@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +17,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,8 +41,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.MainActivity
@@ -54,6 +63,9 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 import kotlinx.coroutines.launch
+import androidx.compose.ui.graphics.Color.Companion.Unspecified
+import androidx.compose.animation.animateContentSize
+
 
 
 const val TAG = "TAG_NavBar"
@@ -94,21 +106,28 @@ fun NavBar(modifier: Modifier = Modifier) {
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.width(300.dp),
-                drawerContainerColor = backgroundColor
+                drawerContainerColor = Color(0xFFFBF8F1)
             ) {
+                var isLanguageListExpanded by remember { mutableStateOf(false) }
+
                 Column(
                     modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxSize(),
+                        .padding(horizontal = 16.dp, vertical = 24.dp)
+                        .fillMaxSize()
+
+                        .animateContentSize(),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    // Заголовок
+                    // Заголовок "SejongApp"
                     Text(
                         text = "SejongApp",
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
 
-                    // ---------- Profile ----------
+
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -116,17 +135,21 @@ fun NavBar(modifier: Modifier = Modifier) {
                             .clickable {
                                 val intent = Intent(context, ProfileActivity::class.java)
                                 context.startActivity(intent)
+                                scope.launch { drawerState.close() }
                             },
-                        shape = MaterialTheme.shapes.medium
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_sejong_profile),
+                                imageVector = Icons.Default.Person,
                                 contentDescription = "Profile",
-                                modifier = Modifier.size(28.dp)
+                                modifier = Modifier.size(28.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = context.getString(R.string.Profile),
@@ -135,61 +158,87 @@ fun NavBar(modifier: Modifier = Modifier) {
                         }
                     }
 
-                    // ---------- Language ----------
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
-                        shape = MaterialTheme.shapes.medium
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                        Column(
+
+                            modifier = Modifier.animateContentSize()
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_flag_kor),
-                                contentDescription = "Language",
-                                modifier = Modifier.size(28.dp)
-                            )
-                            Text(
-                                text = context.getString(R.string.Language),
-                                modifier = Modifier.padding(start = 12.dp)
-                            )
-                        }
-                    }
 
-                    // ---------- List of languages ----------
-                    val languages = listOf(
-                        "KOR" to R.drawable.ic_flag_kor,
-                        "ENG" to R.drawable.ic_flag_eng,
-                        "RUS" to R.drawable.ic_flag_rus,
-                        "TAJ" to R.drawable.ic_flag_taj
-                    )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable  (
+                                        indication = null,
+                                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                    ){
+                                        isLanguageListExpanded = !isLanguageListExpanded
 
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        Column {
-                            languages.forEach { (lang, flagRes) ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { changeAppLanguage(context, lang) }
-                                        .padding(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        painter = painterResource(flagRes),
-                                        contentDescription = lang,
-                                        modifier = Modifier.size(28.dp)
-                                    )
-                                    Text(
-                                        text = lang,
-                                        modifier = Modifier.padding(start = 12.dp)
-                                    )
+                                    }
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_lenguage),
+                                    contentDescription = "Language",
+                                    modifier = Modifier.size(28.dp),
+                                    tint = Color.Unspecified
+                                )
+                                Text(
+                                    text = context.getString(R.string.Language),
+                                    modifier = Modifier.padding(start = 12.dp)
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Icon(
+                                    imageVector = if (isLanguageListExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "Toggle Language List",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+
+                            if (isLanguageListExpanded) {
+                                val languages = listOf(
+                                    "KOR" to R.drawable.ic_flag_kor,
+                                    "ENG" to R.drawable.ic_flag_eng,
+                                    "RUS" to R.drawable.ic_flag_rus,
+                                    "TAJ" to R.drawable.ic_flag_taj
+                                )
+
+                                val currentLang = LocalData.getSavedLanguage(context)
+
+                                languages.forEach { (lang, flagRes) ->
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                changeAppLanguage(context, lang)
+                                                scope.launch { drawerState.close() }
+                                            }
+                                            .background(
+                                                if (lang == currentLang) Color(0xFFEDE9E3) else Color.Transparent
+                                            )
+                                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(flagRes),
+                                            contentDescription = lang,
+                                            modifier = Modifier.size(28.dp),
+                                            tint = Color.Unspecified
+                                        )
+                                        Text(
+                                            text = lang,
+                                            modifier = Modifier.padding(start = 12.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -197,22 +246,28 @@ fun NavBar(modifier: Modifier = Modifier) {
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    // ---------- Log out ----------
+
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable { deletToken(context) },
-                        shape = MaterialTheme.shapes.medium
+                            .clickable {
+                                deletToken(context)
+                                scope.launch { drawerState.close() }
+                            },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_logout),
+                                imageVector = Icons.Default.Logout,
                                 contentDescription = "Log out",
-                                modifier = Modifier.size(28.dp)
+                                modifier = Modifier.size(28.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = context.getString(R.string.Log_out),
