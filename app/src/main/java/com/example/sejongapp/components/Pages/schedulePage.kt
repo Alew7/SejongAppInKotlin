@@ -2,7 +2,6 @@ package com.example.sejongapp.components.Pages
 import LocalData
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,11 +12,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -25,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,19 +44,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
-import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.ScheduleData
+import com.example.sejongapp.models.DataClasses.ScheduleTime
 import com.example.sejongapp.models.ViewModels.ScheduleViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
-import com.example.sejongapp.ui.theme.cardGreyBackground
+import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.lightGray
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
@@ -85,7 +84,7 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
         onChangeScreen(NavigationScreenEnum.HOMEPAGE)
     }
 
-    Log.i(TAG, "The user's token is ${LocalData.getSavedToken(context)}")
+    Log.i(TAG, "Ther user's token is ${LocalData.getSavedToken(context)}")
     Log.i(TAG, "The user data here is ${LocalData.getUserData(context)}")
 
 //    Getting all the schedule data from the server db
@@ -93,19 +92,19 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
         scheduleViewModel.getAllSchedules()
     }
 
-    context.resources.getStringArray(R.array.week_days).forEachIndexed { index, day ->
 
+    context.resources.getStringArray(R.array.week_days).forEachIndexed { index, day ->
         weekDays.put(index, day)
     }
 
 
 
 
-
-
-
-
-    Column {
+    Column  (
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
+    ){
         //    The header with logo icon
         Column {
             Box(
@@ -155,12 +154,7 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
         ScheduleScreen(scheduleViewModel, selectedPage)
 
 
-
-
     }
-  
-
-
 }
 
 @Composable
@@ -198,9 +192,10 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
             Log.d(TAG, "the schedule result is Error")
             Log.e(TAG, "the schedule result is ${result.message}")
 
-            showError(result.message){
-                viewModel.resetScheduleResult()
-            }
+            Text(
+                text = result.message,
+                color = Color.Red
+            )
         }
         is NetworkResponse.Loading -> {
             Log.d(TAG, "the schedule result is Loading")
@@ -259,146 +254,132 @@ fun PaginationSelector(
             }
         }
     }
-
-
-
-
 }
 
 
-@Composable()
+@Composable
 fun table(scheduleData: ScheduleData) {
-    scheduleData.time[0].day
-    ElevatedCard (
+
+    val context = LocalContext.current
+
+
+    ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-//            .background(lightGray),
-        shape = RoundedCornerShape(15.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp
-        ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
         colors = CardDefaults.cardColors(
-            containerColor = cardGreyBackground
+            containerColor = Color.White
         )
-
-
-    )
-    {
-
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
+
         ) {
+            // Название группы
             Text(
                 text = scheduleData.group,
-                fontSize = 32.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 10.dp)
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = primaryColor,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Заголовок таблицы
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-//                DAY
-                Box(
-                    Modifier.weight(1F).drawBehind {
-                        val stroke = 2.dp.toPx()
-                        val borderColor = Color.Black
+                Text(
+                    text = context.getString(R.string.DAY),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = context.getString(R.string.TIME),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+                Text (
+                    text = context.getString(R.string.CLASS),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
 
-
-//                        Right border
-                        drawLine(borderColor, Offset(size.width, 0f), Offset(size.width, size.height), stroke/2)
-
-                        // Bottom border
-                        drawLine(borderColor, Offset(0f, size.height), Offset(size.width, size.height), stroke)
-                    }
-                ){
-                    Text(
-                        text = "DAY",
-                        fontSize = 20.sp,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-//                TIME
-                Box(
-                    Modifier.weight(2F).drawBehind {
-                        val stroke = 2.dp.toPx()
-                        val borderColor = Color.Black
-
-                        // Bottom border
-                        drawLine(borderColor, Offset(0f, size.height), Offset(size.width, size.height), stroke)
-                    }
-                ){
-                    Text(
-                        text = "TIME",
-                        fontSize = 20.sp,
-                        modifier = Modifier.align(Alignment.Center)
-
-                    )
-                }
-            }
-
-            scheduleData.time.forEach { time ->
-                TableRowElements(weekDays[time.day].toString(), time.start_time + "-" + time.end_time)
 
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                modifier = Modifier.align(Alignment.Start),
-                fontSize = 20.sp,
-                text = scheduleData.teacher
+            Divider(
+                color = Color(0xFFE0E0E0),
+                thickness = 1.dp,
+                modifier = Modifier.padding(vertical = 8.dp)
             )
+
+            // Список дней
+            scheduleData.time.forEachIndexed { index, time,  ->
+                TableRowElements(
+                    day = weekDays[time.day].toString(),
+                    time = "${time.start_time} - ${time.end_time}",
+                    classRoom = "${time.classroom}"
+
+
+                )
+
+                if (index != scheduleData.time.lastIndex) {
+                    Divider(color = Color(0xFFE0E0E0), thickness = 1.dp)
+                }
+            }
+
+
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Учитель
+            Text(
+                text = scheduleData.teacher,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF757575),
+                modifier = Modifier.align(Alignment.End)
+            )
+
+
         }
     }
 }
 
-
-@Composable()
-fun TableRowElements(day: String, time: String){
+@Composable
+fun TableRowElements(day: String, time: String,classRoom: String) {
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-//                DAY
-        Box(
-            Modifier.weight(1F).drawBehind {
-                val stroke = 1.dp.toPx()
-                val borderColor = Color.Black
-
-//                        Right border
-                drawLine(borderColor, Offset(size.width, 0f), Offset(size.width, size.height), stroke)
-
-                // Top border
-                drawLine(borderColor, Offset(0f, 0f), Offset(size.width, 0f), stroke)
-
-            }
-        ){
-            Text(
-                text = day,
-                fontSize = 16.sp,
-                modifier = Modifier.align(Alignment.Center).padding(vertical = 10.dp)
-            )
-        }
-
-//                TIME
-        Box(
-            Modifier.weight(2F).drawBehind {
-                val stroke = 1.dp.toPx()
-                val borderColor = Color.Black
-
-                // Top border
-                drawLine(borderColor, Offset(0f, 0f), Offset(size.width, 0f), stroke)
-            }
-        ){
-            Text(
-                text = time,
-                fontSize = 16.sp,
-                modifier = Modifier.align(Alignment.Center).padding(vertical = 10.dp)
-
-            )
-        }
+        Text(
+            text = day,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.Black
+        )
+        Text(
+            text = time,
+            fontSize = 16.sp,
+            color = Color(0xFF424242)
+        )
+        Text (
+            text = classRoom,
+            fontSize = 16.sp,
+            color = Color(0xFF424242)
+        )
     }
 }
 
@@ -441,27 +422,3 @@ fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleD
 private fun Preview() {
     Schedule()
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -5,171 +5,241 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
+import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.R
+import com.example.sejongapp.components.ImageGalleryDialog
+import com.example.sejongapp.models.DataClasses.AnnouncementDateItem
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
-
 @Composable
-fun AnnousmentDetailPage() {
-
-    val text_size = 15.sp
+fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
+    val textSize = 15.sp
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val images = annData.images ?: emptyList()
 
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedImage by remember { mutableStateOf<String?>(null) }
 
-
-    BoxWithConstraints  (
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor)
-    ) {
-        val screenWidth = maxWidth
-        val startPadding = screenWidth * 0.5f
-        val endPadding = screenWidth * 0.5f
+            .background(backgroundColor),
 
-        Column  (
+        ) {
+        val columns = if (maxWidth < 400.dp) 2 else 3
+
+        LazyColumn(
             modifier = Modifier
-                .verticalScroll(scrollState)
-        ){
-            Box(
-                modifier = Modifier
-
-                    .fillMaxWidth()
-                    .padding(top = 25.dp)
-                    .drawBehind {
-                        val strokeWidth = 2.dp.toPx()
-                        val y = size.height - strokeWidth / 2
-                        drawLine(
-                            color = primaryColor,
-                            start = Offset(0f, y),
-                            end = Offset(size.width, y),
-                            strokeWidth = strokeWidth
-                        )
-                    }
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_head),
-                    contentDescription = "ic_had",
-                    modifier = Modifier
-                        .size(32.dp)  /// 65.dp old
-                        .align(Alignment.TopEnd)
-                        .padding(end = 25.dp)
-                )
-
+                .fillMaxSize()
+                .background(backgroundColor),
+            contentPadding = PaddingValues(bottom = 100.dp)
+        ) {
+            item {
+                // Верхняя панель
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
-                        .padding(top = 20.dp, start = 10.dp)
-                        .clickable  (
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-
-                        ){
-                            (context as? ComponentActivity)?.finish()
-                        },
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .padding(top = 25.dp)
+                        .drawBehind {
+                            val strokeWidth = 2.dp.toPx()
+                            val y = size.height - strokeWidth / 2
+                            drawLine(
+                                color = primaryColor,
+                                start = Offset(0f, y),
+                                 end = Offset(size.width, y),
+                                strokeWidth = strokeWidth
+                            )
+                        }
                 ) {
-                    Image (
-                        painter = painterResource(R.drawable.ic_back),
-                        contentDescription = "ic_back",
+                    Box(
                         modifier = Modifier
-                            .size(30.dp)
-
-                    )
+                            .size(48.dp)
+                            .padding(top = 20.dp, start = 10.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                (context as? ComponentActivity)?.finish()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(onClick = {
+                            (context as? AnnousmentActivity)?.finish()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "ic_back",
+                                modifier = Modifier.align(Alignment.TopStart)
+                            )
+                        }
+                    }
                 }
-
-//                Image(
-//                    painter = painterResource(R.drawable.ic_back),
-//                    contentDescription = "ic_back",
-//                    modifier = Modifier
-//                        .size(55.dp)
-//                        .padding(top = 20.dp, start = 10.dp)
-//                        .clickable  (
-//                            interactionSource = remember { MutableInteractionSource() },
-//                            indication = null
-//                        )
-//                        {
-//                            (context as? ComponentActivity)?.finish()
-//                        }
-//                )
-
-
-
             }
-            Text(
-                text = "11.02.2025",
-                modifier = Modifier
-                    .padding(top = 10.dp,start = 15.dp)
-            )
-            Text (
-                text = "Dushanbe 3 Sejong Institute: A\nHub of Cultural Exchange and\nLanguage Mastery",
-                fontWeight = FontWeight.Bold,
-                fontSize = 25.sp,
-                modifier = Modifier
-                    .padding(start = 15.dp)
-            )
 
-            Column (
-                modifier = Modifier
-                    .padding(bottom = 40.dp)
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.annousment_img),
-                    contentDescription = "annousment_img",
-                    modifier = Modifier
-                        .size(350.dp)
-
+            item {
+                // Дата
+                Text(
+                    text = annData.time_posted?.substring(0, 10) ?: "NULL",
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 10.dp, start = 15.dp)
                 )
-                Text (
-                    text = "In the heart of Dushanbe, the Dushanbe 3 Sejong\nInstitute stands as a vibrant center for the promotion\nof Korean language and culture, fostering a deeper\nunderstanding between Tajikistan and South Korea.\nSince its establishment,the instite has witnessed\n a remarkable surge in interest, with students of all ages\neagerto explore the rich tapestry of Korean\ntraditions.\n   The institute's comprehensive curreculum extends\nbeyond basic language instruction, offering a diverse\nrange of programs that delve  into the intricaries of\nKorean history, art, and contemporary culture.From\ntraditional calligraphy and cooking classes to modern\nK-pop dance workshops,the Sejong Institute\nprovides a holistic cultural experience.",
-                    fontSize = text_size,
-
-                    )
-
             }
+
+            item {
+
+                Text(
+                    text = annData.title.getLocalized(context) ?: "NULL",
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 25.sp,
+                    modifier = Modifier.padding(start = 15.dp)
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+
+            if (images.isNotEmpty()) {
+                val maxVisible = if (images.size > 3) 3 else images.size
+
+                item {
+                    if (images.size == 1) {
+
+                        val url = images[0]
+
+                        Box (
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(url),
+                                contentDescription = "announcement_img",
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .width(280.dp)
+                                    .height(280.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        selectedImage = url
+                                        showDialog = true
+                                    },
+                                contentScale = ContentScale.Crop,
+
+                                )
+
+                        }
+                    } else {
+                        //asd
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(columns),
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .heightIn(max = 400.dp),
+                            contentPadding = PaddingValues(bottom = 16.dp)
+                        ) {
+                            items(maxVisible) { index ->
+                                val url = images[index]
+
+                                Card(
+                                    modifier = Modifier
+                                        .padding(5.dp)
+                                        .size(120.dp)
+                                        .clickable {
+                                            selectedImage = url
+                                            showDialog = true
+                                        },
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color.White
+                                    ),
+                                    elevation = CardDefaults.cardElevation(4.dp)
+                                ) {
+                                    Box {
+                                        Image(
+                                            painter = rememberImagePainter(url),
+                                            contentDescription = "announcement_img",
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clip(RoundedCornerShape(12.dp)),
+                                            contentScale = ContentScale.Crop
+                                        )
+
+                                        if (images.size > 3 && index == 2) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .background(
+                                                        Color.Black.copy(alpha = 0.5f),
+                                                        shape = RoundedCornerShape(12.dp)
+                                                    ),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = "+${images.size - 3}",
+                                                    color = Color.White,
+                                                    fontSize = 24.sp
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+            item {
+
+                Text(
+                    text = annData.content.getLocalized(context) ?: "NULL",
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = textSize,
+                    modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 20.dp)
+                )
+            }
+        }
+
+        // Диалог
+        if (showDialog && selectedImage != null) {
+            ImageGalleryDialog(images = images, onDismiss = { showDialog = false })
         }
     }
 }
-
-
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun Preview () {
-    AnnousmentDetailPage()
-}
-
-
 

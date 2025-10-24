@@ -30,6 +30,16 @@
 
     <!-- Schedule -->
     <string name="All">Все</string>
+    <string name="TIME">Время</string>
+    <string name="DAY">День</string>
+    <string name="CLASS">класс</string>
+    <string-array name="week_days">
+        <item>Пн</item>
+        <item>Вт</item>
+        <item>Ср</item>
+        <item>Чт</item>
+        <item>Пт</item>
+    </string-array>
 
     <!-- Electronic Library -->
     <string name="read">Читать</string>
@@ -40,9 +50,7 @@
     <string name="Groups">Группа</string>
     <string name="Student">Студент</string>
     <string name="Edit_profile">Редактировать профиль</string>
-    <string name="applying_changes">применение изменений</string>
-    <string name="refreshing_data">обновление данных</string>
+
 
     <string name="press_again_to_exit">Нажмите ещё раз для выхода</string>
-
 </resources>

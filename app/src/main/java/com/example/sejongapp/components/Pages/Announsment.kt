@@ -1,14 +1,17 @@
 package com.example.sejongapp.Pages
 
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -27,14 +30,17 @@ import com.example.sejongapp.R
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberImagePainter
 import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
-import com.example.sejongapp.components.Pages.TAG
+import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.components.showError
-import com.example.sejongapp.models.DataClasses.AnnouncementData
+import com.example.sejongapp.models.DataClasses.AnnouncementDateItem
 import com.example.sejongapp.models.ViewModels.AnnouncmentsViewModel
-import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.brightBackgroundColor
 import com.example.sejongapp.ui.theme.darkGray
@@ -43,6 +49,9 @@ import com.example.sejongapp.utils.NavigationScreenEnum
 
 const val TAG = "AnnouncmentsViewModel_TAG"
 
+
+
+@RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
@@ -167,6 +176,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
     val result by announcementView.announcments.observeAsState(NetworkResponse.Idle)
 
+
     when(result){
         is NetworkResponse.Error -> {
             Log.e(TAG, "AnnouncementPage: Got an error in fetching data")
@@ -193,28 +203,35 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
         }
         is NetworkResponse.Success -> {
             Log.v(TAG, "AnnouncementPage: Success got data!")
-            Log.i(TAG, "AnnouncementPage: the fetched data is ${(result as NetworkResponse.Success<ArrayList<AnnouncementData>>).data}")
+            Log.i(TAG, "AnnouncementPage: the fetched data is ${(result as NetworkResponse.Success<AnnouncementDateItem>).data}")
 
-            val announcementData: ArrayList<AnnouncementData> = (result as NetworkResponse.Success<ArrayList<AnnouncementData>>).data
+            val announcementData: List<AnnouncementDateItem> = (result as NetworkResponse.Success<List<AnnouncementDateItem>>).data
             Log.i(TAG, "AnnouncementPage: the data is in the var and its $announcementData")
             Log.i(TAG, "AnnouncementPage: the data size is ${announcementData.size}")
 
-            // Список карточек
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 110.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(announcementData.size-1) { index ->
-                    AnnousmentCard (announcementData[index]){
-                        val intent = Intent(context, AnnousmentActivity::class.java)
-                        context.startActivity(intent)
+                // Список карточек
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 110.dp), // 110
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp,  bottom = 100.dp), // 80
+                    verticalArrangement = Arrangement.spacedBy(5.dp) // 16.dp
+                ) {
+                    items(
+                        items = announcementData,
+                        key = { it.custom_id}
+                    ) { ann ->
+                        AnnousmentCard(ann) {
+                            val intent = Intent(context, AnnousmentActivity::class.java)
+                            intent.putExtra("AnnData", ann)
+                            context.startActivity(intent)
+                        }
                     }
                 }
-            }
+
+
         }
+
     }
 
 
@@ -223,14 +240,18 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
 
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun AnnousmentCard(annData: AnnouncementData, onClick: () -> Unit) {
+fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
 
 
+    val context = LocalContext.current
+    val imgSize = 64.dp
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(8.dp)
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
@@ -244,25 +265,38 @@ fun AnnousmentCard(annData: AnnouncementData, onClick: () -> Unit) {
         )
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
+            val firstImage = annData.images?.firstOrNull()?.let { fixGoogleDriveLink(it) }
             Image(
-                painter = painterResource(R.drawable.annousment_img),
+                painter = rememberImagePainter(firstImage),
                 contentDescription = "annousment_img",
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(imgSize)
+                    .clip(RoundedCornerShape(15.dp))
+
+
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
+
                 Text(
-                    text = annData.title ?: "",
+                    text = annData.title.getLocalized(context),
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = annData.content ?: "",
+                    text = annData.content.getLocalized(context),
                     fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 4.dp)
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 4.dp),
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+
                 )
                 Text(
-                    text = annData.time_posted ?: "",
+                    text = annData.time_posted,
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                    fontWeight = FontWeight.Bold,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 8.dp)
                 )
@@ -276,52 +310,12 @@ fun AnnousmentCard(annData: AnnouncementData, onClick: () -> Unit) {
 //private fun Preview() {
 //    AnnousmentPage()
 //}
-//
-//
-//@Preview(
-//    name = "📱 Small Phone",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 320,
-//    heightDp = 568
-//)
-//@Composable
-//private fun PreviewSmallPhone() {
-//    AnnousmentPage()
-//}
-//
-//@Preview(
-//    name = "📱 Standard Phone",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 393,
-//    heightDp = 851
-//)
-//@Composable
-//private fun PreviewStandardPhone() {
-//    AnnousmentPage()
-//}
-//
-//@Preview(
-//    name = "📱 Large Phone / Fold",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 600,
-//    heightDp = 960
-//)
-//@Composable
-//private fun PreviewLargePhone() {
-//    AnnousmentPage()
-//}
-//
-//@Preview(
-//    name = "💻 Tablet",
-//    showBackground = true,
-//    showSystemUi = true,
-//    widthDp = 800,
-//    heightDp = 1280
-//)
-//@Composable
-//private fun PreviewTablet() {
-//    AnnousmentPage()
-//}
+
+fun fixGoogleDriveLink(url: String): String {
+    return if (url.contains("drive.google.com/thumbnail?id=")) {
+        val id = url.substringAfter("id=")
+        "https://drive.google.com/uc?id=$id"
+    } else {
+        url
+    }
+}

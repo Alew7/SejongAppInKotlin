@@ -58,14 +58,20 @@ fun SpleshScreen () {
                 painter = painterResource(R.drawable.ic_sejong),
                 contentDescription = "ic_sejong",
                 modifier = Modifier
-                    .scale(scale.value)
-
+//                    .scale(scale.value)
 
             )
         }
     }
-
 }
+@Preview (showBackground = true, showSystemUi = true)
+@Composable
+fun Alisher () {
+    SpleshScreen()
+}
+
+
+
 
 
 

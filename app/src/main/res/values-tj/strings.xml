@@ -33,6 +33,16 @@
 
     <!-- Schedule -->
     <string name="All">Ҳама</string>
+    <string name="TIME">Вакт</string>
+    <string name="DAY">Руз</string>
+    <string name="CLASS">Синф</string>
+    <string-array name="week_days">
+        <item>Дш</item>
+        <item>Сш</item>
+        <item>Чш</item>
+        <item>Пш</item>
+        <item>Ҷш</item>
+    </string-array>
 
     <!-- Electronic Library -->
     <string name="read">Хондан</string>
@@ -40,11 +50,13 @@
 
     <!--  Profile Activity -->
     <string name="status">ҳолат</string>
-    <string name="Groups">Гурух</string>
-    <string name="Student">Донишчу</string>
-    <string name="Edit_profile">Таҳрири профил</string>
-    <string name="applying_changes">татбиқи тағйирот</string>
-    <string name="refreshing_data">навсозии маълумот</string>
+    <string name="Groups">Гурӯҳ</string>
+    <string name="Student">донишҷӯ</string>
+    <string name="Email">почтаи электронӣ</string>
+    <string name="Edit_profile">Таҳрир кардани профил</string>
+
+
+
 
     <string name="press_again_to_exit">Барои баромадан боз як бор пахш кунед</string>
 </resources>

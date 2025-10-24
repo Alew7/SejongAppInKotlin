@@ -32,7 +32,10 @@
 
     <!--Schedule-->
     <string name="All">All</string>
-
+    <string name="TIME">TIME</string>
+    <string name="DAY">DAY</string>
+    <string name="CLASS">CLASS</string>
+    
     <string-array name="week_days">
         <item>MON</item>
         <item>TUE</item>
@@ -48,9 +51,11 @@
 
 
     <!--  Profile Activity -->
+
     <string name="status">Status</string>
     <string name="Groups">Groups</string>
     <string name="Student">Student</string>
+    <string name="Email">Email</string>
     <string name="Edit_profile">Edit Profile</string>
     <string name="applying_changes">applying changes</string>
     <string name="refreshing_data">refreshing data</string>

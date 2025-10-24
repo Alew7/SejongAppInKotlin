@@ -4,20 +4,27 @@ package com.example.sejongapp.NavBar
 import LocalData.deletToken
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -30,14 +37,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.MainActivity
@@ -47,8 +54,8 @@ import com.example.sejongapp.components.Pages.HomePage
 import com.example.sejongapp.components.Pages.Schedule
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
-import com.example.sejongapp.SpleshLoginPages.MoveToMainActivity
-import com.example.sejongapp.models.DataClasses.UserData
+import com.example.sejongapp.models.DataClasses.Content
+import com.example.sejongapp.models.DataClasses.Title
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.WarmBeige
@@ -56,13 +63,16 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 import kotlinx.coroutines.launch
-import java.util.Locale
+import androidx.compose.ui.graphics.Color.Companion.Unspecified
+import androidx.compose.animation.animateContentSize
+
 
 
 const val TAG = "TAG_NavBar"
 
 
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun NavBar(modifier: Modifier = Modifier) {
     val iconSize = 40.dp
@@ -96,107 +106,175 @@ fun NavBar(modifier: Modifier = Modifier) {
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.width(300.dp),
-                drawerContainerColor = backgroundColor
+                drawerContainerColor = Color(0xFFFBF8F1)
             ) {
-                var expanded by remember { mutableStateOf(false) }
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = context.getString(R.string.app_name), style = MaterialTheme.typography.titleLarge)
-                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+                var isLanguageListExpanded by remember { mutableStateOf(false) }
 
-//                   Profile icon btn
-                    Row(
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 24.dp)
+                        .fillMaxSize()
+
+                        .animateContentSize(),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    // Заголовок "SejongApp"
+                    Text(
+                        text = "SejongApp",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+
+                    Card(
                         modifier = Modifier
-                            .clickable  (
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ){
-                                val intent = Intent(context,ProfileActivity :: class.java)
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable {
+                                val intent = Intent(context, ProfileActivity::class.java)
                                 context.startActivity(intent)
-                            }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                                scope.launch { drawerState.close() }
+                            },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
-
-//
-                        Icon(
-                            modifier = Modifier.size(iconSize),
-                            painter = painterResource(R.drawable.ic_sejong_profile),
-                            contentDescription = "Profile"
-
-                        )
-                        Text(
-                            text = context.getString(R.string.Profile),
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-
-                    // 🌍 Language row (click to expand dropdown)
-                    Row(
-                        modifier = Modifier
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) {
-                                expanded = true
-                            }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(iconSize),
-                            painter = painterResource(R.drawable.ic_lang),
-                            contentDescription = "Change language"
-                        )
-                        Text(
-                            text = "${context.getString(R.string.Language)}: ${LocalData.getSavedLanguage(context)}",
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-
-                    // 🔽 Dropdown menu anchored to this drawer
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        listOf("KOR", "ENG", "RUS", "TAJ").forEach { lang ->
-                            DropdownMenuItem(
-                                text = { Text(lang) },
-                                onClick = {
-                                    expanded = false
-                                    changeAppLanguage(context, lang) // apply language change
-                                }
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Profile",
+                                modifier = Modifier.size(28.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = context.getString(R.string.Profile),
+                                modifier = Modifier.padding(start = 12.dp)
                             )
                         }
                     }
 
-//                   Exit icon btn
-                    Row(
+                    Card(
                         modifier = Modifier
-                            .clickable (
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            )
-                            {
-                                deletToken(context)
-                            }
+                            .fillMaxWidth()
                             .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
-                        Icon(
-                            modifier = Modifier.size(iconSize),
-                            painter = painterResource(R.drawable.ic_logout),
-                            contentDescription = "Log out",
+                        Column(
 
-                        )
-                        Text(
-                            text = context.getString(R.string.Log_out),
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
+                            modifier = Modifier.animateContentSize()
+                        ) {
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable  (
+                                        indication = null,
+                                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                    ){
+                                        isLanguageListExpanded = !isLanguageListExpanded
+
+                                    }
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.language_icon),
+                                    contentDescription = "Language",
+                                    modifier = Modifier.size(28.dp),
+                                    tint = Color.Unspecified
+                                )
+                                Text(
+                                    text = context.getString(R.string.Language),
+                                    modifier = Modifier.padding(start = 12.dp)
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Icon(
+                                    imageVector = if (isLanguageListExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "Toggle Language List",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+
+                            if (isLanguageListExpanded) {
+                                val languages = listOf(
+                                    "KOR" to R.drawable.ic_flag_kor,
+                                    "ENG" to R.drawable.ic_flag_eng,
+                                    "RUS" to R.drawable.ic_flag_rus,
+                                    "TAJ" to R.drawable.ic_flag_taj
+                                )
+
+                                val currentLang = LocalData.getSavedLanguage(context)
+
+                                languages.forEach { (lang, flagRes) ->
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                changeAppLanguage(context, lang)
+                                                scope.launch { drawerState.close() }
+                                            }
+                                            .background(
+                                                if (lang == currentLang) Color(0xFFEDE9E3) else Color.Transparent
+                                            )
+                                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(flagRes),
+                                            contentDescription = lang,
+                                            modifier = Modifier.size(28.dp),
+                                            tint = Color.Unspecified
+                                        )
+                                        Text(
+                                            text = lang,
+                                            modifier = Modifier.padding(start = 12.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
 
+                    Spacer(modifier = Modifier.weight(1f))
 
 
-
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable {
+                                deletToken(context)
+                                scope.launch { drawerState.close() }
+                            },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Logout,
+                                contentDescription = "Log out",
+                                modifier = Modifier.size(28.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = context.getString(R.string.Log_out),
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -256,6 +334,7 @@ fun NavBar(modifier: Modifier = Modifier) {
 
 
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScreenEnum,onChangeScreen : (NavigationScreenEnum) -> Unit) {
     when(selectedIndex) {
@@ -291,12 +370,33 @@ fun changeAppLanguage(context: Context, lang: String) {
     context.startActivity(intent)
 }
 
-
-
-
-
-@Preview (showBackground = true, showSystemUi = true)
-@Composable
-private  fun Preview () {
-    NavBar()
+fun Title.getLocalized(context: Context): String {
+    return when (LocalData.getSavedLanguage(context)) {
+        "RUS" -> this.rus
+        "ENG" -> this.eng
+        "KOR" -> this.kor
+        "TAJ" -> this.taj
+        else -> this.rus // по умолчанию русский
+    }
 }
+
+fun Content.getLocalized(context: Context): String {
+    return when (LocalData.getSavedLanguage(context)) {
+        "RUS" -> this.rus
+        "ENG" -> this.eng
+        "KOR" -> this.kor
+        "TAJ" -> this.taj
+        else -> this.rus
+    }
+}
+
+
+
+
+
+
+//@Preview (showBackground = true, showSystemUi = true)
+//@Composable
+//private  fun Preview () {
+//    NavBar()
+//}

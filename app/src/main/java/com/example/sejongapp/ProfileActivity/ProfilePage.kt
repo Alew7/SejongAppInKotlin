@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.VerifiedUser
@@ -30,6 +32,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,9 +64,21 @@ fun ProfilePage() {
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
-            .padding(16.dp),
+            .padding(30.dp),    /// 16.dp
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        IconButton (onClick = {
+            (context as? ProfileActivity)?.finish()
+        }, modifier = Modifier.align(Alignment.Start)) {
+            Icon (
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "ic_back",
+                tint = Color.Black,
+                modifier = Modifier
+                    .size(35.dp)
+            )
+        }
+
         // Заголовок
         Text(
             text = context.getString(R.string.Profile),
@@ -95,13 +110,13 @@ fun ProfilePage() {
 
         // Имя и Email
         Text(
-            text = userData.fullname ?: "Unknown User",
+            text = userData.username ?: "Unknown User",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF111111)
         )
         Text(
-            text = userData.email ?: "email@example.com",
+            text = userData.fullname ?: "email@example.com",
             fontSize = 16.sp,
             color = Color.Gray
         )
@@ -124,10 +139,28 @@ fun ProfilePage() {
                     value = userData.status ?: "—"
                 )
                 Divider(color = Color(0xFFDDDDDD))
+
+
+                val groupsValue = userData.groups
+                    ?.toString()
+                    ?.replace("[", "")
+                    ?.replace("]", "")
+                    ?: "-"
+
                 ProfileItem(
                     icon = Icons.Default.Group,
                     title = context.getString(R.string.Groups),
-                    value = userData.groups ?.joinToString (", ") ?: "-"
+                    value = groupsValue
+
+                )
+
+                Divider(color = Color(0xFFDDDDDD))
+
+
+                ProfileItem(
+                    icon = Icons.Filled.Email,
+                    title = context.getString(R.string.Email),
+                    value = userData.email ?: "-"
                 )
 
             }
@@ -260,7 +293,11 @@ fun ProfileItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: St
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(text = title, fontSize = 14.sp, color = Color.Gray)
-            Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 1,
+                overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false)
+                )
+
+
         }
     }
 }

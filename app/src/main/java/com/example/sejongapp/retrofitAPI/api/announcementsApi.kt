@@ -6,5 +6,5 @@ import retrofit2.http.GET
 
 interface announcementsApi {
     @GET ("announcements/")
-    suspend fun getAnnouncements(): Response<ArrayList<AnnouncementData>>
+    suspend fun getAnnouncements(): Response<AnnouncementData>
 }
