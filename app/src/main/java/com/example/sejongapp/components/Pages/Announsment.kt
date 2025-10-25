@@ -64,7 +64,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
     LaunchedEffect(Unit) {
         Log.i(TAG, "AnnouncementPage: Starting to fetch data")
-        announcementView.getAllannouncments()
+        announcementView.getAllannouncments(context)
     }
 
 

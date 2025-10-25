@@ -51,6 +51,7 @@ import com.example.sejongapp.ui.theme.deepBlack
 import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.Checkbox
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -58,6 +59,7 @@ import androidx.compose.runtime.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.draw.clip
+import com.example.sejongapp.models.DataClasses.ChangeUserData
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
@@ -124,10 +126,14 @@ fun showError(errorMessage: String, onDismiss: () -> Unit) {
 fun EditUserDialog(
     userData: UserData,
     onDismiss: () -> Unit,
-    onSave: (UserData) -> Unit
+    onSave: (ChangeUserData) -> Unit
 ) {
     var UsernameState by remember { mutableStateOf(userData.username) }
     var emailState by remember { mutableStateOf(userData.email) }
+    val passwordChangeChecked = remember { mutableStateOf(false) }
+    var oldpassword by  remember { mutableStateOf("") }
+    var newpassword by remember { mutableStateOf("") }
+
 
 
     AlertDialog(
@@ -176,18 +182,55 @@ fun EditUserDialog(
                         cursorColor = Color.Black
 
                 ))
+
+
+                Checkbox(
+                    checked = passwordChangeChecked.value,
+                    onCheckedChange = { passwordChangeChecked.value = it }
+                )
+                Text("Checkbox is ${if (passwordChangeChecked.value) "checked" else "unchecked"}")
+
+
+                if (passwordChangeChecked.value){
+                    OutlinedTextField(
+                        value = oldpassword,
+                        onValueChange = { oldpassword = it },
+                        label = { Text("OLd Password") },
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedTextColor = Color.Black,
+                            focusedBorderColor = primaryColor,
+                            focusedLabelColor = Color.Black,
+                            cursorColor = Color.Black
+
+                        ))
+
+                    OutlinedTextField(
+                        value = newpassword,
+                        onValueChange = { newpassword = it },
+                        label = { Text("New Password") },
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedTextColor = Color.Black,
+                            focusedBorderColor = primaryColor,
+                            focusedLabelColor = Color.Black,
+                            cursorColor = Color.Black
+
+                        ))
+                }
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    val newUserData = UserData(
+                    val newUserData = ChangeUserData(
                         username = UsernameState,
                         email = emailState,
-                        status = userData.status,
-                        groups = userData.groups,
-                        avatar = userData.avatar,
-                        fullname = userData.fullname
+                        check_password = "",
+                        password = "",
+                        phone_number = ""
                     )
                     onSave(newUserData)
                 },

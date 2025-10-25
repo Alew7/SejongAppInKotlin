@@ -89,7 +89,7 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 //    Getting all the schedule data from the server db
     LaunchedEffect(Unit) {
-        scheduleViewModel.getAllSchedules()
+        scheduleViewModel.getAllSchedules(context)
     }
 
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sejongapp.models.DataClasses.ChangeUserData
 import com.example.sejongapp.models.DataClasses.UserData
 import com.example.sejongapp.models.DataClasses.loginRequestData
 import com.example.sejongapp.models.DataClasses.tokenData
@@ -96,14 +97,15 @@ class UserViewModel: ViewModel() {
         }
     }
 
-    fun changeUserData(token: String, userData: UserData){
+
+    fun changeUserData(token: String, changeUserData: ChangeUserData){
         Log.i(TAG, "ChangeUserData: trying to change user data")
         _userChangeResult.value = Loading
 
         viewModelScope.launch {
 
             try {
-                val response = userApi.changeUserData(token, userData)
+                val response = userApi.changeUserData(token, changeUserData)
                 if (response.isSuccessful){
                     Log.i(TAG, "ChangeUserData: data successfully changed " + response.body().toString())
 

@@ -1,5 +1,6 @@
 package com.example.sejongapp.models.ViewModels
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,15 +22,17 @@ class AnnouncmentsViewModel : ViewModel() {
     val announcments: MutableLiveData<NetworkResponse<AnnouncementData>> = _announcments
 
 
-    fun getAllannouncments() {
+    fun getAllannouncments(context: Context) {
         Log.i(TAG, "trying to fetch all announcments data")
         _announcments.value = NetworkResponse.Loading
+
+        val my_token = LocalData.getSavedToken(context)
 
         viewModelScope.launch {
 
             try {
 
-                val response = announcmentApi.getAnnouncements()
+                val response = announcmentApi.getAnnouncements(my_token)
 
                 if (response.isSuccessful) {
                     Log.i(TAG, "data successfully taken " + response.body().toString())

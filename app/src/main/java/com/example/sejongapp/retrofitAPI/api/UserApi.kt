@@ -1,6 +1,7 @@
 package com.example.sejongapp.retrofitAPI.api
 
 
+import com.example.sejongapp.models.DataClasses.ChangeUserData
 import com.example.sejongapp.models.DataClasses.UserData
 import com.example.sejongapp.models.DataClasses.loginRequestData
 import com.example.sejongapp.models.DataClasses.tokenData
@@ -29,6 +30,6 @@ interface UserApi {
     @POST("change_info/")
     suspend fun changeUserData(
         @Header("token") token: String,
-        @Body request: UserData
+        @Body request: ChangeUserData,
     ):Response<tokenData>
 }

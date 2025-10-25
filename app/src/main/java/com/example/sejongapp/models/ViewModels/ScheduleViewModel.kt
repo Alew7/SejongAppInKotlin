@@ -1,6 +1,9 @@
 package com.example.sejongapp.models.ViewModels
 
+import LocalData
+import android.content.Context
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +11,7 @@ import com.example.sejongapp.models.DataClasses.ScheduleData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.retrofitAPI.RetrofitInstance
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class ScheduleViewModel: ViewModel() {
     companion object {
@@ -22,15 +26,15 @@ class ScheduleViewModel: ViewModel() {
     val scheduleResult : MutableLiveData<NetworkResponse<ArrayList<ScheduleData>>> = _scheduleResult
 
 
-    fun getAllSchedules(){
+    fun getAllSchedules(context: Context){
         Log.i(TAG, "trying to fetch all schedules data")
         _scheduleResult.value = NetworkResponse.Loading
-
+        val user_token = LocalData.getSavedToken(context)
         viewModelScope.launch {
 
 
             try {
-                val response = scheduleApi.getSchedules()
+                val response = scheduleApi.getSchedules(user_token)
                 if (response.isSuccessful) {
                     Log.i(TAG, "data successfully taken " + response.body().toString())
                     _scheduleResult.value = NetworkResponse.Success(response.body()!!)

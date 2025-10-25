@@ -130,7 +130,7 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
 
 //            Announcment
             Image (
-                painter = painterResource(R.drawable.icon_annousment),
+                painter = painterResource(R.drawable.ic_annousment),
                 contentDescription = "icon_annousment",
                 modifier = Modifier
                     .padding(end = endPadding)

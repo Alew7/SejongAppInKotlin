@@ -71,13 +71,14 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
     var isSeraching by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 
+    val context = LocalContext.current
     val eLibViewModel: ELibraryViewModel = viewModel()
 
 
     val showOneBook = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit){
-        eLibViewModel.getAllBooks()
+        eLibViewModel.getAllBooks(context)
     }
 
     BackHandler {

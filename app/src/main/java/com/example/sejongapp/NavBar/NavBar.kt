@@ -185,7 +185,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    painter = painterResource(R.drawable.language_icon),
+                                    painter = painterResource(R.drawable.ic_lenguage),
                                     contentDescription = "Language",
                                     modifier = Modifier.size(28.dp),
                                     tint = Color.Unspecified
