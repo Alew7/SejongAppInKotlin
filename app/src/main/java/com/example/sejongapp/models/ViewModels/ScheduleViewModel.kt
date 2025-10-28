@@ -42,7 +42,7 @@ class ScheduleViewModel: ViewModel() {
 
                 }
                 else {
-                        Log.e(TAG, response.message().toString())
+                        Log.e(TAG, "Sth went wrong while fetching schedules data ${response.body()}")
                         _scheduleResult.value = NetworkResponse.Error("Failed to fetch data")
                 }
             }

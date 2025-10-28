@@ -228,8 +228,8 @@ fun EditUserDialog(
                     val newUserData = ChangeUserData(
                         username = UsernameState,
                         email = emailState,
-                        check_password = "",
-                        password = "",
+                        check_password = newpassword,
+                        password = oldpassword,
                         phone_number = ""
                     )
                     onSave(newUserData)

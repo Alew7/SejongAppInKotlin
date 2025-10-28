@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">192.168.0.115</domain>
+        <domain includeSubdomains="true">sejong-app-container-785993649958.us-central1.run.app</domain>
     </domain-config>
 </network-security-config>
 

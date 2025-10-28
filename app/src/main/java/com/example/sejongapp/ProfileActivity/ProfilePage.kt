@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -38,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat.recreate
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberImagePainter
+import com.example.sejongapp.Pages.fixGoogleDriveLink
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.ProfileActivity.ui.theme.secondaryColor
 import com.example.sejongapp.R
@@ -59,6 +62,7 @@ fun ProfilePage() {
     var showEditDialog by remember { mutableStateOf(false) }
     var showLoadingDialog by remember { mutableStateOf(false) }
     var fetchingNewUserData by remember { mutableStateOf(false) }
+
 
     Column(
         modifier = Modifier
@@ -89,8 +93,10 @@ fun ProfilePage() {
 
         Spacer(modifier = Modifier.height(24.dp))
 
+
+
         // Аватар
-        Box(
+        Box (
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
@@ -98,12 +104,23 @@ fun ProfilePage() {
                 .shadow(8.dp, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = "Profile",
-                tint = Color(0xFF555555),
-                modifier = Modifier.size(64.dp)
-            )
+
+            if (userData.avatar.isNotEmpty()) {
+                Image(
+                    painter = rememberImagePainter(userData.avatar),
+                    contentDescription = "userAvatar",
+                )
+
+            }
+            else {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "null",
+                    tint = Color(0xFF555555),
+                    modifier = Modifier.size(64.dp)
+
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -302,8 +319,8 @@ fun ProfileItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: St
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ProfilePreview() {
-    ProfilePage()
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun ProfilePreview() {
+//    ProfilePage()
+//}

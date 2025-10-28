@@ -1,5 +1,10 @@
 package com.example.sejongapp.models.DataClasses
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+
+@Parcelize
 data class UserData(
     val username: String,
     val avatar: String,
@@ -7,4 +12,4 @@ data class UserData(
     val email: String,
     val status: String,
     val groups: List<String>
-)
+): Parcelable
