@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.sejongapp.MainActivity
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.ui.theme.backgroundColor
@@ -143,8 +147,18 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
                     ) {
                         onChangeScreen(NavigationScreenEnum.ANNOUNCEMENTS)
                     }
-
             )
+            Text (text = context.getString(R.string.Announcement),
+                fontSize = 10.sp,
+                color = primaryColor,
+                modifier = Modifier
+                    .padding(end = endPadding)
+                    .scale(scale.value)
+            )
+
+
+
+
 
 //           Library
             Image (
@@ -162,6 +176,15 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
                         onChangeScreen(NavigationScreenEnum.LIBRARY)
                     }
             )
+            Text (text = context.getString(R.string.ElectLib),
+                fontSize = 10.sp,
+                color = primaryColor,
+                modifier = Modifier
+                    .padding(start = startPadding)
+                    .scale(scale.value)
+            )
+
+
 
 //            schedule
             Image (
@@ -178,6 +201,13 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
                     ) {
                         onChangeScreen(NavigationScreenEnum.SCHEDULE)
                     }
+            )
+            Text (text = context.getString(R.string.schedule),
+                fontSize = 10.sp,
+                color = primaryColor,
+                modifier = Modifier
+                    .padding(end = endPadding)
+                    .scale(scale.value)
             )
 
 //            profile
@@ -196,6 +226,13 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
                         context.startActivity(intent)
                     }
 
+            )
+            Text (text = context.getString(R.string.Profile),
+                fontSize = 10.sp,
+                color = primaryColor,
+                modifier = Modifier
+                    .padding(start = startPadding)
+                    .scale(scale.value)
             )
         }
     }

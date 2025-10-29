@@ -27,6 +27,8 @@
     <!-- sidebar menu -->
     <string name="Log_out">로그아웃</string>
 
+
+
     <!-- Schedule -->
     <string name="All">모두</string>
     <string name = "DAY">날</string>

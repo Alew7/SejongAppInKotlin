@@ -52,6 +52,7 @@ import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -186,16 +187,23 @@ fun EditUserDialog(
 
                 Checkbox(
                     checked = passwordChangeChecked.value,
-                    onCheckedChange = { passwordChangeChecked.value = it }
+                    onCheckedChange = { passwordChangeChecked.value = it },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = primaryColor,
+                        uncheckedColor = Color.Gray,
+
+
+
+                    )
                 )
-                Text("Checkbox is ${if (passwordChangeChecked.value) "checked" else "unchecked"}")
+//                Text("Checkbox is ${if (passwordChangeChecked.value) "checked" else "unchecked"}")
 
 
                 if (passwordChangeChecked.value){
                     OutlinedTextField(
                         value = oldpassword,
                         onValueChange = { oldpassword = it },
-                        label = { Text("OLd Password") },
+                        label = { Text("Old Password") },
                         shape = RoundedCornerShape(12.dp),
                         singleLine = true,
                         colors = TextFieldDefaults.outlinedTextFieldColors(

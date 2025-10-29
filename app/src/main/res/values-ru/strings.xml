@@ -7,7 +7,7 @@
 
     <!-- Main Activity -->
     <string name="Announcement">Объявления</string>
-    <string name="ElectLib">Электронная библиотека</string>
+    <string name="ElectLib"> библиотека</string>
     <string name="schedule">Расписание</string>
     <string name="Profile">Профиль</string>
 
@@ -27,6 +27,8 @@
 
     <!-- sidebar menu -->
     <string name="Log_out">Выйти</string>
+
+
 
     <!-- Schedule -->
     <string name="All">Все</string>
