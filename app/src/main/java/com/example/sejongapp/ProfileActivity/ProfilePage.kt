@@ -58,7 +58,7 @@ const val TAG = "TAG_ProfilePage"
 fun ProfilePage() {
     val userViewModel : UserViewModel = viewModel()
     val context = LocalContext.current
-    val userData = remember { getUserData(context) }
+    val userData = remember { getUserData(context)}
     var showEditDialog by remember { mutableStateOf(false) }
     var showLoadingDialog by remember { mutableStateOf(false) }
     var fetchingNewUserData by remember { mutableStateOf(false) }
@@ -324,3 +324,7 @@ fun ProfileItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: St
 //fun ProfilePreview() {
 //    ProfilePage()
 //}
+
+
+
+

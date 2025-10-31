@@ -6,4 +6,5 @@ data class ChangeUserData(
     val password: String,
     val phone_number: String,
     val email: String,
+
 )

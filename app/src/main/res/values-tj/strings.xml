@@ -58,9 +58,15 @@
     <string name="Student">донишҷӯ</string>
     <string name="Email">почтаи электронӣ</string>
     <string name="Edit_profile">Таҳрир кардани профил</string>
+    <string name="Edit_User_Password">Иваз кардани пароли корбар</string>
+    <string name="Cancel">Бекор кардан</string>
+    <string name="Save">Захира кардан</string>
 
 
 
 
     <string name="press_again_to_exit">Барои баромадан боз як бор пахш кунед</string>
 </resources>
+
+
+

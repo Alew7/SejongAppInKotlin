@@ -52,6 +52,9 @@
     <string name="Groups">Группа</string>
     <string name="Student">Студент</string>
     <string name="Edit_profile">Редактировать профиль</string>
+    <string name="Edit_User_Password">Изменить пароль пользователя</string>
+    <string name="Cancel">Отмена</string>
+    <string name="Save">Сохранить</string>
 
 
     <string name="press_again_to_exit">Нажмите ещё раз для выхода</string>

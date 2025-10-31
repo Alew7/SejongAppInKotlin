@@ -1,5 +1,14 @@
 package com.example.sejongapp.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,6 +16,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,13 +63,22 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.painterResource
 import com.example.sejongapp.models.DataClasses.ChangeUserData
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -135,16 +154,20 @@ fun EditUserDialog(
     var oldpassword by  remember { mutableStateOf("") }
     var newpassword by remember { mutableStateOf("") }
 
+    var isUserInfoExpanded by remember { mutableStateOf(false) }
+    var isPasswordInfoExpanded by remember { mutableStateOf(false)}
+    val context = LocalContext.current
+
 
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        containerColor = backgroundColor, // same soft background
+        containerColor = backgroundColor,
         shape = RoundedCornerShape(20.dp),
         tonalElevation = 8.dp,
         title = {
             Text(
-                text = "Edit User Info",
+                text = context.getString(R.string.Edit_profile),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = deepBlack
@@ -152,82 +175,154 @@ fun EditUserDialog(
         },
         text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
 
-                OutlinedTextField(
-                    value = UsernameState,
-                    onValueChange = { UsernameState = it },
-                    label = { Text("Username") },
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedTextColor = Color.Black,
-                        focusedBorderColor = primaryColor,
-                        focusedLabelColor = Color.Black,
-                        cursorColor = Color.Black
+                Card (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding (vertical = 8.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+//                        modifier = Modifier.animateContentSize( animationSpec = tween(durationMillis = 300, easing = LinearOutSlowInEasing))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                ) {
+                                    isUserInfoExpanded = !isUserInfoExpanded
+                                }
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Profile",
+                                modifier = Modifier.size(28.dp)
+                            )
 
-                    )
-                )
+                            Text(
+                                text = context.getString(R.string.Edit_profile),
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
 
-                OutlinedTextField(
-                    value = emailState,
-                    onValueChange = { emailState = it },
-                    label = { Text("Email") },
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedTextColor = Color.Black,
-                        focusedBorderColor = primaryColor,
-                        focusedLabelColor = Color.Black,
-                        cursorColor = Color.Black
+                            Spacer(modifier = Modifier.weight(1f))
 
-                ))
+                            Icon(
+                                imageVector = if (isUserInfoExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                contentDescription = "Toggle Edit User",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
 
 
-                Checkbox(
-                    checked = passwordChangeChecked.value,
-                    onCheckedChange = { passwordChangeChecked.value = it },
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = primaryColor,
-                        uncheckedColor = Color.Gray,
+                        if (isUserInfoExpanded) {
 
+                            OutlinedTextField(
+                                value = UsernameState,
+                                onValueChange = { UsernameState = it },
+                                label = { Text("Username") },
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedTextColor = Color.Black,
+                                    focusedBorderColor = primaryColor,
+                                    focusedLabelColor = Color.Black,
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
 
-
-                    )
-                )
-//                Text("Checkbox is ${if (passwordChangeChecked.value) "checked" else "unchecked"}")
-
-
-                if (passwordChangeChecked.value){
-                    OutlinedTextField(
-                        value = oldpassword,
-                        onValueChange = { oldpassword = it },
-                        label = { Text("Old Password") },
-                        shape = RoundedCornerShape(12.dp),
-                        singleLine = true,
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedTextColor = Color.Black,
-                            focusedBorderColor = primaryColor,
-                            focusedLabelColor = Color.Black,
-                            cursorColor = Color.Black
-
-                        ))
-
-                    OutlinedTextField(
-                        value = newpassword,
-                        onValueChange = { newpassword = it },
-                        label = { Text("New Password") },
-                        shape = RoundedCornerShape(12.dp),
-                        singleLine = true,
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedTextColor = Color.Black,
-                            focusedBorderColor = primaryColor,
-                            focusedLabelColor = Color.Black,
-                            cursorColor = Color.Black
-
-                        ))
+                            OutlinedTextField(
+                                value = emailState,
+                                onValueChange = { emailState = it },
+                                label = { Text("Email") },
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedTextColor = Color.Black,
+                                    focusedBorderColor = primaryColor,
+                                    focusedLabelColor = Color.Black,
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
                 }
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+//                            .animateContentSize(animationSpec = tween(durationMillis = 300, easing = LinearOutSlowInEasing))
+                            .padding(12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    isPasswordInfoExpanded = !isPasswordInfoExpanded
+                                },
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(imageVector = Icons.Default.Key, contentDescription = "Password")
+                            Text(text = context.getString(R.string.Edit_User_Password), modifier = Modifier.padding(start = 12.dp))
+                            Spacer(modifier = Modifier.weight(1f))
+                            Icon(
+                                imageVector = if (isPasswordInfoExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                contentDescription = null
+                            )
+                        }
+
+                        if (isPasswordInfoExpanded) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = oldpassword,
+                                onValueChange = { oldpassword = it },
+                                label = { Text("Old Password") },
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedTextColor = Color.Black,
+                                    focusedBorderColor = primaryColor,
+                                    focusedLabelColor = Color.Black,
+                                )
+                            )
+
+                            OutlinedTextField(
+                                value = newpassword,
+                                onValueChange = { newpassword = it },
+                                label = { Text("New Password") },
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedTextColor = Color.Black,
+                                    focusedBorderColor = primaryColor,
+                                    focusedLabelColor = Color.Black,
+                                )
+                            )
+                        }
+                    }
+                }
+
+
             }
         },
         confirmButton = {
@@ -249,7 +344,7 @@ fun EditUserDialog(
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.height(45.dp)
             ) {
-                Text("Save", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text(context.getString(R.string.Save), fontSize = 16.sp, fontWeight = FontWeight.Medium)
             }
         },
         dismissButton = {
@@ -258,12 +353,17 @@ fun EditUserDialog(
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.height(45.dp),
 
-            ) {
-                Text("Cancel", fontSize = 16.sp, color = Color.Black)
+                ) {
+                Text(context.getString(R.string.Cancel), fontSize = 16.sp, color = Color.Black)
             }
         }
     )
 }
+
+
+
+
+
 
 /*
  CircularProgressIndicator(

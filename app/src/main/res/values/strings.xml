@@ -62,6 +62,10 @@
     <string name="Edit_profile">Edit Profile</string>
     <string name="applying_changes">applying changes</string>
     <string name="refreshing_data">refreshing data</string>
+    <string name="Edit_User_Password"> Edit User Password </string>
+    <string name="Cancel">Cancel</string>
+    <string name="Save">Save</string>
+
 
 
     <string name="press_again_to_exit">Press again to exit</string>
