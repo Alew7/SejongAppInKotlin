@@ -211,6 +211,7 @@ fun ProfilePage() {
 
         //        Edit dialog. For making changes of the user
         if (showEditDialog){
+
             EditUserDialog(
                 userData = userData,
                 onDismiss = { showEditDialog = false },
@@ -226,6 +227,7 @@ fun ProfilePage() {
 
         //     Loading dialogs for showing and handling the user changing requests
         if(showLoadingDialog){
+
             val result by userViewModel.userChangeResult.observeAsState(NetworkResponse.Idle)
 
             when (result) {
@@ -239,14 +241,14 @@ fun ProfilePage() {
                             LoadingDialog(LocalContext.current.getString(R.string.applying_changes))
                     }
                 is NetworkResponse.Success ->{
-                    val token = (result as NetworkResponse.Success<tokenData>).data.auth_token
+                    val token = (result as NetworkResponse.Success<String>).data
                     Log.v(TAG, "ProfileChangeDialog : The token is $token")
                     if (token.isNullOrBlank()) {
                             // treat as error
                         showError("Server returned null token") { fetchingNewUserData = false }
                     } else {
-                        LocalData.setToken(context, token)
-                        userViewModel.getUserData(token)
+//                        LocalData.setToken(context, token)
+//                        userViewModel.getUserData(token)
                         fetchingNewUserData = true
                         showLoadingDialog = false
 

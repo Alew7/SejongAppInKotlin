@@ -31,5 +31,5 @@ interface UserApi {
     suspend fun changeUserData(
         @Header("token") token: String,
         @Body request: ChangeUserData,
-    ):Response<tokenData>
+    ):Response<Any>
 }

@@ -14,6 +14,7 @@ import com.example.sejongapp.retrofitAPI.NetworkResponse.*
 import com.example.sejongapp.retrofitAPI.RetrofitInstance
 import kotlinx.coroutines.launch
 
+
 class UserViewModel: ViewModel() {
 
 
@@ -23,8 +24,8 @@ class UserViewModel: ViewModel() {
     private val _userTokenResult = MutableLiveData<NetworkResponse<tokenData>>()
     val userTokenResult : LiveData<NetworkResponse<tokenData>> = _userTokenResult
 
-    private val _userChangeResult = MutableLiveData<NetworkResponse<tokenData>>()
-    val userChangeResult : LiveData<NetworkResponse<tokenData>> = _userChangeResult
+    private val _userChangeResult = MutableLiveData<NetworkResponse<Any>>()
+    val userChangeResult : LiveData<NetworkResponse<Any>> = _userChangeResult
 
 
     private val _userDataResult = MutableLiveData<NetworkResponse<UserData>>()
@@ -99,15 +100,21 @@ class UserViewModel: ViewModel() {
 
 
     fun changeUserData(token: String, changeUserData: ChangeUserData){
+
+
+
+
         Log.i(TAG, "ChangeUserData: trying to change user data")
         _userChangeResult.value = Loading
 
         viewModelScope.launch {
 
+            Log.i(TAG, "ChangeUserData: Let's do it!")
             try {
                 val response = userApi.changeUserData(token, changeUserData)
                 if (response.isSuccessful){
                     Log.i(TAG, "ChangeUserData: data successfully changed " + response.body().toString())
+                    Log.i(TAG, "ChangeUserData: Only it's body " + response.body())
 
 
 
@@ -115,13 +122,9 @@ class UserViewModel: ViewModel() {
                         _userChangeResult.value = Success(it)
                     }
                 } else {
-                    response.body()?.let {
-                        Log.e(TAG, "ChangeUserData failed! Error is ${response.message()}")
-                        _userChangeResult.value = Error(response.message().toString())
-                    }
-
-                    Log.i(TAG, "ChangeUserData: the response is not successful, Couldn't change the user data. the response is ${response.message()}")
+                    Log.v(TAG, "ChangeUserData: the response is not successful, Couldn't change the user data. the response is ${response.body()}")
                     Log.e(TAG, response.message().toString())
+                    _userChangeResult.value = Error(response.message().toString())
                 }
             }
             catch (e: Exception){
@@ -136,5 +139,6 @@ class UserViewModel: ViewModel() {
     fun resetUserResult(){
         _userTokenResult.value = Idle
     }
+
 
 }

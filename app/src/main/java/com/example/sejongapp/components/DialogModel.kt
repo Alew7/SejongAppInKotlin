@@ -283,7 +283,7 @@ fun EditUserDialog(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(imageVector = Icons.Default.Key, contentDescription = "Password")
-                            Text(text = context.getString(R.string.Edit_User_Password), modifier = Modifier.padding(start = 12.dp))
+                            Text(text = "Password", modifier = Modifier.padding(start = 12.dp))
                             Spacer(modifier = Modifier.weight(1f))
                             Icon(
                                 imageVector = if (isPasswordInfoExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
@@ -331,9 +331,8 @@ fun EditUserDialog(
                     val newUserData = ChangeUserData(
                         username = UsernameState,
                         email = emailState,
-                        check_password = newpassword,
-                        password = oldpassword,
-                        phone_number = ""
+                        check_password = oldpassword,
+                        password = newpassword
                     )
                     onSave(newUserData)
                 },
@@ -516,4 +515,3 @@ fun ZoomableImage(url: String, modifier: Modifier = Modifier) {
             )
     )
 }
-
