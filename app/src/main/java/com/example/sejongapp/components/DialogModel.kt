@@ -136,9 +136,9 @@ fun EditUserDialog(
     onDismiss: () -> Unit,
     onSave: (ChangeUserInfo) -> Unit
 ) {
-    var UsernameState by remember { mutableStateOf("") } /// userData.username
-    var emailState by remember { mutableStateOf("")}  /// userData.email
-    var isUserInfoExpanded by remember { mutableStateOf(false) }
+    var UsernameState by remember { mutableStateOf(userData.username) } /// userData.username
+    var emailState by remember { mutableStateOf(userData.email)}  /// userData.email
+    var isUserInfoExpanded by remember { mutableStateOf(false)}
 
     val context = LocalContext.current
     val isFormValid = UsernameState.isNotBlank() && emailState.isNotBlank()
