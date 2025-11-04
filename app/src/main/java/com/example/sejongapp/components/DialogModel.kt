@@ -424,20 +424,12 @@ fun EditUserPasswordDialog(
     )
 }
 
-
-
-
-
-
-
-
 /*
  CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.secondary,
                     trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 )
  */
-
 @Composable
 fun LoadingDialog(
     message: String = "Loading..."
