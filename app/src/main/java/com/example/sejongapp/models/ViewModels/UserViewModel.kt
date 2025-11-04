@@ -169,6 +169,4 @@ class UserViewModel: ViewModel() {
     fun resetUserResult(){
         _userTokenResult.value = Idle
     }
-
-
 }
