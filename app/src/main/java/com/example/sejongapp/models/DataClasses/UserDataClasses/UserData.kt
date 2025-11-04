@@ -1,4 +1,4 @@
-package com.example.sejongapp.models.DataClasses
+package com.example.sejongapp.models.DataClasses.UserDataClasses
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

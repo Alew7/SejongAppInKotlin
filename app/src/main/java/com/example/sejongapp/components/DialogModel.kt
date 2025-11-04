@@ -1,14 +1,5 @@
 package com.example.sejongapp.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -54,32 +45,29 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.R
-import com.example.sejongapp.models.DataClasses.UserData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.ui.theme.deepBlack
 import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.Checkbox
-import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.res.painterResource
-import com.example.sejongapp.models.DataClasses.ChangeUserData
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
@@ -146,17 +134,15 @@ fun showError(errorMessage: String, onDismiss: () -> Unit) {
 fun EditUserDialog(
     userData: UserData,
     onDismiss: () -> Unit,
-    onSave: (ChangeUserData) -> Unit
+    onSave: (ChangeUserInfo) -> Unit
 ) {
-    var UsernameState by remember { mutableStateOf(userData.username) }
-    var emailState by remember { mutableStateOf(userData.email) }
-    val passwordChangeChecked = remember { mutableStateOf(false) }
-    var oldpassword by  remember { mutableStateOf("") }
-    var newpassword by remember { mutableStateOf("") }
-
+    var UsernameState by remember { mutableStateOf("") } /// userData.username
+    var emailState by remember { mutableStateOf("")}  /// userData.email
     var isUserInfoExpanded by remember { mutableStateOf(false) }
-    var isPasswordInfoExpanded by remember { mutableStateOf(false)}
+
     val context = LocalContext.current
+    val isFormValid = UsernameState.isNotBlank() && emailState.isNotBlank()
+
 
 
 
@@ -257,91 +243,24 @@ fun EditUserDialog(
                         }
                     }
                 }
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-//                            .animateContentSize(animationSpec = tween(durationMillis = 300, easing = LinearOutSlowInEasing))
-                            .padding(12.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) {
-                                    isPasswordInfoExpanded = !isPasswordInfoExpanded
-                                },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(imageVector = Icons.Default.Key, contentDescription = "Password")
-                            Text(text = "Password", modifier = Modifier.padding(start = 12.dp))
-                            Spacer(modifier = Modifier.weight(1f))
-                            Icon(
-                                imageVector = if (isPasswordInfoExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = null
-                            )
-                        }
-
-                        if (isPasswordInfoExpanded) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            OutlinedTextField(
-                                value = oldpassword,
-                                onValueChange = { oldpassword = it },
-                                label = { Text("Old Password") },
-                                shape = RoundedCornerShape(12.dp),
-                                singleLine = true,
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedTextColor = Color.Black,
-                                    focusedBorderColor = primaryColor,
-                                    focusedLabelColor = Color.Black,
-                                )
-                            )
-
-                            OutlinedTextField(
-                                value = newpassword,
-                                onValueChange = { newpassword = it },
-                                label = { Text("New Password") },
-                                shape = RoundedCornerShape(12.dp),
-                                singleLine = true,
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedTextColor = Color.Black,
-                                    focusedBorderColor = primaryColor,
-                                    focusedLabelColor = Color.Black,
-                                )
-                            )
-                        }
-                    }
-                }
-
-
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    val newUserData = ChangeUserData(
+                    val newUserData = ChangeUserInfo(
                         username = UsernameState,
                         email = emailState,
-                        check_password = oldpassword,
-                        password = newpassword
                     )
                     onSave(newUserData)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = primaryColor,
+                    containerColor = if (isFormValid) primaryColor else Color.Red,
                     contentColor = Color.White
                 ),
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.height(45.dp)
+                modifier = Modifier.height(45.dp),
+                enabled = isFormValid
             ) {
                 Text(context.getString(R.string.Save), fontSize = 16.sp, fontWeight = FontWeight.Medium)
             }
@@ -358,6 +277,154 @@ fun EditUserDialog(
         }
     )
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditUserPasswordDialog(
+    onDismiss: () -> Unit,
+    onSave: (ChangeUserPassword) -> Unit
+) {
+    var oldPassword by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
+    var isPasswordInfoExpanded by remember { mutableStateOf(false)}
+
+    val isFormValid = oldPassword.isNotBlank() && newPassword.isNotBlank()
+
+    val context = LocalContext.current
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        containerColor = backgroundColor,
+        shape = RoundedCornerShape(20.dp),
+        tonalElevation = 8.dp,
+        title = {
+            Text(
+                text = "Изменить пароль",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = deepBlack
+            )
+        },
+        text = {
+            Column {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    isPasswordInfoExpanded = !isPasswordInfoExpanded
+                                }
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = "Password",
+                                modifier = Modifier.size(28.dp)
+                            )
+
+                            Text(
+                                text = context.getString(R.string.Change_password),
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            Icon(
+                                imageVector = if (isPasswordInfoExpanded)
+                                    Icons.Default.KeyboardArrowUp
+                                else
+                                    Icons.Default.KeyboardArrowDown,
+                                contentDescription = "Toggle Password Edit",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+                        if (isPasswordInfoExpanded) {
+
+                            OutlinedTextField(
+                                value = oldPassword,
+                                onValueChange = { oldPassword = it },
+                                label = { Text("Старый пароль") },
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                visualTransformation = PasswordVisualTransformation(),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedTextColor = Color.Black,
+                                    focusedBorderColor = primaryColor,
+                                    focusedLabelColor = Color.Black,
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = newPassword,
+                                onValueChange = { newPassword = it },
+                                label = { Text("Новый пароль") },
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                visualTransformation = PasswordVisualTransformation(),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedTextColor = Color.Black,
+                                    focusedBorderColor = primaryColor,
+                                    focusedLabelColor = Color.Black,
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                        var TheChangedPassword =  ChangeUserPassword(
+                            check_password = oldPassword,
+                            password = newPassword
+                        )
+                        onSave(TheChangedPassword)
+                          },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = primaryColor,
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.height(45.dp),
+                enabled = isFormValid
+            ) {
+                Text(context.getString(R.string.Save), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(
+                onClick = { onDismiss() },
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.height(45.dp)
+            ) {
+                Text(context.getString(R.string.Cancel), fontSize = 16.sp, color = Color.Black)
+            }
+        }
+    )
+}
+
+
 
 
 

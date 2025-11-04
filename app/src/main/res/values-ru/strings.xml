@@ -55,6 +55,9 @@
     <string name="Edit_User_Password">Изменить пароль пользователя</string>
     <string name="Cancel">Отмена</string>
     <string name="Save">Сохранить</string>
+    <string name="Change_password">Изминить пароль</string>
+    <string name="old_password">Старый пароль</string>
+    <string name="new_password">Новый пароль</string>
 
 
     <string name="press_again_to_exit">Нажмите ещё раз для выхода</string>

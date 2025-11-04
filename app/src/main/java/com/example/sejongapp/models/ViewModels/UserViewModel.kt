@@ -5,10 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sejongapp.models.DataClasses.ChangeUserData
-import com.example.sejongapp.models.DataClasses.UserData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
+import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.models.DataClasses.loginRequestData
-import com.example.sejongapp.models.DataClasses.tokenData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.retrofitAPI.NetworkResponse.*
 import com.example.sejongapp.retrofitAPI.RetrofitInstance
@@ -99,22 +100,18 @@ class UserViewModel: ViewModel() {
     }
 
 
-    fun changeUserData(token: String, changeUserData: ChangeUserData){
-
-
-
-
-        Log.i(TAG, "ChangeUserData: trying to change user data")
+    fun changeUserName(token: String, newUserData: ChangeUserInfo){
+        Log.i(TAG, "changeUserName: trying to change user data")
         _userChangeResult.value = Loading
 
         viewModelScope.launch {
 
-            Log.i(TAG, "ChangeUserData: Let's do it!")
+            Log.i(TAG, "changeUserName: Let's do it!")
             try {
-                val response = userApi.changeUserData(token, changeUserData)
+                val response = userApi.changeUserName(token, newUserData)
                 if (response.isSuccessful){
-                    Log.i(TAG, "ChangeUserData: data successfully changed " + response.body().toString())
-                    Log.i(TAG, "ChangeUserData: Only it's body " + response.body())
+                    Log.i(TAG, "changeUserName: data successfully changed " + response.body().toString())
+                    Log.i(TAG, "changeUserName: Only it's body " + response.body())
 
 
 
@@ -122,7 +119,7 @@ class UserViewModel: ViewModel() {
                         _userChangeResult.value = Success(it)
                     }
                 } else {
-                    Log.v(TAG, "ChangeUserData: the response is not successful, Couldn't change the user data. the response is ${response.body()}")
+                    Log.v(TAG, "changeUserName: the response is not successful, Couldn't change the user data. the response is ${response.body()}")
                     Log.e(TAG, response.message().toString())
                     _userChangeResult.value = Error(response.message().toString())
                 }
@@ -130,6 +127,39 @@ class UserViewModel: ViewModel() {
             catch (e: Exception){
                 _userChangeResult.value = Error(e.message.toString())
                 Log.e(TAG, "ChangeUserData: Some error occurred")
+                Log.e(TAG, e.message.toString())
+            }
+        }
+
+    }
+
+    fun changeUserPassword(token: String, newUserData: ChangeUserPassword){
+        Log.i(TAG, "changeUserPassword: trying to change user data")
+        _userChangeResult.value = Loading
+
+        viewModelScope.launch {
+
+            Log.i(TAG, "changeUserPassword: Let's do it!")
+            try {
+                val response = userApi.changeUserPassword(token, newUserData)
+                if (response.isSuccessful){
+                    Log.i(TAG, "changeUserPassword: data successfully changed " + response.body().toString())
+                    Log.i(TAG, "changeUserPassword: Only it's body " + response.body())
+
+
+
+                    response.body()?.let {
+                        _userChangeResult.value = Success(it)
+                    }
+                } else {
+                    Log.v(TAG, "changeUserPassword: the response is not successful, Couldn't change the user data. the response is ${response.body()}")
+                    Log.e(TAG, response.message().toString())
+                    _userChangeResult.value = Error(response.message().toString())
+                }
+            }
+            catch (e: Exception){
+                _userChangeResult.value = Error(e.message.toString())
+                Log.e(TAG, "changeUserPassword: Some error occurred")
                 Log.e(TAG, e.message.toString())
             }
         }

@@ -59,6 +59,9 @@
     <string name="Edit_User_Password">사용자 비밀번호 수정</string>
     <string name="Cancel">취소</string>
     <string name="Save">저장</string>
+    <string name="Change_password">비밀번호 변경</string>
+    <string name="old_password">기존 비밀번호</string>
+    <string name="new_password">새 비밀번호</string>
 
 
 

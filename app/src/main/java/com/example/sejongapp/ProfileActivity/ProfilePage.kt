@@ -3,9 +3,6 @@ package com.example.sejongapp.ProfileActivity
 import LocalData
 import LocalData.getUserData
 import android.app.Activity
-import android.content.ComponentName
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -34,21 +31,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat.recreate
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
-import com.example.sejongapp.Pages.fixGoogleDriveLink
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.ProfileActivity.ui.theme.secondaryColor
 import com.example.sejongapp.R
 import com.example.sejongapp.components.EditUserDialog
+import com.example.sejongapp.components.EditUserPasswordDialog
 import com.example.sejongapp.components.LoadingDialog
 import com.example.sejongapp.components.showError
-import com.example.sejongapp.models.DataClasses.UserData
-import com.example.sejongapp.models.DataClasses.tokenData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
+import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 
@@ -62,6 +58,10 @@ fun ProfilePage() {
     var showEditDialog by remember { mutableStateOf(false) }
     var showLoadingDialog by remember { mutableStateOf(false) }
     var fetchingNewUserData by remember { mutableStateOf(false) }
+    var showPasswordDialog by remember { mutableStateOf(false) }
+
+
+    var isChangingPassword by remember { mutableStateOf(false) }
 
 
     Column(
@@ -204,6 +204,27 @@ fun ProfilePage() {
             )
         }
 
+        Spacer(modifier = Modifier.height(15.dp))
+
+        Button (
+            onClick = {
+                showPasswordDialog = true
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = secondaryColor)
+        ) {
+            Text (
+                text = "Изминить пароль",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+            )
+
+        }
+
 
 
 
@@ -217,9 +238,27 @@ fun ProfilePage() {
                 onDismiss = { showEditDialog = false },
                 onSave = { newUserData ->
                     Log.d(TAG, "The UserData was changed to ${newUserData}")
-                    userViewModel.changeUserData(LocalData.getSavedToken(context),newUserData)
+                    userViewModel.changeUserName(LocalData.getSavedToken(context),newUserData)
                     showEditDialog = false
                     showLoadingDialog = true
+                    isChangingPassword = false
+
+                }
+            )
+        }
+
+        // Edit Password dialog
+        if (showPasswordDialog) {
+            EditUserPasswordDialog(
+                onDismiss = { showPasswordDialog = false },
+                onSave = { newPassword ->
+                    Log.d("TAG_ProfilePage", "The new password is $newPassword")
+                    userViewModel.changeUserPassword(LocalData.getSavedToken(context),newPassword)
+
+                    showPasswordDialog = false
+                    showLoadingDialog = true
+                    isChangingPassword = true
+
                 }
             )
         }
@@ -241,23 +280,53 @@ fun ProfilePage() {
                             LoadingDialog(LocalContext.current.getString(R.string.applying_changes))
                     }
                 is NetworkResponse.Success ->{
-                    val token = (result as NetworkResponse.Success<String>).data
-                    Log.v(TAG, "ProfileChangeDialog : The token is $token")
-                    if (token.isNullOrBlank()) {
-                            // treat as error
-                        showError("Server returned null token") { fetchingNewUserData = false }
-                    } else {
-//                        LocalData.setToken(context, token)
-//                        userViewModel.getUserData(token)
+                    if (isChangingPassword){
+                        var fetchedData = (result as NetworkResponse.Success<tokenData>).data
+                        Log.v(TAG, "ProfileChangeDialog : The token is $fetchedData")
+
+                        if (fetchedData.auth_token.isNullOrEmpty()){
+                            showError("Server returned null token") { fetchingNewUserData = false }
+                        }
+
+                        Toast.makeText(LocalContext.current, "The Password has been successfully updated", Toast.LENGTH_LONG)
+                        LocalData.setToken(context, fetchedData.auth_token)
                         fetchingNewUserData = true
                         showLoadingDialog = false
+                        isChangingPassword = false
+
+                    }
+                    else {
+                        var fetchedData = (result as NetworkResponse.Success<ChangeUserInfo>).data
+
+                        if (fetchedData.username.isNullOrEmpty()){
+                            showError("Server returned null token") { fetchingNewUserData = false }
+                        }
+                        Toast.makeText(LocalContext.current, "The data has been successfully updated", Toast.LENGTH_LONG)
+                        var theUserData = LocalData.getUserData(context)
+                        LocalData.setUserData(context, UserData(
+                            username = fetchedData.username,
+                            avatar = theUserData.avatar,
+                            fullname = theUserData.fullname,
+                            email = fetchedData.email,
+                            status = theUserData.status,
+                            groups = theUserData.groups
+                        )
+                        )
+                        fetchingNewUserData = true
+                        showLoadingDialog = false
+                        isChangingPassword = false
+
+                    }
+//
+
 
 
                     }
+                else ->{}
 
 
                 }
-                else ->{}
+
             }
         }
 
@@ -292,7 +361,6 @@ fun ProfilePage() {
                 else ->{}
             }
         }
-    }
 }
 
 @Composable

@@ -47,7 +47,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.WarmBeige
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.ViewModels.UserViewModel
-import com.example.sejongapp.models.DataClasses.tokenData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor

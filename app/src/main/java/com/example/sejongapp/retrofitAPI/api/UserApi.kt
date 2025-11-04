@@ -1,16 +1,16 @@
 package com.example.sejongapp.retrofitAPI.api
 
 
-import com.example.sejongapp.models.DataClasses.ChangeUserData
-import com.example.sejongapp.models.DataClasses.UserData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
+import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.models.DataClasses.loginRequestData
-import com.example.sejongapp.models.DataClasses.tokenData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 interface UserApi {
 
@@ -28,8 +28,14 @@ interface UserApi {
 
 
     @POST("change_info/")
-    suspend fun changeUserData(
+    suspend fun changeUserName(
         @Header("token") token: String,
-        @Body request: ChangeUserData,
-    ):Response<Any>
+        @Body request: ChangeUserInfo,
+    ):Response<ChangeUserInfo>
+
+    @POST("change_info/")
+    suspend fun changeUserPassword(
+        @Header("token") token: String,
+        @Body request: ChangeUserPassword,
+    ):Response<tokenData>
 }

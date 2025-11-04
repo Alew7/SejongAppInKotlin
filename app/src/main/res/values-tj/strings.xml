@@ -61,6 +61,9 @@
     <string name="Edit_User_Password">Иваз кардани пароли корбар</string>
     <string name="Cancel">Бекор кардан</string>
     <string name="Save">Захира кардан</string>
+    <string name="Change_password">Ивази парол </string>
+    <string name="old_password">Пароли кухна</string>
+    <string name="new_password">Пароли нав</string>
 
 
 

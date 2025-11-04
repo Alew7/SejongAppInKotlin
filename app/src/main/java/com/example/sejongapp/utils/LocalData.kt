@@ -2,9 +2,8 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.util.Log
-import androidx.core.content.ContextCompat.startActivity
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
-import com.example.sejongapp.models.DataClasses.UserData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 
 
 object LocalData {
