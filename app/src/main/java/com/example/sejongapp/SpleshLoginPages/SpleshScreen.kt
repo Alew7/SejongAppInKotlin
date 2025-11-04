@@ -1,6 +1,5 @@
 package com.example.sejongapp.SpleshLoginPages
 
-
 import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
