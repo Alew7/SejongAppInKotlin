@@ -1,5 +1,6 @@
 package com.example.sejongapp.AnnousmentActivity
 
+import android.graphics.Bitmap
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,7 +33,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
+import coil.size.Size
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.R
 import com.example.sejongapp.components.ImageGalleryDialog
@@ -145,12 +149,19 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
 
                         ) {
                             Image(
-                                painter = rememberImagePainter(url),
+                                painter = rememberAsyncImagePainter(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(url)
+                                        .crossfade(true)
+                                        .bitmapConfig(Bitmap.Config.ARGB_8888)
+                                        .build()
+                                ),
                                 contentDescription = "announcement_img",
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
                                     .width(280.dp)
                                     .height(280.dp)
+
                                     .clip(RoundedCornerShape(12.dp))
                                     .clickable {
                                         selectedImage = url

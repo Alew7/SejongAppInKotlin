@@ -1,5 +1,6 @@
 package com.example.sejongapp.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -167,7 +168,7 @@ fun EditUserDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding (vertical = 8.dp),
-                    shape = MaterialTheme.shapes.medium,
+                    shape = RoundedCornerShape(15.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
@@ -312,7 +313,7 @@ fun EditUserPasswordDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
-                    shape = MaterialTheme.shapes.medium,
+                    shape = RoundedCornerShape(15.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {

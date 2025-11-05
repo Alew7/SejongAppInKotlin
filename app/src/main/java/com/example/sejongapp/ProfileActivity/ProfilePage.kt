@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -109,6 +111,13 @@ fun ProfilePage() {
                 Image(
                     painter = rememberImagePainter(userData.avatar),
                     contentDescription = "userAvatar",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(45.dp))
+                        .border(2.dp,Color.Gray, RoundedCornerShape(45.dp)),
+
+                    contentScale = ContentScale.Crop
+
                 )
 
             }

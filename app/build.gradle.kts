@@ -85,7 +85,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
     //    Coil (Coroutine Image Loader)
-    implementation("io.coil-kt:coil-compose:1.3.2")
+//    implementation("io.coil-kt:coil-compose:1.3.2")
+    implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("io.coil-kt:coil-gif:2.4.0")
+
+
 
 
 
