@@ -1,10 +1,13 @@
 package com.example.sejongapp.components
 
+import LocalData.getUserData
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.content.contentReceiver
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.horizontalScroll
@@ -65,8 +68,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
 import com.google.accompanist.pager.HorizontalPager
@@ -431,6 +436,140 @@ fun EditUserPasswordDialog(
                     trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 )
  */
+
+
+@Composable
+fun EditAvatarUser(
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val userAvatar = remember { getUserData(context) }
+
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        containerColor = backgroundColor,
+        shape = RoundedCornerShape(20.dp),
+        tonalElevation = 8.dp,
+        title = { Text (text = "Change Avatar")},
+        text = {
+            Column () {
+                Box (
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = rememberImagePainter(userAvatar.avatar),
+                        contentDescription = "userAvatar",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(RoundedCornerShape(15.dp))
+                            .border(2.dp,Color.Gray, RoundedCornerShape(15.dp)),
+                        contentScale = ContentScale.Crop
+
+                    )
+
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+
+
+                    Box (
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+
+                    ) {
+                        Button (
+                            onClick = {},
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = primaryColor,
+                                contentColor = Color.White
+
+                            )
+                        ) {
+                            Text (
+                                text = "Change User Avatar"
+                            )
+                        }
+
+                    }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Box (
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+
+                ) {
+                    Button (
+
+                        onClick = {},
+                        border = BorderStroke(2.dp, primaryColor),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = backgroundColor,
+                            contentColor = Color.Black
+
+                        )
+                    ) {
+                        Text (
+                            text = "Delet User Avatar"
+                        )
+                    }
+                }
+
+
+
+
+
+            }
+
+        },
+
+        confirmButton = {
+            Button (
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = primaryColor,
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+//                    .height(45.dp)
+
+            ) {
+                Text ( text = context.getString(R.string.Save))
+            }
+        },
+        dismissButton = {
+            OutlinedButton(
+                onClick = {onDismiss() },
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+//                    .height(45.dp)
+
+            ) {
+                Text ( text = context.getString(R.string.Cancel),
+                     fontSize = 16.sp,
+                    color = Color.Black
+
+                    )
+            }
+        }
+
+    )
+}
+
+@Preview (showBackground = true, showSystemUi = true)
+@Composable
+fun Alew() {
+    EditAvatarUser(onDismiss = {})
+}
+
+
 @Composable
 fun LoadingDialog(
     message: String = "Loading..."

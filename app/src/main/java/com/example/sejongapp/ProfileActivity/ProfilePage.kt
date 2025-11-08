@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Person
@@ -40,6 +41,7 @@ import coil.compose.rememberImagePainter
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.ProfileActivity.ui.theme.secondaryColor
 import com.example.sejongapp.R
+import com.example.sejongapp.components.EditAvatarUser
 import com.example.sejongapp.components.EditUserDialog
 import com.example.sejongapp.components.EditUserPasswordDialog
 import com.example.sejongapp.components.LoadingDialog
@@ -61,6 +63,7 @@ fun ProfilePage() {
     var showLoadingDialog by remember { mutableStateOf(false) }
     var fetchingNewUserData by remember { mutableStateOf(false) }
     var showPasswordDialog by remember { mutableStateOf(false) }
+    var showUserAvatarDialog by remember { mutableStateOf(false) }
 
 
     var isChangingPassword by remember { mutableStateOf(false) }
@@ -97,6 +100,7 @@ fun ProfilePage() {
 
 
 
+        
         // Аватар
         Box (
             modifier = Modifier
@@ -106,6 +110,7 @@ fun ProfilePage() {
                 .shadow(8.dp, CircleShape),
             contentAlignment = Alignment.Center
         ) {
+
 
             if (userData.avatar.isNotEmpty()) {
                 Image(
@@ -128,6 +133,23 @@ fun ProfilePage() {
                     tint = Color(0xFF555555),
                     modifier = Modifier.size(64.dp)
 
+                )
+            }
+            IconButton(
+                onClick = {showUserAvatarDialog = true},
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .size(40.dp)
+                    .background(secondaryColor, CircleShape)
+                    .border(2.dp,Color.White, CircleShape)
+                    .shadow(4.dp, CircleShape)
+
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "ic_Edit",
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
@@ -236,7 +258,6 @@ fun ProfilePage() {
 
 
 
-
 //---------------------    The dialogs!  ---------------------//
 
         //        Edit dialog. For making changes of the user
@@ -270,6 +291,11 @@ fun ProfilePage() {
 
                 }
             )
+        }
+
+        // Edit Avatar dialog
+        if (showUserAvatarDialog) {
+            EditAvatarUser(onDismiss = { showUserAvatarDialog = false })
         }
 
 
