@@ -1,6 +1,15 @@
 package com.example.sejongapp.components
 
+import LocalData
 import LocalData.getUserData
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Base64
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -8,6 +17,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.content.contentReceiver
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.horizontalScroll
@@ -55,9 +65,13 @@ import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.ui.theme.deepBlack
 import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -70,13 +84,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
+import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
+import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-
+import java.io.ByteArrayOutputStream
 
 
 @Composable
@@ -440,134 +458,83 @@ fun EditUserPasswordDialog(
 
 @Composable
 fun EditAvatarUser(
-    onDismiss: () -> Unit
+    userData: UserData,
+    onDismiss: () -> Unit,
+    viewModel: UserViewModel
 ) {
     val context = LocalContext.current
-    val userAvatar = remember { getUserData(context) }
+    var selectedUri by remember { mutableStateOf<Uri?>(null) }
+    var tempAvatar by remember { mutableStateOf(userData.avatar) }
 
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            selectedUri = uri
+            tempAvatar = uri.toString()
+        }
+    }
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
         containerColor = backgroundColor,
         shape = RoundedCornerShape(20.dp),
         tonalElevation = 8.dp,
-        title = { Text (text = "Change Avatar")},
+        title = { Text("Change Avatar") },
         text = {
-            Column () {
-                Box (
-                    modifier = Modifier
-                        .fillMaxWidth(),
+            Column {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = rememberImagePainter(userAvatar.avatar),
+                        painter = rememberImagePainter(tempAvatar),
                         contentDescription = "userAvatar",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(RoundedCornerShape(15.dp))
-                            .border(2.dp,Color.Gray, RoundedCornerShape(15.dp)),
+                        modifier = Modifier.size(100.dp).clip(CircleShape),
                         contentScale = ContentScale.Crop
-
                     )
-
                 }
+
                 Spacer(modifier = Modifier.height(10.dp))
 
-
-                    Box (
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-
-                    ) {
-                        Button (
-                            onClick = {},
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = primaryColor,
-                                contentColor = Color.White
-
-                            )
-                        ) {
-                            Text (
-                                text = "Change User Avatar"
-                            )
-                        }
-
-                    }
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                Box (
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-
+                Button(
+                    onClick = { imagePickerLauncher.launch("image/*") },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
-                    Button (
-
-                        onClick = {},
-                        border = BorderStroke(2.dp, primaryColor),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = backgroundColor,
-                            contentColor = Color.Black
-
-                        )
-                    ) {
-                        Text (
-                            text = "Delet User Avatar"
-                        )
-                    }
+                    Text("Choose new avatar")
                 }
-
-
-
-
-
             }
-
         },
-
         confirmButton = {
-            Button (
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primaryColor,
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-//                    .height(45.dp)
+            Button(
 
+                onClick = {
+                    var token = LocalData.getSavedToken(context)
+                    selectedUri?.let { uri ->
+
+                        viewModel.changeUserAvatar(context,token, uri)
+                    } ?: Toast.makeText(context, "Please select an image", Toast.LENGTH_SHORT).show()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text ( text = context.getString(R.string.Save))
+                Text("Save")
             }
         },
         dismissButton = {
-            OutlinedButton(
-                onClick = {onDismiss() },
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-//                    .height(45.dp)
-
-            ) {
-                Text ( text = context.getString(R.string.Cancel),
-                     fontSize = 16.sp,
-                    color = Color.Black
-
-                    )
+            OutlinedButton(onClick = { onDismiss() }) {
+                Text("Cancel", color = Color.Black)
             }
         }
-
     )
 }
 
-@Preview (showBackground = true, showSystemUi = true)
-@Composable
-fun Alew() {
-    EditAvatarUser(onDismiss = {})
-}
+
+
+
+
 
 
 @Composable
@@ -601,6 +568,7 @@ fun LoadingDialog(
     )
 }
 
+
 @Composable
 fun ImageGalleryDialog(
     images: List<String>,
@@ -620,6 +588,7 @@ fun ImageGalleryDialog(
                 .background(Color.Black.copy(alpha = 0.95f))
         ) {
 
+            // Основное изображение с зумом
             HorizontalPager(
                 count = images.size,
                 state = pagerState,
@@ -630,49 +599,51 @@ fun ImageGalleryDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(0.85f)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(16.dp))
                 )
             }
 
-
+            // Текст с номером страницы
             Text(
                 text = "${pagerState.currentPage + 1} / ${images.size}",
                 color = Color.White,
                 fontSize = 18.sp,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = 24.dp)
+                    .padding(top = 28.dp)
             )
 
-
+            // Кнопка закрытия
             IconButton(
                 onClick = { onDismiss() },
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
+                    .align(Alignment.TopStart)
                     .padding(16.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Close",
                     tint = Color.White
                 )
             }
 
-
-            Row(
+            // Миниатюры снизу — теперь квадратные и скроллятся
+            LazyRow(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 24.dp)
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
-                images.forEachIndexed { index, url ->
+                itemsIndexed(images) { index, url ->
                     Card(
-                        shape = RoundedCornerShape(50),
-                        border = if (pagerState.currentPage == index) BorderStroke(2.dp, Color.White) else null,
+                        shape = RoundedCornerShape(8.dp), // квадратная форма
+                        border = if (pagerState.currentPage == index)
+                            BorderStroke(2.dp, Color.White)
+                        else null,
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(80.dp)
                             .clickable {
                                 selectedImageIndex = index
                             }
@@ -695,22 +666,53 @@ fun ImageGalleryDialog(
     }
 }
 
+
 @Composable
-fun ZoomableImage(url: String, modifier: Modifier = Modifier) {
+fun ZoomableImage(
+    url: String,
+    modifier: Modifier = Modifier
+) {
     var scale by remember { mutableStateOf(1f) }
-    val state = rememberTransformableState { zoomChange, _, _ ->
-        scale *= zoomChange
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    val state = rememberTransformableState { zoomChange, panChange, _ ->
+        scale = (scale * zoomChange).coerceIn(1f, 5f) // зум от 1x до 5x
+        offset += panChange // движение
     }
 
-    Image(
-        painter = rememberImagePainter(url),
-        contentDescription = null,
-        contentScale = ContentScale.Fit,
+    Box(
         modifier = modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .clip(RoundedCornerShape(12.dp))
             .transformable(state = state)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onDoubleTap = {
+                        // двойной тап — сброс масштаба
+                        if (scale > 1f) {
+                            scale = 1f
+                            offset = Offset.Zero
+                        } else {
+                            scale = 2f
+                        }
+                    }
+                )
+            }
             .graphicsLayer(
-                scaleX = maxOf(1f, scale),
-                scaleY = maxOf(1f, scale)
-            )
-    )
+                scaleX = scale,
+                scaleY = scale,
+                translationX = offset.x,
+                translationY = offset.y
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = rememberImagePainter(url),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
 }
+

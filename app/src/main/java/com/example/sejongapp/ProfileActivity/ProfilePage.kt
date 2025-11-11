@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,6 +52,7 @@ import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
+import com.example.sejongapp.ui.theme.primaryColor
 
 const val TAG = "TAG_ProfilePage"
 
@@ -117,9 +119,8 @@ fun ProfilePage() {
                     painter = rememberImagePainter(userData.avatar),
                     contentDescription = "userAvatar",
                     modifier = Modifier
-                        .size(100.dp)
-                        .clip(RoundedCornerShape(45.dp))
-                        .border(2.dp,Color.Gray, RoundedCornerShape(45.dp)),
+                        .size(110.dp) // 100
+                        .clip(CircleShape),
 
                     contentScale = ContentScale.Crop
 
@@ -129,20 +130,24 @@ fun ProfilePage() {
             else {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = "null",
+                    contentDescription = "Default user icon",
                     tint = Color(0xFF555555),
                     modifier = Modifier.size(64.dp)
 
                 )
             }
-            IconButton(
-                onClick = {showUserAvatarDialog = true},
+
+            Box (
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
+                    .offset(x = (-4).dp,y = (-4).dp)
                     .size(40.dp)
-                    .background(secondaryColor, CircleShape)
-                    .border(2.dp,Color.White, CircleShape)
-                    .shadow(4.dp, CircleShape)
+                    .clip(CircleShape)
+                    .background(primaryColor)
+                    .border(3.dp,Color.White, CircleShape)
+                    .shadow(6.dp, CircleShape)
+                    .clickable { showUserAvatarDialog = true },
+                contentAlignment = Alignment.Center
 
             ) {
                 Icon(
@@ -295,7 +300,11 @@ fun ProfilePage() {
 
         // Edit Avatar dialog
         if (showUserAvatarDialog) {
-            EditAvatarUser(onDismiss = { showUserAvatarDialog = false })
+            EditAvatarUser(
+                userData = userData,
+                onDismiss = { showUserAvatarDialog = false },
+                viewModel = userViewModel
+            )
         }
 
 
