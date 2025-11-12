@@ -45,8 +45,8 @@ interface UserApi {
     @POST("change_avatar/")
     suspend fun changeUserAvatar(
         @Header("token") token: String,
-        @Header("Content-Type") contentType: String,
-        @Body file: RequestBody
+        @Header("Content-Type") contentType: String= "application/octet-stream",
+        @Body image: RequestBody
     ): Response<ChangeUserAvatarInfo>
 
 }

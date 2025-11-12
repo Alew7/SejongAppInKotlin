@@ -1,9 +1,9 @@
 package com.example.sejongapp.models.ViewModels
 
-import LocalData.fileToRequestBody
-import LocalData.getMimeType
-import LocalData.uriToBase64
-import LocalData.uriToFile
+
+
+import LocalData.uriToBinaryRequestBody
+
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -21,8 +21,10 @@ import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.retrofitAPI.NetworkResponse.*
 import com.example.sejongapp.retrofitAPI.RetrofitInstance
 import kotlinx.coroutines.launch
+
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
+
+import okhttp3.RequestBody.Companion.toRequestBody
 
 
 class UserViewModel: ViewModel() {
@@ -176,25 +178,29 @@ class UserViewModel: ViewModel() {
     }
 
     fun changeUserAvatar(context: Context, token: String, uri: Uri) {
-        val mimeType = getMimeType(context, uri)
-        val file = uriToFile(context, uri)
-        val requestBody = RequestBody.create("application/octet-stream".toMediaTypeOrNull(), file)
+        val TAG = "AvatarChange_TAG"
+        val requestBody = uriToBinaryRequestBody(context,uri)
+
+        Log.i(TAG, "the image in Binary ${requestBody}")
+
+
         Log.i("AvatarChange_TAG", "Trying to change User Avatar")
 
         viewModelScope.launch {
             try {
-                Log.i("AvatarChange_TAG", "Sending the response!")
-                val response = userApi.changeUserAvatar(token,"application/octet-stream", requestBody)
+                Log.i(TAG, "Sending the response!")
+                val response = userApi.changeUserAvatar(token, image = requestBody)
                 if (response.isSuccessful) {
+                    Log.d(TAG, "Got the data $response")
                     val info = response.body()
-                    Log.d("AvatarChange_TAG", "Avatar updated: ${info}")
+                    Log.d(TAG, "Avatar updated: ${info}")
                     Toast.makeText(context, "Avatar updated successfully!", Toast.LENGTH_SHORT).show()
                 } else {
-                    Log.e("AvatarChange_TAG", "Error: ${response.code()}")
+                    Log.e(TAG, "Error: ${response.code()}")
                     Toast.makeText(context, "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Log.e("AvatarChange_TAG", "Error: ${e.message}")
+                Log.e(TAG, "Error: ${e.message}")
                 Toast.makeText(context, "Network error", Toast.LENGTH_SHORT).show()
             }
         }

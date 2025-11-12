@@ -11,10 +11,14 @@ import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 
 
 object LocalData {
@@ -104,44 +108,16 @@ object LocalData {
         editor.apply()
     }
 
-    fun uriToBase64(context: Context,uri: Uri): String? {
-        return try {
-            val inputStrream = context.contentResolver.openInputStream(uri)
-            val bitmap = BitmapFactory.decodeStream(inputStrream)
-            val outputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG,90,outputStream)
-            val bytes = outputStream.toByteArray()
-            Base64.encodeToString(bytes,Base64.DEFAULT)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
 
 
-    fun fileToRequestBody(context: Context, fileUri: Uri): RequestBody {
-        val file = File(fileUri.path!!) // make sure Uri is file:// path
-        return RequestBody.create("application/octet-stream".toMediaTypeOrNull(), file)
-    }
 
-    fun uriToFile(context: Context, uri: Uri, fileName: String = "temp_avatar"): File {
-        val inputStream = context.contentResolver.openInputStream(uri)!!
-        val tempFile = File(context.cacheDir, fileName)
-        val outputStream = FileOutputStream(tempFile)
-        inputStream.copyTo(outputStream)
-        inputStream.close()
-        outputStream.close()
-        return tempFile
-    }
 
-    fun getMimeType(context: Context, uri: Uri): String {
-        val contentResolver = context.contentResolver
-        val type = contentResolver.getType(uri)
-        if (type != null) return type
 
-        // fallback by file extension
-        val extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) ?: "application/octet-stream"
+    fun uriToBinaryRequestBody(context: Context, uri: Uri): RequestBody {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val bytes = inputStream?.readBytes() ?: ByteArray(0)
+        inputStream?.close()
+        return bytes.toRequestBody("application/octet-stream".toMediaTypeOrNull())
     }
 
 

@@ -4,6 +4,7 @@ package com.example.sejongapp.NavBar
 import LocalData.deletToken
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -65,7 +66,7 @@ import com.example.sejongapp.utils.NavigationScreenEnum
 import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.animation.animateContentSize
-
+import androidx.compose.foundation.interaction.MutableInteractionSource
 
 
 const val TAG = "TAG_NavBar"
@@ -246,6 +247,45 @@ fun NavBar(modifier: Modifier = Modifier) {
 
                     Spacer(modifier = Modifier.weight(1f))
 
+                    Card (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource()}
+                            ) {
+                                openTelegram(context,"dushanbe3_king_sejong")
+                            },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+
+
+                    ) {
+                        Row (
+                            modifier = Modifier
+                                .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+
+                        ) {
+                            Icon (
+                                painter = painterResource(R.drawable.ic_obovleni),
+                                contentDescription = "Обивления",
+                                modifier = Modifier
+                                    .size(28.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                            )
+
+                            Text (
+                                text = "Отзыв",
+                                modifier = Modifier
+                                    .padding(start = 12.dp)
+
+                            )
+                        }
+                    }
+
 
                     Card(
                         modifier = Modifier
@@ -392,6 +432,16 @@ fun Content.getLocalized(context: Context): String {
 
 
 
+fun openTelegram(context: Context,username: String) {
+    val telegramIntent = Intent(Intent.ACTION_VIEW, Uri.parse("tg://resolve?domain=$username"))
+    try {
+        context.startActivity(telegramIntent)
+
+    } catch (e: Exception) {
+        val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/$username"))
+        context.startActivity(webIntent)
+    }
+}
 
 
 
