@@ -3,6 +3,7 @@ package com.example.sejongapp.components.Pages
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -57,6 +58,7 @@ import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.ElectronicBookData
 import com.example.sejongapp.models.ViewModels.ELibraryViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
+import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
@@ -92,9 +94,9 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 
 
-    Column {
+    Column  {
         //    The header with logo icon
-        Column {
+        Column  {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -106,7 +106,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                         .size(64.dp)
                         .padding(start = 25.dp)
                         .clickable (
-                            interactionSource = remember { MutableInteractionSource() },
+                            interactionSource = remember {MutableInteractionSource()},
                             indication = null
 
                         ) {
@@ -235,14 +235,8 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                         }
                     }
                 }
-
-
         }
-
     }
-
-
-
 }
 
 

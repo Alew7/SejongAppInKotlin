@@ -134,7 +134,10 @@ fun NavBar(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable {
+                            .clickable (
+                                indication = null,
+                                interactionSource = remember {MutableInteractionSource()}
+                            )  {
                                 val intent = Intent(context, ProfileActivity::class.java)
                                 context.startActivity(intent)
                                 scope.launch { drawerState.close() }
@@ -322,7 +325,10 @@ fun NavBar(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable {
+                            .clickable (
+                                indication = null,
+                                interactionSource = remember {MutableInteractionSource()}
+                            ) {
                                 deletToken(context)
                                 scope.launch {drawerState.close()}
                             },
