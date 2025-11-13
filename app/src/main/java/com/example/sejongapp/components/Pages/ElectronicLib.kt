@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,13 +45,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.R
@@ -310,24 +315,26 @@ fun getAndShowData(
     showOneBook: MutableState<Boolean>,
     isSeraching: Boolean,
     searchText: String
-){
+) {
 
     val Books by eLibViewModel.libResult.observeAsState()
     val showDialog = remember { mutableStateOf(true) }
 
-    when (val result = Books){
+    when (val result = Books) {
         is NetworkResponse.Error -> {
             Log.d(TAG, "the book result is Error")
             Log.e(TAG, "the book result is ${result.message}")
 
-            showError(result.message){
-               eLibViewModel.resetLibResult()
+            showError(result.message) {
+                eLibViewModel.resetLibResult()
             }
 
         }
+
         NetworkResponse.Idle -> {
             Log.d(TAG, "the book result is Idle")
         }
+
         NetworkResponse.Loading -> {
             Log.d(TAG, "the book result is Loading")
 
@@ -346,28 +353,63 @@ fun getAndShowData(
         }
 
         is NetworkResponse.Success -> {
-            LazyColumn(
-                modifier = Modifier.padding(bottom = 105.dp)
-            ) {
-                if (isSeraching) {
-                    var filteredList = result.data.filter { it.title.contains(searchText, ignoreCase = true) }
-                    items(filteredList.size) {
-                        ElectronicBooksCard(filteredList[it], showOneBook)
-                    }
-                }
-                else{
-                    items(result.data.size) {
-                        ElectronicBooksCard(result.data[it], showOneBook)
-                    }
-                }
 
+            val allBooks = result.data
+
+            val filteredBooks = if (isSeraching && searchText.isNotBlank()) {
+                allBooks.filter { book ->
+                    book.title.contains(searchText, ignoreCase = true) ||
+                    book.author.contains(searchText, ignoreCase = true)
+
+                }
+            } else {
+                allBooks
             }
+
+            if (filteredBooks.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 100.dp),
+                    contentAlignment = Alignment.Center
+
+                ) {
+                    Text(
+                        text = "Не чего не найден",
+                        color = Color.Gray,
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.montserrat_medium))
+                    )
+                }
+            } else {
+                LazyColumn(modifier = Modifier.padding(bottom = 105.dp)) {
+                    items(filteredBooks.size) {
+                        ElectronicBooksCard(filteredBooks[it], showOneBook)
+                    }
+                }
+//            LazyColumn(
+//                modifier = Modifier.padding(bottom = 105.dp)
+//            ) {
+//                if (isSeraching) {
+//                    var filteredList = result.data.filter { it.title.contains(searchText, ignoreCase = true) }
+//                    items(filteredList.size) {
+//                        ElectronicBooksCard(filteredList[it], showOneBook)
+//                    }
+//                }
+//                else{
+//                    items(result.data.size) {
+//                        ElectronicBooksCard(result.data[it], showOneBook)
+//                    }
+//                }
+//
+//            }
+            }
+
         }
-        null -> {}
+        null -> Unit
     }
-
-
 }
+
 
 
 
