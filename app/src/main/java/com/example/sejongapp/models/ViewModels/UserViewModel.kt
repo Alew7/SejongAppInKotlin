@@ -2,13 +2,11 @@ package com.example.sejongapp.models.ViewModels
 
 
 
-import LocalData.uriToBinaryRequestBody
-
+import LocalData.compressImageToTempFile
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.core.net.toFile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,8 +25,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.File
 
 
 class UserViewModel: ViewModel() {
@@ -129,7 +125,6 @@ class UserViewModel: ViewModel() {
                     Log.i(TAG, "changeUserName: Only it's body " + response.body())
 
 
-
                     response.body()?.let {
                         _userChangeResult.value = Success(it)
                     }
@@ -147,6 +142,7 @@ class UserViewModel: ViewModel() {
         }
 
     }
+
 
     fun changeUserPassword(token: String, newUserData: ChangeUserPassword){
         Log.i(TAG, "changeUserPassword: trying to change user data")
@@ -184,29 +180,16 @@ class UserViewModel: ViewModel() {
     fun changeUserAvatar(context: Context, token: String, uri: Uri) {
         val TAG = "AvatarChange_TAG"
 
-        val contentResolver = context.contentResolver
 
-        // ✅ Get input stream from URI
-        val inputStream = contentResolver.openInputStream(uri)
-        val tempFile = File.createTempFile("avatar", ".jpg", context.cacheDir)
-
-        inputStream?.use { input ->
-            tempFile.outputStream().use { output ->
-                input.copyTo(output)
-            }
-        }
-
-        // ✅ Create RequestBody
-        val requestFile = tempFile
-            .asRequestBody("image/*".toMediaTypeOrNull())
-
-        // ✅ Create MultipartBody.Part
+        val compressedFile = compressImageToTempFile(context, uri, 25)
+        Log.i(TAG, "the image in Binary ${compressedFile}")
+        val requestBody = compressedFile?.asRequestBody("image/*".toMediaTypeOrNull())
         val imagePart = MultipartBody.Part.createFormData(
-            name = "new_avatar", // must match your backend expected field
-            filename = tempFile.name,
-            body = requestFile
+            name = "new_avatar", // MUST match backend key
+            filename = compressedFile?.name,
+            body = requestBody!!
         )
-        Log.i(TAG, "the image in Binary ${imagePart}")
+
 
         Log.i("AvatarChange_TAG", "Trying to change User Avatar")
 

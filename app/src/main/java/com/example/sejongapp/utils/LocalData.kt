@@ -3,7 +3,10 @@ import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.webkit.MimeTypeMap
@@ -19,6 +22,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import java.net.URLEncoder
 
 
 object LocalData {
@@ -110,16 +114,34 @@ object LocalData {
 
 
 
+    fun compressImageToTempFile(context: Context, uri: Uri, quality: Int): File? {
+        try {
+            // 1. Get the InputStream from the original URI
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+            val originalBitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
 
+            // 2. Prepare a ByteArrayOutputStream for compression
+            val outputStream = ByteArrayOutputStream()
 
+            // 3. Compress the Bitmap (e.g., to JPEG, 75% quality)
+            originalBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+            val compressedBytes = outputStream.toByteArray()
 
-    fun uriToBinaryRequestBody(context: Context, uri: Uri): RequestBody {
-        val inputStream = context.contentResolver.openInputStream(uri)
-        val bytes = inputStream?.readBytes() ?: ByteArray(0)
-        inputStream?.close()
-        return bytes.toRequestBody("application/octet-stream".toMediaTypeOrNull())
+            // 4. Create a new temporary file to store the compressed data
+            val compressedFile = File(context.cacheDir, "compressed_avatar_${System.currentTimeMillis()}.jpg")
+            FileOutputStream(compressedFile).use { fos ->
+                fos.write(compressedBytes)
+            }
+
+            // Recycle the original bitmap if you don't need it anymore
+            originalBitmap.recycle()
+
+            return compressedFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
     }
-
 
 
 
