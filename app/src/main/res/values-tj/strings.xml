@@ -30,6 +30,8 @@
 
     <!-- sidebar menu -->
     <string name="Log_out">Баромадан</string>
+    <string name="Our_Instagram">Инстаграмми мо</string>
+    <string name="Contact_Admin">Бо админ гирефтани тамос</string>
 
 
 
@@ -64,6 +66,8 @@
     <string name="Change_password">Ивази парол </string>
     <string name="old_password">Пароли кухна</string>
     <string name="new_password">Пароли нав</string>
+    <string name="Change_Avatar">Тағйир додани аватар</string>
+    <string name="Choose_new_avatar">Интихоби аватари нав</string>
 
 
 

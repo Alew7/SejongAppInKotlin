@@ -26,6 +26,8 @@
 
     <!-- sidebar menu -->
     <string name="Log_out">로그아웃</string>
+    <string name="Our_Instagram">우리 인스타그램</string>
+    <string name="Contact_Admin">관리자에게 문의하기</string>
 
 
 
@@ -62,6 +64,8 @@
     <string name="Change_password">비밀번호 변경</string>
     <string name="old_password">기존 비밀번호</string>
     <string name="new_password">새 비밀번호</string>
+    <string name="Change_Avatar">아바타 변경</string>
+    <string name="Choose_new_avatar">새로운 아바타 선택</string>
 
 
 

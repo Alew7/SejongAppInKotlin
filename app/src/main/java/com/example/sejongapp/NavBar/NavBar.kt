@@ -64,9 +64,10 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 import kotlinx.coroutines.launch
-import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.height
 
 
 const val TAG = "TAG_NavBar"
@@ -246,46 +247,76 @@ fun NavBar(modifier: Modifier = Modifier) {
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
-
                     Card (
                         modifier = Modifier
-                            .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource()}
-                            ) {
-                                openTelegram(context,"dushanbe3_king_sejong")
-                            },
+                            .fillMaxWidth()
+                            ,
                         shape = MaterialTheme.shapes.medium,
                         colors = CardDefaults.cardColors(containerColor = Color.White),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
 
 
                     ) {
-                        Row (
-                            modifier = Modifier
-                                .padding(12.dp),
+                        Column {
+                            Row ( modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically ) {
+                                Image (
+                                    painter = painterResource(R.drawable.ic_instagram),
+                                    contentDescription = "ic_instegram",
+                                    modifier = Modifier.size(28.dp)
+                                        .clickable (
+                                            indication = null,
+                                            interactionSource = remember {(MutableInteractionSource())}
+                                        ) {
+                                            openInstagram(context,"dushanbe3_king_sejong")
+                                        }
+                                )
+                                Text (
+                                    text = context.getString(R.string.Our_Instagram),
+                                    modifier = Modifier.padding(start = 12.dp)
+                                        .clickable (
+                                            indication = null,
+                                            interactionSource = remember {MutableInteractionSource()}
+                                        ) {
+                                            openInstagram(context,"dushanbe3_king_sejong")
+                                        }
+
+
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Row (
+                                modifier = Modifier
+                                    .padding(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image (
+                                    painter = painterResource(R.drawable.ic_telegram),
+                                    contentDescription = "ic_telegram",
+                                    modifier = Modifier.size(28.dp)
+                                        .clickable (
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource()}
+                                        )   {
+                                            openTelegram(context,"dushanbe3_king_sejong")
+                                        }
+                                )
+                                Text (
+                                    text = context.getString(R.string.Contact_Admin),
+                                    modifier = Modifier.padding(start = 12.dp)
+                                        .clickable (
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            openTelegram(context,"dushanbe3_king_sejong")
+                                        }
+                                )
+                            }
 
-                        ) {
-                            Icon (
-                                painter = painterResource(R.drawable.ic_obovleni),
-                                contentDescription = "Обивления",
-                                modifier = Modifier
-                                    .size(28.dp),
-                                    tint = MaterialTheme.colorScheme.onSurface
-                            )
-
-                            Text (
-                                text = "Отзыв",
-                                modifier = Modifier
-                                    .padding(start = 12.dp)
-
-                            )
                         }
                     }
-
 
                     Card(
                         modifier = Modifier
@@ -293,7 +324,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                             .padding(vertical = 8.dp)
                             .clickable {
                                 deletToken(context)
-                                scope.launch { drawerState.close() }
+                                scope.launch {drawerState.close()}
                             },
                         shape = MaterialTheme.shapes.medium,
                         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -450,3 +481,21 @@ fun openTelegram(context: Context,username: String) {
 //private  fun Preview () {
 //    NavBar()
 //}
+
+
+
+
+
+fun openInstagram ( context: Context,username: String ) {
+    val uri = Uri.parse("http://instagram.com/_u/$username")
+    val instagramIntent = Intent(Intent.ACTION_VIEW,uri).apply {
+        setPackage("com.instagram.android")
+    }
+
+    try {
+        context.startActivity(instagramIntent)
+    } catch (e: Exception) {
+        val webIntent = Intent(Intent.ACTION_VIEW,Uri.parse("https://intagram.com/$username"))
+        context.startActivity(webIntent)
+    }
+}

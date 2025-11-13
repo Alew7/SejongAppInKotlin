@@ -28,6 +28,11 @@
 
     <!-- sidebar menu-->
     <string name="Log_out">Log out</string>
+    <string name="Our_Instagram">Our Instagram</string>
+    <string name="Contact_Admin">Contact Admin</string>
+
+
+
 
 
 
@@ -68,6 +73,11 @@
     <string name="Change_password">Change password</string>
     <string name="old_password">Old password</string>
     <string name="new_password">New password</string>
+    <string name="Change_Avatar">Change Avatar</string>
+    <string name="Choose_new_avatar">Choose new avatar</string>
+
+
+
 
 
 

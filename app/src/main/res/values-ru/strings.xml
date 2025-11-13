@@ -27,6 +27,8 @@
 
     <!-- sidebar menu -->
     <string name="Log_out">Выйти</string>
+    <string name="Our_Instagram">Наш Instagram</string>
+    <string name="Contact_Admin">Связаться с админом</string>
 
 
 
@@ -58,6 +60,9 @@
     <string name="Change_password">Изминить пароль</string>
     <string name="old_password">Старый пароль</string>
     <string name="new_password">Новый пароль</string>
+    <string name="Change_Avatar">Изменить аватар</string>
+    <string name="Choose_new_avatar">Выбрать новый аватар</string>
+
 
 
     <string name="press_again_to_exit">Нажмите ещё раз для выхода</string>

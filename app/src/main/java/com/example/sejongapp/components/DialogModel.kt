@@ -480,7 +480,7 @@ fun EditAvatarUser(
         containerColor = backgroundColor,
         shape = RoundedCornerShape(20.dp),
         tonalElevation = 8.dp,
-        title = { Text("Change Avatar") },
+        title = { Text(text = context.getString(R.string.Change_Avatar))},
         text = {
             Column {
                 Box(
@@ -503,7 +503,7 @@ fun EditAvatarUser(
                     colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
-                    Text("Choose new avatar")
+                    Text(text = context.getString(R.string.Choose_new_avatar))
                 }
             }
         },
@@ -520,12 +520,12 @@ fun EditAvatarUser(
                 colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Save")
+                Text(text = context.getString(R.string.Save))
             }
         },
         dismissButton = {
             OutlinedButton(onClick = { onDismiss() }) {
-                Text("Cancel", color = Color.Black)
+                Text(context.getString(R.string.Cancel), color = Color.Black)
             }
         }
     )

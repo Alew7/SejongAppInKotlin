@@ -253,7 +253,7 @@ fun ProfilePage() {
             colors = ButtonDefaults.buttonColors(containerColor = secondaryColor)
         ) {
             Text (
-                text = "Изминить пароль",
+                text = context.getString(R.string.Change_password),
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
