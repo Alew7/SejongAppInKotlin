@@ -8,6 +8,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.core.net.toFile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,8 +24,11 @@ import com.example.sejongapp.retrofitAPI.RetrofitInstance
 import kotlinx.coroutines.launch
 
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
 
 class UserViewModel: ViewModel() {
@@ -179,17 +183,37 @@ class UserViewModel: ViewModel() {
 
     fun changeUserAvatar(context: Context, token: String, uri: Uri) {
         val TAG = "AvatarChange_TAG"
-        val requestBody = uriToBinaryRequestBody(context,uri)
 
-        Log.i(TAG, "the image in Binary ${requestBody}")
+        val contentResolver = context.contentResolver
 
+        // ✅ Get input stream from URI
+        val inputStream = contentResolver.openInputStream(uri)
+        val tempFile = File.createTempFile("avatar", ".jpg", context.cacheDir)
+
+        inputStream?.use { input ->
+            tempFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        // ✅ Create RequestBody
+        val requestFile = tempFile
+            .asRequestBody("image/*".toMediaTypeOrNull())
+
+        // ✅ Create MultipartBody.Part
+        val imagePart = MultipartBody.Part.createFormData(
+            name = "new_avatar", // must match your backend expected field
+            filename = tempFile.name,
+            body = requestFile
+        )
+        Log.i(TAG, "the image in Binary ${imagePart}")
 
         Log.i("AvatarChange_TAG", "Trying to change User Avatar")
 
         viewModelScope.launch {
             try {
                 Log.i(TAG, "Sending the response!")
-                val response = userApi.changeUserAvatar(token, image = requestBody)
+                val response = userApi.changeUserAvatar(token, new_avatar = imagePart)
                 if (response.isSuccessful) {
                     Log.d(TAG, "Got the data $response")
                     val info = response.body()

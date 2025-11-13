@@ -7,6 +7,7 @@ import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPasswo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.models.DataClasses.loginRequestData
 import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -14,6 +15,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 
 interface UserApi {
 
@@ -42,11 +44,11 @@ interface UserApi {
         @Body request: ChangeUserPassword,
     ):Response<tokenData>
 
+    @Multipart
     @POST("change_avatar/")
     suspend fun changeUserAvatar(
         @Header("token") token: String,
-        @Header("Content-Type") contentType: String= "application/octet-stream",
-        @Body image: RequestBody
+        @Part new_avatar: MultipartBody.Part
     ): Response<ChangeUserAvatarInfo>
 
 }
