@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserAvatarInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
@@ -42,6 +43,10 @@ class UserViewModel: ViewModel() {
 
     private val _userDataResult = MutableLiveData<NetworkResponse<UserData>>()
     val userDataResult : LiveData<NetworkResponse<UserData>> = _userDataResult
+
+
+    private val _userAvatarResult = MutableLiveData<NetworkResponse<ChangeUserAvatarInfo>>()
+    val userAvatarResult : LiveData<NetworkResponse<ChangeUserAvatarInfo>> = _userAvatarResult
 
     companion object {
         private const val TAG = "UserViewModel_TAG"
@@ -179,6 +184,8 @@ class UserViewModel: ViewModel() {
 
     fun changeUserAvatar(context: Context, token: String, uri: Uri) {
         val TAG = "AvatarChange_TAG"
+
+        _userAvatarResult.value = Loading
 
 
         val compressedFile = compressImageToTempFile(context, uri, 25)

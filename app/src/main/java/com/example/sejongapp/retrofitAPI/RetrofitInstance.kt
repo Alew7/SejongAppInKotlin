@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
 
-    private const val baseUrl = "http://192.168.0.106:8000/api/"
+    private const val baseUrl = "https://sejong-app-container-785993649958.us-central1.run.app/api/"
 
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(60, TimeUnit.SECONDS)   // time to connect to server

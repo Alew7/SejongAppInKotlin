@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Base64
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -83,15 +84,19 @@ import androidx.compose.runtime.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sejongapp.Pages.TAG
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
 import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.models.ViewModels.UserViewModel
+import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import java.io.ByteArrayOutputStream
@@ -317,6 +322,11 @@ fun EditUserPasswordDialog(
 
     val context = LocalContext.current
 
+    val userViewModel : UserViewModel = viewModel ()
+    val userAvatarResult = userViewModel.userAvatarResult.observeAsState()
+
+    var isLoading = userAvatarResult.value is NetworkResponse.Loading
+
     AlertDialog(
         onDismissRequest = { onDismiss() },
         containerColor = backgroundColor,
@@ -419,6 +429,7 @@ fun EditUserPasswordDialog(
         confirmButton = {
             Button(
                 onClick = {
+
                         var TheChangedPassword =  ChangeUserPassword(
                             check_password = oldPassword,
                             password = newPassword
@@ -465,6 +476,13 @@ fun EditAvatarUser(
     val context = LocalContext.current
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
     var tempAvatar by remember { mutableStateOf(userData.avatar) }
+
+    val userViewModel : UserViewModel = viewModel
+    val userAvatarResult = userViewModel.userAvatarResult.observeAsState()
+
+    var isLoading = userAvatarResult.value is NetworkResponse.Loading
+
+
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -517,11 +535,38 @@ fun EditAvatarUser(
                         viewModel.changeUserAvatar(context,token, uri)
                     } ?: Toast.makeText(context, "Please select an image", Toast.LENGTH_SHORT).show()
                 },
+                enabled = !isLoading,
                 colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(text = context.getString(R.string.Save))
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(20.dp)
+                            .size(24.dp)
+                            .padding(bottom = 2.dp, start = 1.dp)
+                    )
+                }
+                else {
+                    Text (text = context.getString(R.string.Save))
+                }
             }
+            when (userAvatarResult.value) {
+                is NetworkResponse.Error -> {
+                    Log.e(TAG,"ERROR")
+                    isLoading = false
+                    showError(context.getString(R.string.Error_fetching_data), onDismiss)
+
+                }
+                NetworkResponse.Idle -> {}
+                NetworkResponse.Loading -> isLoading = true
+                is NetworkResponse.Success -> {isLoading = false}
+                null -> {}
+
+            }
+
+
         },
         dismissButton = {
             OutlinedButton(onClick = { onDismiss() }) {
