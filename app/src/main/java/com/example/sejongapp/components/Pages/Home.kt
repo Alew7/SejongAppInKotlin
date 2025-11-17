@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -39,6 +37,7 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 import kotlinx.coroutines.delay
+import kotlin.math.truncate
 
 @Composable
 fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
@@ -49,6 +48,10 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
     val scale = remember {
         androidx.compose.animation.core.Animatable(0.2f)
     }
+
+
+
+
 
     var isClickedOnce by remember { mutableStateOf(false) }
 
@@ -119,6 +122,31 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
                 modifier = Modifier
                     .size(64.dp)
                     .padding(start = 25.dp)
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        val username = " Агар дхта боши занг за"
+                        val userPhone = "+992 000-33-90-66 "
+
+                        val noteText = " Номм Алишерай: $username\n Телефон: $userPhone"
+
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, noteText)
+                            setPackage("com.samsung.android.app.notes")
+                        }
+                        try {
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                context,
+                                "Samsung Notes не установлено",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                    }
             )
         }
 
