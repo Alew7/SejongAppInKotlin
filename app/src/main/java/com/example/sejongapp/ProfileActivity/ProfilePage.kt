@@ -466,10 +466,7 @@ fun ProfilePage() {
                     Toast.makeText(LocalContext.current, "The data has been successfully updated", Toast.LENGTH_LONG)
                     fetchingNewUserData = false
 
-                    val context = LocalContext.current
-                    if (context is Activity) {
-                        context.recreate()
-                    }
+
 
                 }
                 else ->{}
@@ -487,6 +484,11 @@ fun ProfilePage() {
             LaunchedEffect(Unit) {
                 delay(3000)
                 showSuccessAnomation = false
+
+                if (context is Activity) {
+                    context.recreate()
+                }
+
             }
         }
     }
