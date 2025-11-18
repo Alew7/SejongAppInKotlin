@@ -39,6 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.ProfileActivity.ui.theme.secondaryColor
 import com.example.sejongapp.R
@@ -47,6 +51,7 @@ import com.example.sejongapp.components.EditUserDialog
 import com.example.sejongapp.components.EditUserPasswordDialog
 import com.example.sejongapp.components.LoadingDialog
 import com.example.sejongapp.components.showError
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserAvatarInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
@@ -66,6 +71,8 @@ fun ProfilePage() {
     var fetchingNewUserData by remember { mutableStateOf(false) }
     var showPasswordDialog by remember { mutableStateOf(false) }
     var showUserAvatarDialog by remember { mutableStateOf(false) }
+    var avatarChanged by remember { mutableStateOf(false) }
+    var showSuccessAnomation by remember { mutableStateOf(false) }
 
 
     var isChangingPassword by remember { mutableStateOf(false) }
@@ -260,6 +267,7 @@ fun ProfilePage() {
             )
 
         }
+    }
 
 
 
@@ -302,77 +310,133 @@ fun ProfilePage() {
         if (showUserAvatarDialog) {
             EditAvatarUser(
                 userData = userData,
-                onDismiss = { showUserAvatarDialog = false },
-                viewModel = userViewModel
+                onDismiss = {
+                    showUserAvatarDialog = false
+                    avatarChanged = false
+                            },
+                onSave = {uri ->
+                    var token = LocalData.getSavedToken(context)
+                    userViewModel.changeUserAvatar(context, token, uri)
+                    showUserAvatarDialog = false
+                    showLoadingDialog = true
+                    avatarChanged = true
+                }
             )
         }
 
 
         //     Loading dialogs for showing and handling the user changing requests
         if(showLoadingDialog){
+            if (avatarChanged){
+                val result by userViewModel.userAvatarResult.observeAsState(NetworkResponse.Idle)
+                Log.i(TAG, "Started fetching for the avatar")
+                when (result) {
 
-            val result by userViewModel.userChangeResult.observeAsState(NetworkResponse.Idle)
-
-            when (result) {
-                is NetworkResponse.Error -> {
+                    is NetworkResponse.Error -> {
                         showError((result as NetworkResponse.Error).message) {
                             showLoadingDialog = false
                         }
                     }
-                NetworkResponse.Idle -> {}
-                NetworkResponse.Loading -> {
-                            LoadingDialog(LocalContext.current.getString(R.string.applying_changes))
+                    NetworkResponse.Idle -> {}
+                    NetworkResponse.Loading -> {
+                        LoadingDialog(LocalContext.current.getString(R.string.applying_changes))
                     }
-                is NetworkResponse.Success ->{
-                    if (isChangingPassword){
-                        var fetchedData = (result as NetworkResponse.Success<tokenData>).data
-                        Log.v(TAG, "ProfileChangeDialog : The token is $fetchedData")
+                    is NetworkResponse.Success ->{
+                            var fetchedData = (result as NetworkResponse.Success<ChangeUserAvatarInfo>).data
 
-                        if (fetchedData.auth_token.isNullOrEmpty()){
-                            showError("Server returned null token") { fetchingNewUserData = false }
-                        }
-
-                        Toast.makeText(LocalContext.current, "The Password has been successfully updated", Toast.LENGTH_LONG)
-                        LocalData.setToken(context, fetchedData.auth_token)
-                        fetchingNewUserData = true
-                        showLoadingDialog = false
-                        isChangingPassword = false
-
-                    }
-                    else {
-                        var fetchedData = (result as NetworkResponse.Success<ChangeUserInfo>).data
-
-                        if (fetchedData.username.isNullOrEmpty()){
-                            showError("Server returned null token") { fetchingNewUserData = false }
-                        }
-                        Toast.makeText(LocalContext.current, "The data has been successfully updated", Toast.LENGTH_LONG)
-                        var theUserData = LocalData.getUserData(context)
-                        LocalData.setUserData(context, UserData(
-                            username = fetchedData.username,
-                            avatar = theUserData.avatar,
-                            fullname = theUserData.fullname,
-                            email = fetchedData.email,
-                            status = theUserData.status,
-                            groups = theUserData.groups
-                        )
-                        )
-                        fetchingNewUserData = true
-                        showLoadingDialog = false
-                        isChangingPassword = false
-
-                    }
-//
+                            if (fetchedData.message.isNullOrEmpty()){
+                                showError("Server returned null token") { showLoadingDialog = false }
+                            }
+                            Toast.makeText(context, "Avatar updated successfully!", Toast.LENGTH_SHORT).show()
+                            Log.i(TAG, "Success on  fetching the data")
+                            fetchingNewUserData = true
+                            showLoadingDialog = false
+                            isChangingPassword = false
+                            avatarChanged = false
+                            var theUserData = getUserData(context)
+                            LocalData.setUserData(context, UserData(
+                                username = theUserData.username,
+                                avatar = fetchedData.avatar,
+                                fullname = theUserData.fullname,
+                                email = theUserData.email,
+                                status = theUserData.status,
+                                groups = theUserData.groups
+                            )
+                            )
 
 
 
                     }
-                else ->{}
+                    else ->{}
 
 
                 }
-
             }
+            else{
+                val result by userViewModel.userChangeResult.observeAsState(NetworkResponse.Idle)
+                Log.i(TAG, "Started fetching for the user data")
+
+                when (result) {
+
+                    is NetworkResponse.Error -> {
+                        showError((result as NetworkResponse.Error).message) {
+                            showLoadingDialog = false
+                        }
+                    }
+                    NetworkResponse.Idle -> {}
+                    NetworkResponse.Loading -> {
+                        LoadingDialog(LocalContext.current.getString(R.string.applying_changes))
+                    }
+                    is NetworkResponse.Success ->{
+                        Log.i(TAG, "Success on  fetching the data")
+                        if (isChangingPassword){
+                            var fetchedData = (result as NetworkResponse.Success<tokenData>).data
+                            Log.v(TAG, "ProfileChangeDialog : The token is $fetchedData")
+                            if (fetchedData.auth_token.isNullOrEmpty()){
+                                showError("Server returned null token") { showLoadingDialog = false }
+                            }
+
+                            Toast.makeText(LocalContext.current, "The Password has been successfully updated", Toast.LENGTH_LONG)
+                            LocalData.setToken(context, fetchedData.auth_token)
+                            fetchingNewUserData = true
+                            showLoadingDialog = false
+                            isChangingPassword = false
+
+                        }
+                        else{
+                            var fetchedData = (result as NetworkResponse.Success<ChangeUserInfo>).data
+                            if (fetchedData.username.isNullOrEmpty()){
+                                showError("Server returned null token") { showLoadingDialog = false }
+                            }
+                            Toast.makeText(LocalContext.current, "The data has been successfully updated", Toast.LENGTH_LONG)
+                            Log.i(TAG, "Success on  fetching the data")
+                            fetchingNewUserData = true
+                            showLoadingDialog = false
+                            isChangingPassword = false
+                            avatarChanged = false
+                            var theUserData = getUserData(context)
+                            LocalData.setUserData(context, UserData(
+                                username = fetchedData.username,
+                                avatar = theUserData.avatar,
+                                fullname = theUserData.fullname,
+                                email = fetchedData.email,
+                                status = theUserData.status,
+                                groups = theUserData.groups
+                            )
+                            )
+                        }
+
+                    }
+                    else ->{}
+
+
+                }
+            }
+
+
+
         }
+
 
         //     Loading dialogs for showing and handing the new user data that was changed
         if(fetchingNewUserData){
@@ -432,6 +496,29 @@ fun ProfileItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: St
         }
     }
 }
+
+@Composable
+fun SuccessAnimation(modifier: Modifier = Modifier) {
+
+
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.Asset("Sucesso.lottie")
+    )
+
+
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = 1,
+        speed = 1f
+    )
+
+    LottieAnimation(
+        composition = composition,
+        progress = { progress },
+        modifier = modifier.size(200.dp)
+    )
+}
+
 
 //@Preview(showBackground = true, showSystemUi = true)
 //@Composable

@@ -205,10 +205,11 @@ class UserViewModel: ViewModel() {
                 Log.i(TAG, "Sending the response!")
                 val response = userApi.changeUserAvatar(token, new_avatar = imagePart)
                 if (response.isSuccessful) {
+
                     Log.d(TAG, "Got the data $response")
                     val info = response.body()
                     Log.d(TAG, "Avatar updated: ${info}")
-                    Toast.makeText(context, "Avatar updated successfully!", Toast.LENGTH_SHORT).show()
+                    _userAvatarResult.value = Success(info!!)
                 } else {
                     Log.e(TAG, "Error: ${response.code()}")
                     Toast.makeText(context, "Error: ${response.code()}", Toast.LENGTH_SHORT).show()

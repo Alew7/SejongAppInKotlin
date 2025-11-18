@@ -1,27 +1,18 @@
 package com.example.sejongapp.components
 
 import LocalData
-import LocalData.getUserData
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.content.contentReceiver
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -68,12 +59,9 @@ import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Lock
@@ -83,23 +71,19 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.Pages.TAG
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
-import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import java.io.ByteArrayOutputStream
 
 
 @Composable
@@ -471,16 +455,13 @@ fun EditUserPasswordDialog(
 fun EditAvatarUser(
     userData: UserData,
     onDismiss: () -> Unit,
-    viewModel: UserViewModel
+    onSave: (Uri) -> Unit
 ) {
     val context = LocalContext.current
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
     var tempAvatar by remember { mutableStateOf(userData.avatar) }
 
-    val userViewModel : UserViewModel = viewModel
-    val userAvatarResult = userViewModel.userAvatarResult.observeAsState()
 
-    var isLoading = userAvatarResult.value is NetworkResponse.Loading
 
 
 
@@ -529,41 +510,13 @@ fun EditAvatarUser(
             Button(
 
                 onClick = {
-                    var token = LocalData.getSavedToken(context)
                     selectedUri?.let { uri ->
-
-                        viewModel.changeUserAvatar(context,token, uri)
+                        onSave(uri)
                     } ?: Toast.makeText(context, "Please select an image", Toast.LENGTH_SHORT).show()
                 },
-                enabled = !isLoading,
                 colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        color = Color.White,
-                        strokeWidth = 2.dp,
-                        modifier = Modifier.size(20.dp)
-                            .size(24.dp)
-                            .padding(bottom = 2.dp, start = 1.dp)
-                    )
-                }
-                else {
-                    Text (text = context.getString(R.string.Save))
-                }
-            }
-            when (userAvatarResult.value) {
-                is NetworkResponse.Error -> {
-                    Log.e(TAG,"ERROR")
-                    isLoading = false
-                    showError(context.getString(R.string.Error_fetching_data), onDismiss)
-
-                }
-                NetworkResponse.Idle -> {}
-                NetworkResponse.Loading -> isLoading = true
-                is NetworkResponse.Success -> {isLoading = false}
-                null -> {}
-
             }
 
 
