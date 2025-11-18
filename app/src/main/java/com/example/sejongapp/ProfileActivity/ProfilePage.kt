@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -58,6 +60,7 @@ import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.primaryColor
+import kotlinx.coroutines.delay
 
 const val TAG = "TAG_ProfilePage"
 
@@ -348,6 +351,7 @@ fun ProfilePage() {
                                 showError("Server returned null token") { showLoadingDialog = false }
                             }
                             Toast.makeText(context, "Avatar updated successfully!", Toast.LENGTH_SHORT).show()
+                            showSuccessAnomation = true
                             Log.i(TAG, "Success on  fetching the data")
                             fetchingNewUserData = true
                             showLoadingDialog = false
@@ -397,6 +401,7 @@ fun ProfilePage() {
                             }
 
                             Toast.makeText(LocalContext.current, "The Password has been successfully updated", Toast.LENGTH_LONG)
+                            showSuccessAnomation = true
                             LocalData.setToken(context, fetchedData.auth_token)
                             fetchingNewUserData = true
                             showLoadingDialog = false
@@ -409,6 +414,7 @@ fun ProfilePage() {
                                 showError("Server returned null token") { showLoadingDialog = false }
                             }
                             Toast.makeText(LocalContext.current, "The data has been successfully updated", Toast.LENGTH_LONG)
+                            showSuccessAnomation = true
                             Log.i(TAG, "Success on  fetching the data")
                             fetchingNewUserData = true
                             showLoadingDialog = false
@@ -469,6 +475,21 @@ fun ProfilePage() {
                 else ->{}
             }
         }
+    if (showSuccessAnomation) {
+        Box (
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0x66000000)),
+            contentAlignment = Alignment.Center
+        ) {
+            SuccessAnimation()
+
+            LaunchedEffect(Unit) {
+                delay(3000)
+                showSuccessAnomation = false
+            }
+        }
+    }
 }
 
 @Composable

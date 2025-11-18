@@ -517,6 +517,7 @@ fun EditAvatarUser(
                 colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                 shape = RoundedCornerShape(12.dp)
             ) {
+                Text (text = context.getString(R.string.Save))
             }
 
 
@@ -550,13 +551,17 @@ fun LoadingDialog(
             ) {
                 CircularProgressIndicator(
                     color = primaryColor,
-                    strokeWidth = 3.dp
+                    strokeWidth = 3.dp,
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+
                 )
                 Text(
                     text = message,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = darkGray
+                    color = darkGray,
+                    modifier = Modifier.padding(start = 15.dp,top = 5.dp)
                 )
             }
         },
