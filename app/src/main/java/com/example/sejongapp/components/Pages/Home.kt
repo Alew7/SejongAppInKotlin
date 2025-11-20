@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sejongapp.Appupdate.appupdateactivity
 import com.example.sejongapp.MainActivity
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.ui.theme.backgroundColor
@@ -115,39 +117,45 @@ fun HomePage (onChangeScreen: (NavigationScreenEnum) -> Unit) {
                     )
                 }
         ) {
-//            The HEAD
-            Image (
-                painter = painterResource(R.drawable.ic_head),
-                contentDescription = "ic_head",
+            Row (
                 modifier = Modifier
-                    .size(64.dp)
-                    .padding(start = 25.dp)
-                    .clickable (
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        val username = " Агар дхта боши занг за"
-                        val userPhone = "+992 000-33-90-66 "
+                    .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
 
-                        val noteText = " Номм Алишерай: $username\n Телефон: $userPhone"
 
-                        val intent = Intent(Intent.ACTION_SEND).apply {
-                            type = "text/plain"
-                            putExtra(Intent.EXTRA_TEXT, noteText)
-                            setPackage("com.samsung.android.app.notes")
-                        }
-                        try {
+            ) {
+                Image (
+                    painter = painterResource(R.drawable.ic_head),
+                    contentDescription = "ic_head",
+                    modifier = Modifier
+                        .size(64.dp)
+                        .padding(start = 25.dp)
+
+                )
+                Image (
+                    painter = painterResource(R.drawable.ic_kalakolchik),
+                    contentDescription = "ic_kolokolchik",
+                    modifier = Modifier
+                        .clickable (
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+
+                        ) {
+                            val intent = Intent(context,appupdateactivity :: class.java)
                             context.startActivity(intent)
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                context,
-                                "Samsung Notes не установлено",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
+                        .size(64.dp).padding(end = 25.dp),
+                    alignment = Alignment.Center
 
-                    }
-            )
+
+                )
+
+            }
+
+
+
+
         }
 
 //        The body of the page (all btn icons)

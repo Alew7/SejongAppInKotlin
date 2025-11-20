@@ -523,9 +523,10 @@ fun EditAvatarUser(
 
         },
         dismissButton = {
-            OutlinedButton(onClick = { onDismiss() }) {
+            OutlinedButton(onClick = { onDismiss() }, shape = RoundedCornerShape(12.dp)) {
                 Text(context.getString(R.string.Cancel), color = Color.Black)
             }
+
         }
     )
 }
