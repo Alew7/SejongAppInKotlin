@@ -11,7 +11,7 @@ class appupdateactivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Appupdate()
+            AppUpdateDesign()
         }
     }
 }

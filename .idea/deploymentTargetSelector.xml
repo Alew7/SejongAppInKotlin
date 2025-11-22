@@ -13,13 +13,7 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="instate">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="Preview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="UpdateActivityDisignPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="UpdateAppDisignPreview">
@@ -34,6 +28,12 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="AppupdatePreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="UppdataPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="Alisherjon">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
