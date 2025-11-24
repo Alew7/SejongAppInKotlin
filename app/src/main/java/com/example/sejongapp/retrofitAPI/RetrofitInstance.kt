@@ -34,3 +34,5 @@ object RetrofitInstance {
     val AnnouncementsApi: announcementsApi = getInstance().create(announcementsApi::class.java)
 
 }
+
+// https://sejong-app-container-785993649958.us-central1.run.app/api/

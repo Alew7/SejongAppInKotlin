@@ -37,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -81,194 +82,190 @@ fun ProfilePage() {
     var isChangingPassword by remember { mutableStateOf(false) }
 
 
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
-            .padding(30.dp),    /// 16.dp
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        IconButton (onClick = {
-            (context as? ProfileActivity)?.finish()
-        }, modifier = Modifier.align(Alignment.Start)) {
-            Icon (
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "ic_back",
-                tint = Color.Black,
-                modifier = Modifier
-                    .size(35.dp)
-            )
-        }
+        val screenWidth = maxWidth
+        val screenHeight = maxHeight
 
-        // Заголовок
-        Text(
-            text = context.getString(R.string.Profile),
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF222222)
-        )
+        val paddingHorizontal = screenWidth * 0.05f
+        val avatarSize = screenWidth * 0.3f
+        val editButtonSize = avatarSize * 0.33f
+        val titleFontSize = (screenWidth.value * 0.07).sp
+        val subFontSize = (screenWidth.value * 0.045).sp
+        val buttonHeight = screenHeight * 0.07f
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-
-
-        
-        // Аватар
-        Box (
+        Column(
             modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .background(Color.White)
-                .shadow(8.dp, CircleShape),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .padding(horizontal = paddingHorizontal),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-
-            if (userData.avatar.isNotEmpty()) {
-                Image(
-                    painter = rememberImagePainter(userData.avatar),
-                    contentDescription = "userAvatar",
-                    modifier = Modifier
-                        .size(110.dp) // 100
-                        .clip(CircleShape),
-
-                    contentScale = ContentScale.Crop
-
-                )
-
-            }
-            else {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Default user icon",
-                    tint = Color(0xFF555555),
-                    modifier = Modifier.size(64.dp)
-
-                )
-            }
-
-            Box (
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(x = (-4).dp,y = (-4).dp)
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(primaryColor)
-                    .border(3.dp,Color.White, CircleShape)
-                    .shadow(6.dp, CircleShape)
-                    .clickable { showUserAvatarDialog = true },
-                contentAlignment = Alignment.Center
-
+            IconButton(
+                onClick = { (context as? ProfileActivity)?.finish() },
+                modifier = Modifier.align(Alignment.Start)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "ic_Edit",
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "ic_back",
+                    tint = Color.Black,
+                    modifier = Modifier.size(screenWidth * 0.08f)
                 )
             }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Имя и Email
-        Text(
-            text = userData.username ?: "Unknown User",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF111111)
-        )
-        Text(
-            text = userData.fullname ?: "email@example.com",
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
-
-
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Карточка с информацией
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-            Column {
-                ProfileItem(
-                    icon = Icons.Default.VerifiedUser,
-                    title = context.getString(R.string.status),
-                    value = userData.status ?: "—"
-                )
-                Divider(color = Color(0xFFDDDDDD))
-
-
-                val groupsValue = userData.groups
-                    ?.toString()
-                    ?.replace("[", "")
-                    ?.replace("]", "")
-                    ?: "-"
-
-                ProfileItem(
-                    icon = Icons.Default.Group,
-                    title = context.getString(R.string.Groups),
-                    value = groupsValue
-
-                )
-
-                Divider(color = Color(0xFFDDDDDD))
-
-
-                ProfileItem(
-                    icon = Icons.Filled.Email,
-                    title = context.getString(R.string.Email),
-                    value = userData.email ?: "-"
-                )
-
-            }
-        }
-
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = {
-                showEditDialog = true
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = secondaryColor) // Golden color
-        ) {
+            // Заголовок
             Text(
-                text = LocalContext.current.getString(R.string.Edit_profile),
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(15.dp))
-
-        Button (
-            onClick = {
-                showPasswordDialog = true
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = secondaryColor)
-        ) {
-            Text (
-                text = context.getString(R.string.Change_password),
-                color = Color.White,
-                fontSize = 16.sp,
+                text = context.getString(R.string.Profile),
+                fontSize = titleFontSize,
                 fontWeight = FontWeight.Bold,
+                color = Color(0xFF222222)
             )
 
+            Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+
+            // Аватар
+            Box(
+                modifier = Modifier
+                    .size(avatarSize)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .shadow(8.dp, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                if (userData.avatar.isNotEmpty()) {
+                    Image(
+                        painter = rememberImagePainter(userData.avatar),
+                        contentDescription = "userAvatar",
+                        modifier = Modifier
+                            .size(avatarSize * 0.9f)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Default user icon",
+                        tint = Color(0xFF555555),
+                        modifier = Modifier.size(avatarSize * 0.5f)
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = -(avatarSize * 0.1f), y = -(avatarSize * 0.1f))
+                        .size(editButtonSize)
+                        .clip(CircleShape)
+                        .background(primaryColor)
+                        .border(3.dp, Color.White, CircleShape)
+                        .shadow(6.dp, CircleShape)
+                        .clickable { showUserAvatarDialog = true },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "ic_Edit",
+                        tint = Color.White,
+                        modifier = Modifier.size(editButtonSize * 0.5f)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(screenHeight * 0.02f))
+
+            // Имя и Email
+            Text(
+                text = userData.username ?: "Unknown User",
+                fontSize = titleFontSize,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF111111)
+            )
+            Text(
+                text = userData.fullname ?: "email@example.com",
+                fontSize = subFontSize,
+                color = Color.Gray
+            )
+
+            Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+
+            // Карточка с информацией
+            Card(
+                shape = RoundedCornerShape(screenWidth * 0.04f),
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(4.dp)
+            ) {
+                Column {
+                    ProfileItem(
+                        icon = Icons.Default.VerifiedUser,
+                        title = context.getString(R.string.status),
+                        value = userData.status ?: "—",
+                        screenWidth = screenWidth
+                    )
+                    Divider(color = Color(0xFFDDDDDD))
+
+                    val groupsValue = userData.groups
+                        ?.toString()
+                        ?.replace("[", "")
+                        ?.replace("]", "")
+                        ?: "-"
+
+                    ProfileItem(
+                        icon = Icons.Default.Group,
+                        title = context.getString(R.string.Groups),
+                        value = groupsValue,
+                        screenWidth = screenWidth
+                    )
+
+                    Divider(color = Color(0xFFDDDDDD))
+
+                    ProfileItem(
+                        icon = Icons.Filled.Email,
+                        title = context.getString(R.string.Email),
+                        value = userData.email ?: "-",
+                        screenWidth = screenWidth
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+
+            // Кнопки
+            Button(
+                onClick = { showEditDialog = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(buttonHeight),
+                shape = RoundedCornerShape(screenWidth * 0.03f),
+                colors = ButtonDefaults.buttonColors(containerColor = secondaryColor)
+            ) {
+                Text(
+                    text = context.getString(R.string.Edit_profile),
+                    color = Color.White,
+                    fontSize = subFontSize,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(screenHeight * 0.015f))
+
+            Button(
+                onClick = { showPasswordDialog = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(buttonHeight),
+                shape = RoundedCornerShape(screenWidth * 0.03f),
+                colors = ButtonDefaults.buttonColors(containerColor = secondaryColor)
+            ) {
+                Text(
+                    text = context.getString(R.string.Change_password),
+                    color = Color.White,
+                    fontSize = subFontSize,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 
@@ -473,13 +470,17 @@ fun ProfilePage() {
             }
         }
     if (showSuccessAnomation) {
-        Box (
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0x66000000)),
             contentAlignment = Alignment.Center
         ) {
-            SuccessAnimation()
+            val screenWidth = maxWidth
+
+            SuccessAnimation(
+                modifier = Modifier.size(screenWidth * 0.5f)
+            )
 
             LaunchedEffect(Unit) {
                 delay(3000)
@@ -488,34 +489,39 @@ fun ProfilePage() {
                 if (context is Activity) {
                     context.recreate()
                 }
-
             }
         }
     }
+
 }
 
 @Composable
-fun ProfileItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, value: String) {
+fun ProfileItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, value: String, screenWidth: androidx.compose.ui.unit.Dp) {
+    val iconSize = screenWidth * 0.06f
+    val titleFontSize = (screenWidth.value * 0.04).sp
+    val valueFontSize = (screenWidth.value * 0.045).sp
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(horizontal = screenWidth * 0.03f, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icon,
             contentDescription = title,
             tint = Color(0xFF555555),
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(iconSize)
         )
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(screenWidth * 0.03f))
         Column {
-            Text(text = title, fontSize = 14.sp, color = Color.Gray)
-            Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 1,
-                overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false)
-                )
-
-
+            Text(text = title, fontSize = titleFontSize, color = Color.Gray)
+            Text(
+                text = value,
+                fontSize = valueFontSize,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
@@ -543,11 +549,11 @@ fun SuccessAnimation(modifier: Modifier = Modifier) {
 }
 
 
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun ProfilePreview() {
-//    ProfilePage()
-//}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun ProfilePreview() {
+    ProfilePage()
+}
 
 
 
