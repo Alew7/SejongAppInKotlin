@@ -4,6 +4,7 @@ import com.example.sejongapp.retrofitAPI.api.ELibAPI
 import com.example.sejongapp.retrofitAPI.api.ScheduleApi
 import com.example.sejongapp.retrofitAPI.api.UserApi
 import com.example.sejongapp.retrofitAPI.api.announcementsApi
+import com.example.sejongapp.retrofitAPI.api.programupdateApi
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -32,7 +33,8 @@ object RetrofitInstance {
     val scheduleApi: ScheduleApi = getInstance().create(ScheduleApi::class.java)
     val eLibApi: ELibAPI = getInstance().create(ELibAPI::class.java)
     val AnnouncementsApi: announcementsApi = getInstance().create(announcementsApi::class.java)
+    val ProgramupdateApi: programupdateApi = getInstance().create(programupdateApi::class.java)
 
 }
 
-// https://sejong-app-container-785993649958.us-central1.run.app/api/
+//
