@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
+import com.example.sejongapp.models.DataClasses.ProgramUpdate
 import com.example.sejongapp.models.DataClasses.ProgramUpdateData
 import com.example.sejongapp.models.ViewModels.ProgramUpdateViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
@@ -85,6 +86,14 @@ fun AppUpdateDesign() {
         is NetworkResponse.Success -> {
             val proData = (result.value as NetworkResponse.Success<ProgramUpdateData>).data
 
+            val localVersion = context.packageManager.getPackageInfo(context.packageName, 0).versionName
+
+            val serverVersion = proData[0].version
+
+            if ( localVersion == serverVersion ) {
+                AppIsUpdatedScreen(proData[0])
+                return
+            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -142,7 +151,7 @@ fun AppUpdateDesign() {
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Text(
-                                    text = proData[0].content.getLocalized(context),
+                                    text = proData[0].version,
                                     fontSize = 17.sp,
                                     color = Color.Black
                                 )
@@ -170,10 +179,7 @@ fun AppUpdateDesign() {
                         Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
-                            text = "• Новый дизайн профиля\n" +
-                                    "• Повышена скорость загрузки\n" +
-                                    "• Исправлено множество ошибок\n" +
-                                    "• Улучшены чаты 1 на 1",
+                            text = proData[0].content.getLocalized(context),
                             fontSize = 16.sp,
                             color = Color.DarkGray,
                             lineHeight = 22.sp
@@ -206,15 +212,11 @@ fun AppUpdateDesign() {
 
 
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun Alisherjon () {
-    AppIsUpdatedScreen()
-}
+
 
 
 @Composable
-fun AppIsUpdatedScreen() {
+fun AppIsUpdatedScreen(proData: ProgramUpdate ) {
 
     Box(
         modifier = Modifier
@@ -241,7 +243,7 @@ fun AppIsUpdatedScreen() {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = "ic_check",
-                    tint = Color(0xFF27AE60),
+                    tint = Color(0xFFBEA96A),
                     modifier = Modifier.size(60.dp)
                 )
 
@@ -267,7 +269,7 @@ fun AppIsUpdatedScreen() {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Версия: 1.3.0",
+                    text = proData.version,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black
@@ -276,6 +278,8 @@ fun AppIsUpdatedScreen() {
         }
     }
 }
+
+
 
 
 
