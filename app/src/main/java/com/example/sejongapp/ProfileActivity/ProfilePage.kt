@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
@@ -106,6 +107,7 @@ fun ProfilePage() {
             IconButton(
                 onClick = { (context as? ProfileActivity)?.finish() },
                 modifier = Modifier.align(Alignment.Start)
+                    .offset(y = 14.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
@@ -139,8 +141,10 @@ fun ProfilePage() {
                         painter = rememberImagePainter(userData.avatar),
                         contentDescription = "userAvatar",
                         modifier = Modifier
+                            .fillMaxSize()
                             .size(avatarSize * 0.9f)
-                            .clip(CircleShape),
+                            .clip(CircleShape)
+                            .rotate(90f),
                         contentScale = ContentScale.Crop
                     )
                 } else {
