@@ -93,7 +93,7 @@ fun ProfilePage() {
 
         val paddingHorizontal = screenWidth * 0.05f
         val avatarSize = screenWidth * 0.3f
-        val editButtonSize = avatarSize * 0.33f
+        val editButtonSize = avatarSize * 0.25f
         val titleFontSize = (screenWidth.value * 0.07).sp
         val subFontSize = (screenWidth.value * 0.045).sp
         val buttonHeight = screenHeight * 0.07f
@@ -143,8 +143,8 @@ fun ProfilePage() {
                         modifier = Modifier
                             .fillMaxSize()
                             .size(avatarSize * 0.9f)
-                            .clip(CircleShape)
-                            .rotate(90f),
+                            .clip(CircleShape),
+//                            .rotate(90f),
                         contentScale = ContentScale.Crop
                     )
                 } else {
@@ -163,7 +163,7 @@ fun ProfilePage() {
                         .size(editButtonSize)
                         .clip(CircleShape)
                         .background(primaryColor)
-                        .border(3.dp, Color.White, CircleShape)
+                        .border(2.dp, Color.White, CircleShape)
                         .shadow(6.dp, CircleShape)
                         .clickable { showUserAvatarDialog = true },
                     contentAlignment = Alignment.Center

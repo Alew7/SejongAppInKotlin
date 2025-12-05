@@ -34,6 +34,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -48,7 +49,7 @@ import com.example.sejongapp.models.DataClasses.ProgramUpdateData
 import com.example.sejongapp.models.ViewModels.ProgramUpdateViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 
-
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun AppUpdateDesign() {
 
@@ -134,7 +135,7 @@ fun AppUpdateDesign() {
                             Icon(
                                 imageVector = Icons.Default.CloudDownload,
                                 contentDescription = "Download",
-                                tint = Color(0xFF0A84FF),
+                                tint = Color(0xFFBEA96A),
                                 modifier = Modifier.size(60.dp)
                             )
 
@@ -151,7 +152,7 @@ fun AppUpdateDesign() {
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Text(
-                                    text = proData[0].version,
+                                    text ="Версия: " + proData[0].version,
                                     fontSize = 17.sp,
                                     color = Color.Black
                                 )
@@ -195,12 +196,15 @@ fun AppUpdateDesign() {
                                 .height(55.dp),
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF0A84FF),
+                                containerColor = Color(0xFFBEA96A),
                                 contentColor = Color.White
                             )
                         ) {
                             Text(text = "Обновить", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+
                         }
+                        Spacer(modifier = Modifier.height(10.dp))
+
                     }
                 }
             }
@@ -217,63 +221,81 @@ fun AppUpdateDesign() {
 
 @Composable
 fun AppIsUpdatedScreen(proData: ProgramUpdate ) {
+    val context = LocalContext.current
 
-    Box(
+    Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor),
-        contentAlignment = Alignment.Center
+            .background(backgroundColor)
+            .padding(20.dp)
     ) {
-
-        Card(
+        Icon (
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = "ic_ArrowBack",
+            tint = Color.Black,
             modifier = Modifier
-                .fillMaxWidth(0.85f)
-                .wrapContentHeight(),
-            shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.cardColors(Color.White),
-            elevation = CardDefaults.cardElevation(8.dp)
+                .size(60.dp)
+                .padding(bottom = 16.dp,top = 10.dp)
+                .clickable (
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    (context as? appupdateactivity)?.finish()
+
+                }
+        )
+        Box (
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Card(
+                modifier = Modifier.fillMaxWidth()
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(Color.White),
+                elevation = CardDefaults.cardElevation(8.dp)
+
             ) {
+                Column (
+                    modifier = Modifier.padding(24.dp).fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
 
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "ic_check",
-                    tint = Color(0xFFBEA96A),
-                    modifier = Modifier.size(60.dp)
-                )
+                ) {
+                    Icon (
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "ic_Check",
+                        tint = Color(0xFFBEA96A),
+                        modifier = Modifier.size(60.dp)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                Spacer(modifier = Modifier.height(12.dp))
+                    Text (
+                        text = "Придложения актуально",
+                        fontSize = 22.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
 
-                Text(
-                    text = "Приложение актуально",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
+                    )
+                    Spacer (modifier = Modifier.height(5.dp))
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Text (
+                        text = "У вас установлена \n последняя версия",
+                        fontSize = 16.sp,
+                        color = Color.Gray,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
 
-                Text(
-                    text = "У вас установлена\nпоследняя версия",
-                    fontSize = 16.sp,
-                    color = Color.Gray,
-                    lineHeight = 20.sp,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
+                    )
+                    Spacer (modifier = Modifier.height(5.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Text (
+                        text = "Версия: " + proData.version,
+                        fontSize = 16.sp,
+                        color = Color.Black,
 
-                Text(
-                    text = proData.version,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
-                )
+                    )
+
+                }
             }
         }
     }

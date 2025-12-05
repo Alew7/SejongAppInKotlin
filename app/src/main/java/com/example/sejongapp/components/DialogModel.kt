@@ -75,7 +75,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.Pages.TAG
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
@@ -679,21 +681,35 @@ fun ZoomableImage(
     var scale by remember { mutableStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
 
+    var containerSize by remember { mutableStateOf(IntSize.Zero) }
+
+    val painter = rememberImagePainter(url)
+
     val state = rememberTransformableState { zoomChange, panChange, _ ->
-        scale = (scale * zoomChange).coerceIn(1f, 5f) // зум от 1x до 5x
-        offset += panChange // движение
+        scale = (scale * zoomChange).coerceIn(1f, 5f)
+
+
+        val newOffset = offset + panChange
+
+
+        offset = limitOffset(
+            newOffset = newOffset,
+            scale = scale,
+            containerSize = containerSize
+        )
     }
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(Color.Black)
-            .clip(RoundedCornerShape(12.dp))
-            .transformable(state = state)
+            .onGloballyPositioned {
+                containerSize = it.size
+            }
+            .transformable(state)
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = {
-                        // двойной тап — сброс масштаба
                         if (scale > 1f) {
                             scale = 1f
                             offset = Offset.Zero
@@ -712,11 +728,31 @@ fun ZoomableImage(
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = rememberImagePainter(url),
+            painter = painter,
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier.fillMaxSize()
         )
     }
 }
+
+
+
+fun limitOffset(
+    newOffset: Offset,
+    scale: Float,
+    containerSize: IntSize
+): Offset {
+    if (scale <= 1f) return Offset.Zero
+
+    val maxX = (containerSize.width * (scale - 1)) / 2f
+    val maxY = (containerSize.height * (scale - 1)) / 2f
+
+    val limitedX = newOffset.x.coerceIn(-maxX, maxX)
+    val limitedY = newOffset.y.coerceIn(-maxY, maxY)
+
+    return Offset(limitedX, limitedY)
+}
+
+
 

@@ -238,11 +238,9 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 
 
+
 @Composable
 fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Boolean>){
-
-
-
 
     Card(
         modifier = Modifier
@@ -288,17 +286,15 @@ fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Bool
 
 
                     Button(
-                        modifier = Modifier.width(100.dp).align(Alignment.End),
+                        modifier = Modifier.width(100.dp).align(Alignment.End).padding(end = 15.dp),
 
                         onClick = {
                             chosenBook = book
                             showOneBook.value = true
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2B47C)), // gold color
-                        shape = RoundedCornerShape(
-                            topStart = 8.dp,
-                            bottomStart = 8.dp
-                        ),
+                        shape = RoundedCornerShape(8.dp),
+
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
                     ) {
                         Text(LocalContext.current.getString(R.string.read))

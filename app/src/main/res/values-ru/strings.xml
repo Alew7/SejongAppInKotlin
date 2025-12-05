@@ -7,7 +7,7 @@
 
     <!-- Main Activity -->
     <string name="Announcement">Объявления</string>
-    <string name="ElectLib"> библиотека</string>
+    <string name="ElectLib"> Библиотека</string>
     <string name="schedule">Расписание</string>
     <string name="Profile">Профиль</string>
 
@@ -36,7 +36,7 @@
     <string name="All">Все</string>
     <string name="TIME">Время</string>
     <string name="DAY">День</string>
-    <string name="CLASS">класс</string>
+    <string name="CLASS">Класс</string>
     <string-array name="week_days">
         <item>Пн</item>
         <item>Вт</item>
