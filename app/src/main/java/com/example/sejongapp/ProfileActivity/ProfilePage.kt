@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +37,7 @@ import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -104,18 +106,34 @@ fun ProfilePage() {
                 .padding(horizontal = paddingHorizontal),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(
-                onClick = { (context as? ProfileActivity)?.finish() },
-                modifier = Modifier.align(Alignment.Start)
-                    .offset(y = 14.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "ic_back",
-                    tint = Color.Black,
-                    modifier = Modifier.size(screenWidth * 0.08f)
-                )
-            }
+
+            Image (
+                painter = painterResource(R.drawable.ic_back),
+                contentDescription = "ic_back"
+                ,
+                modifier = Modifier
+                    .size(screenWidth * 0.08f)
+                    .offset(y = 30.dp)
+                    .align(Alignment.Start)
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        (context as? ProfileActivity)?.finish()
+                    }
+
+            )
+//            IconButton(
+//                onClick = { (context as? ProfileActivity)?.finish() },
+//                modifier = Modifier.align(Alignment.Start)
+//                    .offset(y = 30.dp)
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.ArrowBack,
+//                    contentDescription = "ic_back",
+//                    modifier = Modifier.size(screenWidth * 0.08f)
+//                )
+//            }
 
             // Заголовок
             Text(

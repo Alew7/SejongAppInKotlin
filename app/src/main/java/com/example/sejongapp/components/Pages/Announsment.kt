@@ -99,20 +99,36 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                     }
             ) {
                 if (!isSeraching) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "ic_ArrowBack",
-                    modifier = Modifier
-                        .size(64.dp)
-                        .padding(start = 25.dp)
-                        .clickable (
-                            interactionSource = remember {MutableInteractionSource()},
-                            indication = null
+                    Image (
+                        painter = painterResource(R.drawable.ic_back),
+                        contentDescription = "ic_bakc",
+                        modifier = Modifier
+                            .size(64.dp)
+                            .padding(start = 25.dp)
+                            .clickable (
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                onChangeScreen(NavigationScreenEnum.HOMEPAGE)
 
-                        ) {
-                            onChangeScreen(NavigationScreenEnum.HOMEPAGE)
-                        }
-                )
+                            }
+
+                    )
+
+//                Icon(
+//                    imageVector = Icons.Default.ArrowBack,
+//                    contentDescription = "ic_ArrowBack",
+//                    modifier = Modifier
+//                        .size(64.dp)
+//                        .padding(start = 25.dp)
+//                        .clickable (
+//                            interactionSource = remember {MutableInteractionSource()},
+//                            indication = null
+//
+//                        ) {
+//                            onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+//                        }
+//                )
 
                 Image (
                     painter = painterResource(R.drawable.ic_search),

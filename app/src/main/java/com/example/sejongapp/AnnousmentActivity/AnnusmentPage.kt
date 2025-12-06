@@ -28,6 +28,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -87,7 +88,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(48.dp)
+                            .size(70.dp)
                             .padding(top = 20.dp, start = 10.dp)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
@@ -97,15 +98,28 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        IconButton(onClick = {
-                            (context as? AnnousmentActivity)?.finish()
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "ic_back",
-                                modifier = Modifier.align(Alignment.TopStart)
-                            )
-                        }
+                        Image (
+                            painter = painterResource(R.drawable.ic_back),
+                            contentDescription = "ic_back",
+                            modifier = Modifier
+                                .size(60.dp)
+                                .padding(start = 20.dp)
+                                .clickable (
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ){
+                                    (context as? AnnousmentActivity)?.finish()
+                                }
+                        )
+//                        IconButton(onClick = {
+//                            (context as? AnnousmentActivity)?.finish()
+//                        }) {
+//                            Icon(
+//                                imageVector = Icons.Default.ArrowBack,
+//                                contentDescription = "ic_back",
+//                                modifier = Modifier.align(Alignment.TopStart)
+//                            )
+//                        }
                     }
                 }
             }

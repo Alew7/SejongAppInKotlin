@@ -390,7 +390,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                             },
                             icon = {
                                 Icon(
-                                    modifier = Modifier.size(24.dp),
+                                    modifier = Modifier.size(24.dp), // 24
                                     painter = painterResource(navItem.icon),
                                     contentDescription = "Icon"
 

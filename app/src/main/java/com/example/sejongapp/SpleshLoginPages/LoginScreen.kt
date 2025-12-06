@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sejongapp.MainActivity
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.WarmBeige
@@ -72,12 +73,6 @@ fun LoginScreen () {
     var isLoading = userTokenResult.value is NetworkResponse.Loading
 
 
-
-
-
-
-
-
     var username by remember {
         mutableStateOf("")
     }
@@ -101,7 +96,12 @@ fun LoginScreen () {
         ){
             Image (
                 painter = painterResource(R.drawable.ic_sejong),
-                contentDescription = "ic_sejong"
+                contentDescription = "ic_sejong",
+                modifier = Modifier
+                    .size(200.dp),
+                contentScale = ContentScale.Fit
+
+
             )
             Spacer(modifier = Modifier.height(35.dp))
 

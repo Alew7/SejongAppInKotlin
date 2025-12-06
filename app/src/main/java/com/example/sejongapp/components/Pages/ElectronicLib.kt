@@ -181,6 +181,7 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 //                        When not searching
                         else{
+
                             Image(
                                 painter = painterResource(R.drawable.ic_back),
                                 contentDescription = "ic_head",
