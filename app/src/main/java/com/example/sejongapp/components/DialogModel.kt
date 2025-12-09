@@ -377,7 +377,7 @@ fun EditUserPasswordDialog(
                             OutlinedTextField(
                                 value = oldPassword,
                                 onValueChange = { oldPassword = it },
-                                label = { Text("Старый пароль") },
+                                label = { Text(context.getString(R.string.old_password))},
                                 shape = RoundedCornerShape(12.dp),
                                 singleLine = true,
                                 visualTransformation = PasswordVisualTransformation(),
@@ -394,7 +394,7 @@ fun EditUserPasswordDialog(
                             OutlinedTextField(
                                 value = newPassword,
                                 onValueChange = { newPassword = it },
-                                label = { Text("Новый пароль") },
+                                label = { Text(context.getString(R.string.new_password)) },
                                 shape = RoundedCornerShape(12.dp),
                                 singleLine = true,
                                 visualTransformation = PasswordVisualTransformation(),

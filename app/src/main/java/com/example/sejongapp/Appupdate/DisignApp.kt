@@ -271,7 +271,7 @@ fun AppIsUpdatedScreen(proData: ProgramUpdate ) {
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text (
-                        text = "Придложения актуально",
+                        text = "Приложение актуально",
                         fontSize = 22.sp,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
