@@ -15,11 +15,13 @@ import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserAvatar
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.UserDataDTO
 import com.example.sejongapp.models.DataClasses.loginRequestData
 import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.retrofitAPI.NetworkResponse.*
 import com.example.sejongapp.retrofitAPI.RetrofitInstance
+import com.example.sejongapp.utils.UserStatusEnum
 import kotlinx.coroutines.launch
 
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -81,7 +83,21 @@ class UserViewModel: ViewModel() {
         }
     }
 
-
+    fun UserDataDTO.toUserData(): UserData {
+        return UserData(
+            username = this.username,
+            avatar = this.avatar,
+            fullname = this.fullname,
+            email = this.email,
+            groups = this.groups,
+            status = when (this.status.uppercase()) { // .uppercase() для надежности
+                "STUDENT" -> UserStatusEnum.STUDENT
+                "TEACHER" -> UserStatusEnum.TEACHER
+                "ADMIN" -> UserStatusEnum.ADMIN
+                else -> UserStatusEnum.UNKNOWN // Важно иметь значение по умолчанию!
+            }
+        )
+    }
 
     fun getUserData(token: String){
         Log.i(TAG, "getUserData: trying to get user data. Token is ${token}")
@@ -96,8 +112,10 @@ class UserViewModel: ViewModel() {
                     Log.i(TAG, "getUserData: data successfully taken " + response.body().toString())
 
 
-                    response.body()?.let {
-                        _userDataResult.value = Success(it)
+                    response.body()?.let {dto->
+                        val fetchedDta: UserData = dto.toUserData()
+                        _userDataResult.value = Success(fetchedDta)
+
                     }
                 } else {
                     response.body()?.let {

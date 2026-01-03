@@ -175,7 +175,13 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
             var scheduleData: ArrayList<ScheduleData> = arrayListOf()
             scheduleData = result.data as? ArrayList<ScheduleData> ?: arrayListOf()
 
-            var sortedScheduleData: ArrayList<ScheduleData> = sortScheduleData(scheduleData)
+//            var sortedScheduleData: ArrayList<ScheduleData> = sortScheduleData(scheduleData)
+            var sortedScheduleData = if (selectedPage == 0) {
+                sortScheduleData(scheduleData)
+            } else {
+                sortScheduleByLastDigitOnly(scheduleData)
+            }
+
 
             LazyColumn(
                 modifier = Modifier.padding(bottom = 105.dp)
@@ -393,6 +399,7 @@ fun TableRowElements(day: String, time: String,classRoom: String) {
 
 fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData>{
 
+
     Log.i(TAG, "starts soring the schedule data, the size of datas ${scheduleData.size}")
     var sortedScheduleData: ArrayList<ScheduleData> = arrayListOf<ScheduleData>()
     var i : Int = 0
@@ -421,7 +428,24 @@ fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleD
         Log.i(TAG, "the book : ${item.book}")
     }
     return sortedScheduleData;
+
 }
+fun sortScheduleByLastDigitOnly(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData>{
+    return ArrayList(
+        scheduleData.sortedBy { getLastNumber(it.group) }
+    )
+}
+fun getLastNumber(group: String): Int {
+    return group.substringAfterLast("-").toIntOrNull()?:0
+}
+
+
+
+
+
+
+
+
 
 @Preview(showSystemUi = true)
 @Composable()

@@ -2,27 +2,15 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import android.util.Base64
 import android.util.Log
-import android.webkit.MimeTypeMap
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
-import com.google.gson.Gson
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import com.example.sejongapp.utils.UserStatusEnum
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
-import java.net.URLEncoder
+
 
 
 object LocalData {
@@ -33,6 +21,7 @@ object LocalData {
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
         return prefs.getString("token", "null") ?: "null"
     }
+
 
     fun setToken(context: Context,token: String) {
 
@@ -75,12 +64,14 @@ object LocalData {
 
     fun getUserData(context: Context): UserData {
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
+        val statusOrdinal: Int = prefs.getInt("status", UserStatusEnum.UNKNOWN.ordinal)
+        val status: UserStatusEnum = UserStatusEnum.fromOrdinal(statusOrdinal)
         return UserData(
             prefs.getString("username", "null") ?: "null",
             prefs.getString("avatar", "null") ?: "null",
             prefs.getString("fullname", "null") ?: "null",
             prefs.getString("email", "null") ?: "null",
-            prefs.getString("status", "null") ?: "null",
+            status,
             prefs.getString("groups", "null")?.split(",") ?: listOf()
         )
     }
@@ -94,7 +85,7 @@ object LocalData {
         editor.putString("avatar", userdata.avatar)
         editor.putString("fullname", userdata.fullname)
         editor.putString("email", userdata.email)
-        editor.putString("status", userdata.status)
+        editor.putInt("status", userdata.status.ordinal)
         editor.putString("groups", userdata.groups.toString())
         editor.apply()
     }
@@ -142,6 +133,8 @@ object LocalData {
             return null
         }
     }
+
+
 
 
 

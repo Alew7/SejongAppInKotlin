@@ -5,6 +5,7 @@ import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserAvatar
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.UserDataDTO
 import com.example.sejongapp.models.DataClasses.loginRequestData
 import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import okhttp3.MultipartBody
@@ -28,7 +29,7 @@ interface UserApi {
     @GET("profile/")
     suspend fun getUserData(
         @Header("token") token: String
-    ): Response<UserData>
+    ): Response<UserDataDTO>
 
 
 

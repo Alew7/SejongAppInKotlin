@@ -9,6 +9,11 @@
     <string name="ElectLib">전자 도서관</string>
     <string name="schedule">시간표</string>
     <string name="Profile">프로필</string>
+    <string name="Magazine">잡지"</string>
+
+    <string name="Attendance">출석률</string>
+    <string name="Lesson">수업</string>
+    <string name="skips">결석</string>
 
     <!--  Login Activity  -->
     <string name="Log_in">로그인</string>
@@ -28,6 +33,7 @@
     <string name="Log_out">로그아웃</string>
     <string name="Our_Instagram">우리 인스타그램</string>
     <string name="Contact_Admin">관리자에게 문의하기</string>
+    <string name="Review">리뷰</string>
 
 
 
@@ -69,9 +75,14 @@
 
 
 
-
-
-
     <string name="press_again_to_exit">한 번 더 누르면 종료됩니다</string>
+
+    <!--  for Dialogs -->
+    <string name="Leave_a_review"> 리뷰를 남겨주세요</string>
+    <string name="How_do_you_rate_our_service">우리 서비스에 대해 어떻게 평가하시나요?</string>
+    <string name="Write_your_review_here">여기에 리뷰를 작성해 주세요...</string>
+    <string name="Send">보내기</string>
+    <string name="Review_sent_Thank_you">리뷰가 전송되었습니다! 감사합니다</string>
+
 
 </resources>

@@ -10,7 +10,4 @@ interface announcementsApi {
     suspend fun getAnnouncements(
         @Header("token") token: String
     ): Response<AnnouncementData>
-
-
-
 }

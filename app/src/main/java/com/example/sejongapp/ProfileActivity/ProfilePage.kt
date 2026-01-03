@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Group
@@ -44,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -64,6 +64,7 @@ import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.models.ViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.primaryColor
+import com.example.sejongapp.utils.UserStatusEnum
 import kotlinx.coroutines.delay
 
 const val TAG = "TAG_ProfilePage"
@@ -99,6 +100,14 @@ fun ProfilePage() {
         val titleFontSize = (screenWidth.value * 0.07).sp
         val subFontSize = (screenWidth.value * 0.045).sp
         val buttonHeight = screenHeight * 0.07f
+
+        val painter = rememberImagePainter(
+            data = userData.avatar,
+            builder = {
+                crossfade(true)
+                allowHardware(false)
+            }
+        )
 
         Column(
             modifier = Modifier
@@ -155,6 +164,7 @@ fun ProfilePage() {
                 contentAlignment = Alignment.Center
             ) {
                 if (userData.avatar.isNotEmpty()) {
+
                     Image(
                         painter = rememberImagePainter(userData.avatar),
                         contentDescription = "userAvatar",
@@ -223,7 +233,14 @@ fun ProfilePage() {
                     ProfileItem(
                         icon = Icons.Default.VerifiedUser,
                         title = context.getString(R.string.status),
-                        value = userData.status ?: "—",
+                        value = (
+                            when(userData.status){
+                                UserStatusEnum.STUDENT -> context.getString(R.string.Student)
+                                UserStatusEnum.TEACHER -> "Teacher"
+                                UserStatusEnum.ADMIN -> "Admin"
+                                UserStatusEnum.UNKNOWN -> "Unauthorized"
+                            }
+                            ),
                         screenWidth = screenWidth
                     )
                     Divider(color = Color(0xFFDDDDDD))

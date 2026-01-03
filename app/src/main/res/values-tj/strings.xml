@@ -7,9 +7,15 @@
 
     <!-- Main Activity -->
     <string name="Announcement">Эълонҳо</string>
-    <string name="ElectLib">Китобхонаи электронӣ</string>
+    <string name="ElectLib">Китобхона</string>
     <string name="schedule">Ҷадвал</string>
     <string name="Profile">Профил</string>
+    <string name="Magazine">Журнал</string>
+
+
+    <string name="Attendance">Иштирок</string>
+    <string name="Lesson">дарс</string>
+    <string name="skips">дарсшиканӣ</string>
 
 
     <!--  Login Activity  -->
@@ -32,6 +38,7 @@
     <string name="Log_out">Баромадан</string>
     <string name="Our_Instagram">Инстаграми мо</string>
     <string name="Contact_Admin">Бо админ гирифтани тамос</string>
+    <string name="Review">Барраси</string>
 
 
 
@@ -73,6 +80,16 @@
 
 
     <string name="press_again_to_exit">Барои баромадан боз як бор пахш кунед</string>
+
+
+    <!--  for Dialogs -->
+    <string name="Leave_a_review">Шарҳ гузоред</string>
+    <string name="How_do_you_rate_our_service">Хизматрасонии моро чӣ гуна арзёбӣ мекунед?</string>
+    <string name="Write_your_review_here">Шарҳи худро дар ин ҷо нависед...</string>
+    <string name="Send">Фиристодан</string>
+    <string name="Review_sent_Thank_you">Шарҳ фиристода шуд! Ташаккур</string>
+
+
 </resources>
 
 

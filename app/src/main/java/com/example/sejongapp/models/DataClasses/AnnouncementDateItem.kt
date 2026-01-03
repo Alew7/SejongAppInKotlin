@@ -14,3 +14,6 @@ data class AnnouncementDateItem(
     val time_posted: String,
     val title: Title
 ) :Parcelable
+
+
+

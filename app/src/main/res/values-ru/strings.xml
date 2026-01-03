@@ -10,6 +10,13 @@
     <string name="ElectLib"> Библиотека</string>
     <string name="schedule">Расписание</string>
     <string name="Profile">Профиль</string>
+    <string name="Magazine">Журнал</string>
+
+
+    <string name="Attendance">Посещаемость</string>
+    <string name="Lesson">уроков</string>
+    <string name="skips">пропусков</string>
+
 
     <!--  Login Activity  -->
     <string name="Log_in">Войти</string>
@@ -29,6 +36,7 @@
     <string name="Log_out">Выйти</string>
     <string name="Our_Instagram">Наш Instagram</string>
     <string name="Contact_Admin">Связаться с админом</string>
+    <string name="Review">Отзыв</string>
 
 
 
@@ -66,4 +74,13 @@
 
 
     <string name="press_again_to_exit">Нажмите ещё раз для выхода</string>
+
+
+    <!--  for Dialogs -->
+    <string name="Leave_a_review"> Оставьте отзыв</string>
+    <string name="How_do_you_rate_our_service">Как вы оцениваете наш сервис?</string>
+    <string name="Write_your_review_here">Напишите ваш отзыв здесь...</string>
+    <string name="Send">Отправить</string>
+    <string name="Review_sent_Thank_you">Отзыв отправлен! Спасибо</string>
+
 </resources>

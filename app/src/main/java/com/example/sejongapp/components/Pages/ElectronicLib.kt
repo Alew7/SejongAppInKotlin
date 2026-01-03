@@ -3,7 +3,6 @@ package com.example.sejongapp.components.Pages
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -45,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -58,17 +56,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
+import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.R
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.ElectronicBookData
+import com.example.sejongapp.models.ViewModels.DownloadViewModel
 import com.example.sejongapp.models.ViewModels.ELibraryViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
-import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 
-var chosenBook: ElectronicBookData = ElectronicBookData("", "", "", "","","","","")
+
+lateinit var chosenBook: ElectronicBookData
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,6 +80,7 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
     val context = LocalContext.current
     val eLibViewModel: ELibraryViewModel = viewModel()
+    val downloadVM: DownloadViewModel = viewModel()
 
 
     val showOneBook = remember { mutableStateOf(false) }
@@ -228,7 +229,7 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
             /////////////////////////////////////   BODY  /////////////////////////////////////
 
             if (showOneBook.value){
-                ShowBook(chosenBook)
+                ShowBook(chosenBook,downloadVM)
             }
             else{
                 getAndShowData(eLibViewModel, showOneBook, isSeraching, searchText)
@@ -237,11 +238,10 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
     }
 }
 
-
-
-
 @Composable
 fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Boolean>){
+
+    val context = LocalContext.current
 
     Card(
         modifier = Modifier
@@ -272,12 +272,12 @@ fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Bool
             ) {
 //                Title
                 Text(
-                    text = book.title,
+                    text = book.title.getLocalized(context),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = book.description,
+                    text = book.description.getLocalized(context),
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -316,6 +316,7 @@ fun getAndShowData(
 
     val Books by eLibViewModel.libResult.observeAsState()
     val showDialog = remember { mutableStateOf(true) }
+    val context = LocalContext.current
 
     when (val result = Books) {
         is NetworkResponse.Error -> {
@@ -355,9 +356,11 @@ fun getAndShowData(
 
             val filteredBooks = if (isSeraching && searchText.isNotBlank()) {
                 allBooks.filter { book ->
-                    book.title.contains(searchText, ignoreCase = true) ||
+                    book.title.getLocalized(context)
+                        .contains(searchText, ignoreCase = true) ||
+                    book.description.getLocalized(context)
+                        .contains(searchText, ignoreCase = true) ||
                     book.author.contains(searchText, ignoreCase = true)
-
                 }
             } else {
                 allBooks
@@ -372,7 +375,7 @@ fun getAndShowData(
 
                 ) {
                     Text(
-                        text = "Не чего не найден",
+                        text = "Нечего не найдено",
                         color = Color.Gray,
                         fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.montserrat_medium))

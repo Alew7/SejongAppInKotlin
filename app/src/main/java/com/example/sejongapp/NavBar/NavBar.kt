@@ -2,6 +2,7 @@ package com.example.sejongapp.NavBar
 
 
 import LocalData.deletToken
+import LocalData.getUserData
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -68,6 +69,9 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.height
+import com.example.sejongapp.TelegramManager.TelegramManager
+import com.example.sejongapp.components.ReviewDialog
+import com.example.sejongapp.utils.UserStatusEnum
 
 
 const val TAG = "TAG_NavBar"
@@ -89,6 +93,11 @@ fun NavBar(modifier: Modifier = Modifier) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val userData = remember { getUserData(context) }
+
+    var showReviewDialog by remember { mutableStateOf(false) }
+
+
 
 
 
@@ -253,8 +262,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                     Card (
                         modifier = Modifier
                             .padding(vertical = 8.dp)
-                            .fillMaxWidth()
-                            ,
+                            .fillMaxWidth(),
                         shape = MaterialTheme.shapes.medium,
                         colors = CardDefaults.cardColors(containerColor = Color.White),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -317,8 +325,59 @@ fun NavBar(modifier: Modifier = Modifier) {
                                         }
                                 )
                             }
-
                         }
+                    }
+
+                    Card (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable (
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                showReviewDialog = true
+                            },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+
+                    ) {
+                        Row (
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+
+                        ) {
+                            Image (
+                                painter = painterResource(R.drawable.ic_otzif),
+                                contentDescription = "ic_otzif",
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Text (
+                                text = context.getString(R.string.Review),
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
+                        }
+                    }
+                    if (showReviewDialog) {
+                        ReviewDialog  (
+                            onDismiss = { showReviewDialog = false },
+                            onSend = { rating, text ->
+                                scope.launch {
+                                    val realname = userData.fullname
+                                    val statusName = userData.status.name
+                                    val group = userData.groups.joinToString (", ")
+                                    TelegramManager.sendReview(
+                                        rating = rating,
+                                        comment = text,
+                                        userName = realname,
+                                        status = statusName,
+                                        group = group
+                                    )
+                                }
+                                showReviewDialog = false
+                            }
+                        )
                     }
 
                     Card(
@@ -416,10 +475,11 @@ fun NavBar(modifier: Modifier = Modifier) {
 fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScreenEnum,onChangeScreen : (NavigationScreenEnum) -> Unit) {
     when(selectedIndex) {
         NavigationScreenEnum.ANNOUNCEMENTS -> AnnousmentPage(onChangeScreen = onChangeScreen)
-        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen)
+        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen, viewModel = UserViewModel())
         NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.LIBRARY -> ElectronicLibraryPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied
+
     }
 }
 
@@ -505,3 +565,6 @@ fun openInstagram ( context: Context,username: String ) {
         context.startActivity(webIntent)
     }
 }
+
+
+
