@@ -39,7 +39,6 @@
     <string name="Review">Отзыв</string>
 
 
-
     <!-- Schedule -->
     <string name="All">Все</string>
     <string name="TIME">Время</string>
@@ -70,7 +69,6 @@
     <string name="new_password">Новый пароль</string>
     <string name="Change_Avatar">Изменить аватар</string>
     <string name="Choose_new_avatar">Выбрать новый аватар</string>
-
 
 
     <string name="press_again_to_exit">Нажмите ещё раз для выхода</string>
