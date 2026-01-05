@@ -69,6 +69,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.height
+import com.example.sejongapp.MagazineActivity.ChooseGroupDesign
 import com.example.sejongapp.TelegramManager.TelegramManager
 import com.example.sejongapp.components.ReviewDialog
 import com.example.sejongapp.utils.UserStatusEnum
@@ -479,6 +480,7 @@ fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScree
         NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.LIBRARY -> ElectronicLibraryPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied
+        NavigationScreenEnum.MAGAZINES -> ChooseGroupDesign(onChangeScreen = onChangeScreen)
 
     }
 }

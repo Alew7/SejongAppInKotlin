@@ -6,6 +6,7 @@ enum class NavigationScreenEnum {
     HOMEPAGE,
     SCHEDULE,
     LIBRARY,
+    MAGAZINES
 
 }
 

@@ -365,7 +365,7 @@ fun HomePage(
                         text = R.string.Magazine,
                         scale = scale.value,
                         iconSize = 100.dp
-                    ) { context.startActivity(Intent(context,Magazine :: class.java)) }
+                    ) { onChangeScreen(NavigationScreenEnum.MAGAZINES) }
                 }
 
 
