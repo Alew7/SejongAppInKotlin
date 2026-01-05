@@ -19,6 +19,8 @@ class MainActivity : ComponentActivity() {
         }
 
         LocalData.getSavedToken(this)
+
+
     }
 
     override fun attachBaseContext(newBase: Context) {
@@ -26,12 +28,5 @@ class MainActivity : ComponentActivity() {
         val context = LocaleHelper.setLocale(newBase, lang)
         super.attachBaseContext(context)
     }
+
 }
-
-
-
-
-
-
-
-

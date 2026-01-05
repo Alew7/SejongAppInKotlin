@@ -7,9 +7,15 @@
 
     <!-- Main Activity -->
     <string name="Announcement">Эълонҳо</string>
-    <string name="ElectLib">Китобхонаи электронӣ</string>
+    <string name="ElectLib">Китобхона</string>
     <string name="schedule">Ҷадвал</string>
     <string name="Profile">Профил</string>
+    <string name="Magazine">Журнал</string>
+
+
+    <string name="Attendance">Иштирок</string>
+    <string name="Lesson">дарс</string>
+    <string name="skips">дарсшиканӣ</string>
 
 
     <!--  Login Activity  -->
@@ -30,18 +36,25 @@
 
     <!-- sidebar menu -->
     <string name="Log_out">Баромадан</string>
+    <string name="Our_Instagram">Инстаграми мо</string>
+    <string name="Contact_Admin">Бо админ гирифтани тамос</string>
+    <string name="Review">Барраси</string>
+
+
+
+
 
     <!-- Schedule -->
     <string name="All">Ҳама</string>
-    <string name="TIME">Вакт</string>
-    <string name="DAY">Руз</string>
+    <string name="TIME">Вақт</string>
+    <string name="DAY">Рӯз</string>
     <string name="CLASS">Синф</string>
     <string-array name="week_days">
         <item>Дш</item>
         <item>Сш</item>
         <item>Чш</item>
         <item>Пш</item>
-        <item>Ҷш</item>
+        <item>Ҷм</item>
     </string-array>
 
     <!-- Electronic Library -->
@@ -54,9 +67,38 @@
     <string name="Student">донишҷӯ</string>
     <string name="Email">почтаи электронӣ</string>
     <string name="Edit_profile">Таҳрир кардани профил</string>
+    <string name="Edit_User_Password">Иваз кардани пароли корбар</string>
+    <string name="Cancel">Бекор кардан</string>
+    <string name="Save">Захира кардан</string>
+    <string name="Change_password">Ивази рамз </string>
+    <string name="old_password">Пароли кухна</string>
+    <string name="new_password">Пароли нав</string>
+    <string name="Change_Avatar">Тағйир додани аватар</string>
+    <string name="Choose_new_avatar">Интихоби аватари нав</string>
 
 
 
 
     <string name="press_again_to_exit">Барои баромадан боз як бор пахш кунед</string>
+
+
+    <!--  for Dialogs -->
+    <string name="Leave_a_review">Шарҳ гузоред</string>
+    <string name="How_do_you_rate_our_service">Хизматрасонии моро чӣ гуна арзёбӣ мекунед?</string>
+    <string name="Write_your_review_here">Шарҳи худро дар ин ҷо нависед...</string>
+    <string name="Send">Фиристодан</string>
+    <string name="Review_sent_Thank_you">Шарҳ фиристода шуд! Ташаккур</string>
+
+
+    <!--  for Appupdate -->
+    <string name="Update">Навсозӣ кардан</string>
+    <string name="Updates">Навсозиҳо</string>
+    <string name="Whats_new">Чизҳои нав:</string>
+    <string name="New_update_available">Навсозии нав дастрас аст</string>
+    <string name="Version">Версия</string>
+
+
 </resources>
+
+
+

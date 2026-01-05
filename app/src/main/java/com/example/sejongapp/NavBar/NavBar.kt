@@ -2,8 +2,10 @@ package com.example.sejongapp.NavBar
 
 
 import LocalData.deletToken
+import LocalData.getUserData
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -63,9 +65,14 @@ import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 import kotlinx.coroutines.launch
-import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.animation.animateContentSize
-
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.height
+import com.example.sejongapp.MagazineActivity.ChooseGroupDesign
+import com.example.sejongapp.TelegramManager.TelegramManager
+import com.example.sejongapp.components.ReviewDialog
+import com.example.sejongapp.utils.UserStatusEnum
 
 
 const val TAG = "TAG_NavBar"
@@ -87,6 +94,11 @@ fun NavBar(modifier: Modifier = Modifier) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val userData = remember { getUserData(context) }
+
+    var showReviewDialog by remember { mutableStateOf(false) }
+
+
 
 
 
@@ -132,7 +144,10 @@ fun NavBar(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable {
+                            .clickable (
+                                indication = null,
+                                interactionSource = remember {MutableInteractionSource()}
+                            )  {
                                 val intent = Intent(context, ProfileActivity::class.java)
                                 context.startActivity(intent)
                                 scope.launch { drawerState.close() }
@@ -185,7 +200,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    painter = painterResource(R.drawable.language_icon),
+                                    painter = painterResource(R.drawable.ic_lenguage),
                                     contentDescription = "Language",
                                     modifier = Modifier.size(28.dp),
                                     tint = Color.Unspecified
@@ -245,15 +260,137 @@ fun NavBar(modifier: Modifier = Modifier) {
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
+                    Card (
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
 
+
+                    ) {
+                        Column {
+                            Row ( modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically ) {
+                                Image (
+                                    painter = painterResource(R.drawable.ic_instagram),
+                                    contentDescription = "ic_instegram",
+                                    modifier = Modifier.size(28.dp)
+                                        .clickable (
+                                            indication = null,
+                                            interactionSource = remember {(MutableInteractionSource())}
+                                        ) {
+                                            openInstagram(context,"dushanbe3_king_sejong")
+                                        }
+                                )
+                                Text (
+                                    text = context.getString(R.string.Our_Instagram),
+                                    modifier = Modifier.padding(start = 12.dp)
+                                        .clickable (
+                                            indication = null,
+                                            interactionSource = remember {MutableInteractionSource()}
+                                        ) {
+                                            openInstagram(context,"dushanbe3_king_sejong")
+                                        }
+
+
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Row (
+                                modifier = Modifier
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image (
+                                    painter = painterResource(R.drawable.ic_telegram),
+                                    contentDescription = "ic_telegram",
+                                    modifier = Modifier.size(28.dp)
+                                        .clickable (
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource()}
+                                        )   {
+                                            openTelegram(context,"dushanbe3_king_sejong")
+                                        }
+                                )
+                                Text (
+                                    text = context.getString(R.string.Contact_Admin),
+                                    modifier = Modifier.padding(start = 12.dp)
+                                        .clickable (
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            openTelegram(context,"dushanbe3_king_sejong")
+                                        }
+                                )
+                            }
+                        }
+                    }
+
+                    Card (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable (
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                showReviewDialog = true
+                            },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+
+                    ) {
+                        Row (
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+
+                        ) {
+                            Image (
+                                painter = painterResource(R.drawable.ic_otzif),
+                                contentDescription = "ic_otzif",
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Text (
+                                text = context.getString(R.string.Review),
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
+                        }
+                    }
+                    if (showReviewDialog) {
+                        ReviewDialog  (
+                            onDismiss = { showReviewDialog = false },
+                            onSend = { rating, text ->
+                                scope.launch {
+                                    val realname = userData.fullname
+                                    val statusName = userData.status.name
+                                    val group = userData.groups.joinToString (", ")
+                                    TelegramManager.sendReview(
+                                        rating = rating,
+                                        comment = text,
+                                        userName = realname,
+                                        status = statusName,
+                                        group = group
+                                    )
+                                }
+                                showReviewDialog = false
+                            }
+                        )
+                    }
 
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable {
+                            .clickable (
+                                indication = null,
+                                interactionSource = remember {MutableInteractionSource()}
+                            ) {
                                 deletToken(context)
-                                scope.launch { drawerState.close() }
+                                scope.launch {drawerState.close()}
                             },
                         shape = MaterialTheme.shapes.medium,
                         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -313,7 +450,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                             },
                             icon = {
                                 Icon(
-                                    modifier = Modifier.size(24.dp),
+                                    modifier = Modifier.size(24.dp), // 24
                                     painter = painterResource(navItem.icon),
                                     contentDescription = "Icon"
 
@@ -339,10 +476,12 @@ fun NavBar(modifier: Modifier = Modifier) {
 fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScreenEnum,onChangeScreen : (NavigationScreenEnum) -> Unit) {
     when(selectedIndex) {
         NavigationScreenEnum.ANNOUNCEMENTS -> AnnousmentPage(onChangeScreen = onChangeScreen)
-        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen)
+        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen, viewModel = UserViewModel())
         NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.LIBRARY -> ElectronicLibraryPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied
+        NavigationScreenEnum.MAGAZINES -> ChooseGroupDesign(onChangeScreen = onChangeScreen)
+
     }
 }
 
@@ -392,6 +531,16 @@ fun Content.getLocalized(context: Context): String {
 
 
 
+fun openTelegram(context: Context,username: String) {
+    val telegramIntent = Intent(Intent.ACTION_VIEW, Uri.parse("tg://resolve?domain=$username"))
+    try {
+        context.startActivity(telegramIntent)
+
+    } catch (e: Exception) {
+        val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/$username"))
+        context.startActivity(webIntent)
+    }
+}
 
 
 
@@ -400,3 +549,24 @@ fun Content.getLocalized(context: Context): String {
 //private  fun Preview () {
 //    NavBar()
 //}
+
+
+
+
+
+fun openInstagram ( context: Context,username: String ) {
+    val uri = Uri.parse("http://instagram.com/_u/$username")
+    val instagramIntent = Intent(Intent.ACTION_VIEW,uri).apply {
+        setPackage("com.instagram.android")
+    }
+
+    try {
+        context.startActivity(instagramIntent)
+    } catch (e: Exception) {
+        val webIntent = Intent(Intent.ACTION_VIEW,Uri.parse("https://intagram.com/$username"))
+        context.startActivity(webIntent)
+    }
+}
+
+
+

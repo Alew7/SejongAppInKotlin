@@ -3,7 +3,6 @@ package com.example.sejongapp.models.DataClasses
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import java.io.Serializable
 
 @Parcelize
 data class AnnouncementDateItem(
@@ -15,3 +14,6 @@ data class AnnouncementDateItem(
     val time_posted: String,
     val title: Title
 ) :Parcelable
+
+
+

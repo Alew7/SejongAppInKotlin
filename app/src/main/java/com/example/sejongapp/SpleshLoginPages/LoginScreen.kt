@@ -42,12 +42,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sejongapp.MainActivity
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.WarmBeige
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.ViewModels.UserViewModel
-import com.example.sejongapp.models.DataClasses.tokenData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
@@ -70,12 +71,6 @@ fun LoginScreen () {
     var passwordVisible by remember { mutableStateOf(false) }
 
     var isLoading = userTokenResult.value is NetworkResponse.Loading
-
-
-
-
-
-
 
 
     var username by remember {
@@ -101,7 +96,12 @@ fun LoginScreen () {
         ){
             Image (
                 painter = painterResource(R.drawable.ic_sejong),
-                contentDescription = "ic_sejong"
+                contentDescription = "ic_sejong",
+                modifier = Modifier
+                    .size(200.dp),
+                contentScale = ContentScale.Fit
+
+
             )
             Spacer(modifier = Modifier.height(35.dp))
 
@@ -242,6 +242,7 @@ fun MoveToMainActivity(context: Context){
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     context.startActivity(intent)
 }
+
 
 
 

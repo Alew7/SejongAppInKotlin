@@ -1,5 +1,7 @@
 package com.example.sejongapp.models.ViewModels
 
+import LocalData
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,16 +25,17 @@ class ELibraryViewModel: ViewModel() {
     val libResult : MutableLiveData<NetworkResponse<ArrayList<ElectronicBookData>>> = _libResult
 
 
-    fun getAllBooks(){
+    fun getAllBooks(context: Context){
         Log.i(TAG, "Fetching all books from the server")
         _libResult.value = NetworkResponse.Loading
 
+        val my_token = LocalData.getSavedToken(context)
 
         viewModelScope.launch {
 
             try{
 
-                val response = eLibAPI.getBooks()
+                val response = eLibAPI.getBooks(my_token)
 
                 if (response.isSuccessful){
                     Log.i(TAG, "all data books successfully taken" + response.body().toString())

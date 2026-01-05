@@ -1,6 +1,5 @@
 package com.example.sejongapp.SpleshLoginPages
 
-
 import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -8,10 +7,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,45 +26,50 @@ import com.example.sejongapp.ui.theme.backgroundColor
 
 
 @Composable
-fun SpleshScreen () {
+fun SpleshScreen() {
 
     val context = LocalContext.current
 
-    val scale  = remember { Animatable(0.2f)}
-    LaunchedEffect  (Unit){
-        scale.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 800)
-        )
-        if (LocalData.getSavedToken(context) != "null"){
-            Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
-            MoveToMainActivity(context)
-        }
-    }
-
-
-    Box (
+    BoxWithConstraints(
         modifier = Modifier
-            .fillMaxSize().background(backgroundColor)
+            .fillMaxSize()
+            .background(backgroundColor)
     ) {
-        Column (
-            modifier = Modifier
-                .fillMaxWidth().
-                fillMaxHeight(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+        val screenWidth = maxWidth
+        val logoSize = screenWidth * 0.45f
 
+        val scale = remember { Animatable(0.2f) }
+
+        LaunchedEffect(Unit) {
+            scale.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 800)
+            )
+
+            if (LocalData.getSavedToken(context) != "null") {
+                Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
+                MoveToMainActivity(context)
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image (
+            Image(
                 painter = painterResource(R.drawable.ic_sejong),
                 contentDescription = "ic_sejong",
                 modifier = Modifier
-//                    .scale(scale.value)
-
+                    .size(logoSize)
+                    .scale(scale.value)
             )
         }
     }
 }
+
 @Preview (showBackground = true, showSystemUi = true)
 @Composable
 fun Alisher () {

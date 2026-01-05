@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
+
+
 }
 
 android {
@@ -14,6 +16,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -42,6 +45,7 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
+
     }
     packaging {
         resources {
@@ -63,6 +67,11 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.animation.core.lint)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+//    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -85,7 +94,13 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
     //    Coil (Coroutine Image Loader)
-    implementation("io.coil-kt:coil-compose:1.3.2")
+//    implementation("io.coil-kt:coil-compose:1.3.2")
+    implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("io.coil-kt:coil-gif:2.4.0")
+
+    // Lottie - animation
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
+
 
 
 
@@ -94,7 +109,5 @@ dependencies {
         implementation ("com.google.accompanist:accompanist-pager:0.31.5-beta") // последняя версия
         implementation ("com.google.accompanist:accompanist-pager-indicators:0.31.5-beta")
 
-
-
-
+    
 }

@@ -64,7 +64,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
     LaunchedEffect(Unit) {
         Log.i(TAG, "AnnouncementPage: Starting to fetch data")
-        announcementView.getAllannouncments()
+        announcementView.getAllannouncments(context)
     }
 
 
@@ -99,13 +99,36 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                     }
             ) {
                 if (!isSeraching) {
-                Image(
-                    painter = painterResource(R.drawable.ic_head),
-                    contentDescription = "ic_head",
-                    modifier = Modifier
-                        .size(64.dp)
-                        .padding(start = 25.dp)
-                )
+                    Image (
+                        painter = painterResource(R.drawable.ic_back),
+                        contentDescription = "ic_bakc",
+                        modifier = Modifier
+                            .size(64.dp)
+                            .padding(start = 25.dp)
+                            .clickable (
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+
+                            }
+
+                    )
+
+//                Icon(
+//                    imageVector = Icons.Default.ArrowBack,
+//                    contentDescription = "ic_ArrowBack",
+//                    modifier = Modifier
+//                        .size(64.dp)
+//                        .padding(start = 25.dp)
+//                        .clickable (
+//                            interactionSource = remember {MutableInteractionSource()},
+//                            indication = null
+//
+//                        ) {
+//                            onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+//                        }
+//                )
 
                 Image (
                     painter = painterResource(R.drawable.ic_search),
@@ -205,10 +228,38 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
             Log.v(TAG, "AnnouncementPage: Success got data!")
             Log.i(TAG, "AnnouncementPage: the fetched data is ${(result as NetworkResponse.Success<AnnouncementDateItem>).data}")
 
-            val announcementData: List<AnnouncementDateItem> = (result as NetworkResponse.Success<List<AnnouncementDateItem>>).data
-            Log.i(TAG, "AnnouncementPage: the data is in the var and its $announcementData")
-            Log.i(TAG, "AnnouncementPage: the data size is ${announcementData.size}")
+//            val announcementData: List<AnnouncementDateItem> = (result as NetworkResponse.Success<List<AnnouncementDateItem>>).data
+            val allAnnouncements = (result as NetworkResponse.Success<List<AnnouncementDateItem>>).data
+            Log.i(TAG, "AnnouncementPage: the data is in the var and its $allAnnouncements")
+            Log.i(TAG, "AnnouncementPage: the data size is ${allAnnouncements.size}")
 
+            val filteredAnnouncemets = if (searchText.isBlank()) {
+                allAnnouncements
+            }
+            else {
+                allAnnouncements.filter { item ->
+                    item.title.getLocalized(context).contains(searchText, ignoreCase = true) ||
+                    item.content.getLocalized(context).contains(searchText, ignoreCase = true)
+                }
+            }
+
+            if (filteredAnnouncemets.isEmpty()) {
+                Box (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 60.dp),
+                    contentAlignment = Alignment.Center
+
+                ) {
+                    Text (
+                        text = "Не чего не найден",
+                        color = Color.Gray,
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.montserrat_medium))
+                    )
+                }
+            }
+            else {
                 // Список карточек
                 LazyColumn(
                     modifier = Modifier
@@ -218,7 +269,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                     verticalArrangement = Arrangement.spacedBy(5.dp) // 16.dp
                 ) {
                     items(
-                        items = announcementData,
+                        items = filteredAnnouncemets,
                         key = { it.custom_id}
                     ) { ann ->
                         AnnousmentCard(ann) {
@@ -229,13 +280,11 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                     }
                 }
 
+            }
+
 
         }
-
     }
-
-
-
 }
 
 

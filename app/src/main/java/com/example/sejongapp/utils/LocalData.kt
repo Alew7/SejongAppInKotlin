@@ -1,10 +1,16 @@
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Log
-import androidx.core.content.ContextCompat.startActivity
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
-import com.example.sejongapp.models.DataClasses.UserData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
+import com.example.sejongapp.utils.UserStatusEnum
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+
 
 
 object LocalData {
@@ -15,6 +21,7 @@ object LocalData {
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
         return prefs.getString("token", "null") ?: "null"
     }
+
 
     fun setToken(context: Context,token: String) {
 
@@ -57,12 +64,14 @@ object LocalData {
 
     fun getUserData(context: Context): UserData {
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
+        val statusOrdinal: Int = prefs.getInt("status", UserStatusEnum.UNKNOWN.ordinal)
+        val status: UserStatusEnum = UserStatusEnum.fromOrdinal(statusOrdinal)
         return UserData(
             prefs.getString("username", "null") ?: "null",
             prefs.getString("avatar", "null") ?: "null",
             prefs.getString("fullname", "null") ?: "null",
             prefs.getString("email", "null") ?: "null",
-            prefs.getString("status", "null") ?: "null",
+            status,
             prefs.getString("groups", "null")?.split(",") ?: listOf()
         )
     }
@@ -76,7 +85,7 @@ object LocalData {
         editor.putString("avatar", userdata.avatar)
         editor.putString("fullname", userdata.fullname)
         editor.putString("email", userdata.email)
-        editor.putString("status", userdata.status)
+        editor.putInt("status", userdata.status.ordinal)
         editor.putString("groups", userdata.groups.toString())
         editor.apply()
     }
@@ -93,5 +102,40 @@ object LocalData {
         editor.remove("groups")
         editor.apply()
     }
+
+
+
+    fun compressImageToTempFile(context: Context, uri: Uri, quality: Int): File? {
+        try {
+            // 1. Get the InputStream from the original URI
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+            val originalBitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
+
+            // 2. Prepare a ByteArrayOutputStream for compression
+            val outputStream = ByteArrayOutputStream()
+
+            // 3. Compress the Bitmap (e.g., to JPEG, 75% quality)
+            originalBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+            val compressedBytes = outputStream.toByteArray()
+
+            // 4. Create a new temporary file to store the compressed data
+            val compressedFile = File(context.cacheDir, "compressed_avatar_${System.currentTimeMillis()}.jpg")
+            FileOutputStream(compressedFile).use { fos ->
+                fos.write(compressedBytes)
+            }
+
+            // Recycle the original bitmap if you don't need it anymore
+            originalBitmap.recycle()
+
+            return compressedFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
+    }
+
+
+
+
 
 }

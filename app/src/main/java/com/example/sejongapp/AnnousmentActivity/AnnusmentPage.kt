@@ -1,5 +1,6 @@
 package com.example.sejongapp.AnnousmentActivity
 
+import android.graphics.Bitmap
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,12 +12,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,12 +24,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.R
 import com.example.sejongapp.components.ImageGalleryDialog
@@ -83,7 +83,7 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(48.dp)
+                            .size(70.dp)
                             .padding(top = 20.dp, start = 10.dp)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
@@ -93,15 +93,28 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        IconButton(onClick = {
-                            (context as? AnnousmentActivity)?.finish()
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "ic_back",
-                                modifier = Modifier.align(Alignment.TopStart)
-                            )
-                        }
+                        Image (
+                            painter = painterResource(R.drawable.ic_back),
+                            contentDescription = "ic_back",
+                            modifier = Modifier
+                                .size(60.dp)
+                                .padding(start = 20.dp)
+                                .clickable (
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ){
+                                    (context as? AnnousmentActivity)?.finish()
+                                }
+                        )
+//                        IconButton(onClick = {
+//                            (context as? AnnousmentActivity)?.finish()
+//                        }) {
+//                            Icon(
+//                                imageVector = Icons.Default.ArrowBack,
+//                                contentDescription = "ic_back",
+//                                modifier = Modifier.align(Alignment.TopStart)
+//                            )
+//                        }
                     }
                 }
             }
@@ -145,12 +158,19 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
 
                         ) {
                             Image(
-                                painter = rememberImagePainter(url),
+                                painter = rememberAsyncImagePainter(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(url)
+                                        .crossfade(true)
+                                        .bitmapConfig(Bitmap.Config.ARGB_8888)
+                                        .build()
+                                ),
                                 contentDescription = "announcement_img",
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
                                     .width(280.dp)
                                     .height(280.dp)
+
                                     .clip(RoundedCornerShape(12.dp))
                                     .clickable {
                                         selectedImage = url

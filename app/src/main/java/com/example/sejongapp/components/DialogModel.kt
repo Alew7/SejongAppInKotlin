@@ -1,12 +1,25 @@
 package com.example.sejongapp.components
 
+import LocalData
+import android.net.Uri
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +41,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,23 +57,54 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.R
-import com.example.sejongapp.models.DataClasses.UserData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.ui.theme.deepBlack
 import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.IntSize
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.sejongapp.Pages.TAG
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
+import com.example.sejongapp.models.ViewModels.UserViewModel
+import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-
 
 
 @Composable
@@ -124,20 +168,26 @@ fun showError(errorMessage: String, onDismiss: () -> Unit) {
 fun EditUserDialog(
     userData: UserData,
     onDismiss: () -> Unit,
-    onSave: (UserData) -> Unit
+    onSave: (ChangeUserInfo) -> Unit
 ) {
-    var UsernameState by remember { mutableStateOf(userData.username) }
-    var emailState by remember { mutableStateOf(userData.email) }
+    var UsernameState by remember { mutableStateOf(userData.username) } /// userData.username
+    var emailState by remember { mutableStateOf(userData.email)}  /// userData.email
+    var isUserInfoExpanded by remember { mutableStateOf(false)}
+
+    val context = LocalContext.current
+    val isFormValid = UsernameState.isNotBlank() && emailState.isNotBlank()
+
+
 
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        containerColor = backgroundColor, // same soft background
+        containerColor = backgroundColor,
         shape = RoundedCornerShape(20.dp),
         tonalElevation = 8.dp,
         title = {
             Text(
-                text = "Edit User Info",
+                text = context.getString(R.string.Edit_profile),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = deepBlack
@@ -145,60 +195,110 @@ fun EditUserDialog(
         },
         text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
 
-                OutlinedTextField(
-                    value = UsernameState,
-                    onValueChange = { UsernameState = it },
-                    label = { Text("Username") },
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedTextColor = Color.Black,
-                        focusedBorderColor = primaryColor,
-                        focusedLabelColor = Color.Black,
-                        cursorColor = Color.Black
+                Card (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding (vertical = 8.dp),
+                    shape = RoundedCornerShape(15.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+//                        modifier = Modifier.animateContentSize( animationSpec = tween(durationMillis = 300, easing = LinearOutSlowInEasing))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                ) {
+                                    isUserInfoExpanded = !isUserInfoExpanded
+                                }
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Profile",
+                                modifier = Modifier.size(28.dp)
+                            )
 
-                    )
-                )
+                            Text(
+                                text = context.getString(R.string.Edit_profile),
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
 
-                OutlinedTextField(
-                    value = emailState,
-                    onValueChange = { emailState = it },
-                    label = { Text("Email") },
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedTextColor = Color.Black,
-                        focusedBorderColor = primaryColor,
-                        focusedLabelColor = Color.Black,
-                        cursorColor = Color.Black
+                            Spacer(modifier = Modifier.weight(1f))
 
-                ))
+                            Icon(
+                                imageVector = if (isUserInfoExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                contentDescription = "Toggle Edit User",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+
+                        if (isUserInfoExpanded) {
+
+                            OutlinedTextField(
+                                value = UsernameState,
+                                onValueChange = { UsernameState = it },
+                                label = { Text("Username") },
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedTextColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedBorderColor = primaryColor,
+                                    focusedLabelColor = Color.Black,
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = emailState,
+                                onValueChange = { emailState = it },
+                                label = { Text("Email") },
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedTextColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedBorderColor = primaryColor,
+                                    focusedLabelColor = Color.Black,
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    val newUserData = UserData(
+                    val newUserData = ChangeUserInfo(
                         username = UsernameState,
                         email = emailState,
-                        status = userData.status,
-                        groups = userData.groups,
-                        avatar = userData.avatar,
-                        fullname = userData.fullname
                     )
                     onSave(newUserData)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = primaryColor,
+                    containerColor = if (isFormValid) primaryColor else Color.Red,
                     contentColor = Color.White
                 ),
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.height(45.dp)
+                modifier = Modifier.height(45.dp),
+                enabled = isFormValid
             ) {
-                Text("Save", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text(context.getString(R.string.Save), fontSize = 16.sp, fontWeight = FontWeight.Medium)
             }
         },
         dismissButton = {
@@ -207,8 +307,162 @@ fun EditUserDialog(
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.height(45.dp),
 
+                ) {
+                Text(context.getString(R.string.Cancel), fontSize = 16.sp, color = Color.Black)
+            }
+        }
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditUserPasswordDialog(
+    onDismiss: () -> Unit,
+    onSave: (ChangeUserPassword) -> Unit
+) {
+    var oldPassword by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
+    var isPasswordInfoExpanded by remember { mutableStateOf(false)}
+
+    val isFormValid = oldPassword.isNotBlank() && newPassword.isNotBlank()
+
+    val context = LocalContext.current
+
+    val userViewModel : UserViewModel = viewModel ()
+    val userAvatarResult = userViewModel.userAvatarResult.observeAsState()
+
+    var isLoading = userAvatarResult.value is NetworkResponse.Loading
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        containerColor = backgroundColor,
+        shape = RoundedCornerShape(20.dp),
+        tonalElevation = 8.dp,
+        title = {
+            Text(
+                text = "Изменить пароль",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = deepBlack
+            )
+        },
+        text = {
+            Column {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    shape = RoundedCornerShape(15.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    isPasswordInfoExpanded = !isPasswordInfoExpanded
+                                }
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = "Password",
+                                modifier = Modifier.size(28.dp)
+                            )
+
+                            Text(
+                                text = context.getString(R.string.Change_password),
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            Icon(
+                                imageVector = if (isPasswordInfoExpanded)
+                                    Icons.Default.KeyboardArrowUp
+                                else
+                                    Icons.Default.KeyboardArrowDown,
+                                contentDescription = "Toggle Password Edit",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+                        if (isPasswordInfoExpanded) {
+
+                            OutlinedTextField(
+                                value = oldPassword,
+                                onValueChange = { oldPassword = it },
+                                label = { Text(context.getString(R.string.old_password))},
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                visualTransformation = PasswordVisualTransformation(),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedTextColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedBorderColor = primaryColor,
+                                    focusedLabelColor = Color.Black,
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = newPassword,
+                                onValueChange = { newPassword = it },
+                                label = { Text(context.getString(R.string.new_password)) },
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                visualTransformation = PasswordVisualTransformation(),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedTextColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedBorderColor = primaryColor,
+                                    focusedLabelColor = Color.Black,
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+
+                        var TheChangedPassword =  ChangeUserPassword(
+                            check_password = oldPassword,
+                            password = newPassword
+                        )
+                        onSave(TheChangedPassword)
+                          },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = primaryColor,
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.height(45.dp),
+                enabled = isFormValid
             ) {
-                Text("Cancel", fontSize = 16.sp, color = Color.Black)
+                Text(context.getString(R.string.Save), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(
+                onClick = { onDismiss() },
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.height(45.dp)
+            ) {
+                Text(context.getString(R.string.Cancel), fontSize = 16.sp, color = Color.Black)
             }
         }
     )
@@ -220,6 +474,94 @@ fun EditUserDialog(
                     trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 )
  */
+
+
+@Composable
+fun EditAvatarUser(
+    userData: UserData,
+    onDismiss: () -> Unit,
+    onSave: (Uri) -> Unit
+) {
+    val context = LocalContext.current
+    var selectedUri by remember { mutableStateOf<Uri?>(null) }
+    var tempAvatar by remember { mutableStateOf(userData.avatar) }
+
+
+
+
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            selectedUri = uri
+            tempAvatar = uri.toString()
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        containerColor = backgroundColor,
+        shape = RoundedCornerShape(20.dp),
+        tonalElevation = 8.dp,
+        title = { Text(text = context.getString(R.string.Change_Avatar))},
+        text = {
+            Column {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    Image(
+                        painter = rememberImagePainter(tempAvatar),
+                        contentDescription = "userAvatar",
+                        modifier = Modifier.size(100.dp).clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Button(
+                    onClick = { imagePickerLauncher.launch("image/*") },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = context.getString(R.string.Choose_new_avatar))
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+
+                onClick = {
+                    selectedUri?.let { uri ->
+                        onSave(uri)
+                    } ?: Toast.makeText(context, "Please select an image", Toast.LENGTH_SHORT).show()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text (text = context.getString(R.string.Save))
+            }
+
+
+        },
+        dismissButton = {
+            OutlinedButton(onClick = { onDismiss() }, shape = RoundedCornerShape(12.dp)) {
+                Text(context.getString(R.string.Cancel), color = Color.Black)
+            }
+
+        }
+    )
+}
+
+
+
+
+
+
 
 @Composable
 fun LoadingDialog(
@@ -236,13 +578,17 @@ fun LoadingDialog(
             ) {
                 CircularProgressIndicator(
                     color = primaryColor,
-                    strokeWidth = 3.dp
+                    strokeWidth = 3.dp,
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+
                 )
                 Text(
                     text = message,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = darkGray
+                    color = darkGray,
+                    modifier = Modifier.padding(start = 15.dp,top = 5.dp)
                 )
             }
         },
@@ -251,6 +597,7 @@ fun LoadingDialog(
         tonalElevation = 8.dp
     )
 }
+
 
 @Composable
 fun ImageGalleryDialog(
@@ -271,6 +618,7 @@ fun ImageGalleryDialog(
                 .background(Color.Black.copy(alpha = 0.95f))
         ) {
 
+            // Основное изображение с зумом
             HorizontalPager(
                 count = images.size,
                 state = pagerState,
@@ -281,49 +629,51 @@ fun ImageGalleryDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(0.85f)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(16.dp))
                 )
             }
 
-
+            // Текст с номером страницы
             Text(
                 text = "${pagerState.currentPage + 1} / ${images.size}",
                 color = Color.White,
                 fontSize = 18.sp,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = 24.dp)
+                    .padding(top = 28.dp)
             )
 
-
+            // Кнопка закрытия
             IconButton(
                 onClick = { onDismiss() },
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
+                    .align(Alignment.TopStart)
                     .padding(16.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Close",
                     tint = Color.White
                 )
             }
 
 
-            Row(
+            LazyRow(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 24.dp)
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
-                images.forEachIndexed { index, url ->
+                itemsIndexed(images) { index, url ->
                     Card(
-                        shape = RoundedCornerShape(50),
-                        border = if (pagerState.currentPage == index) BorderStroke(2.dp, Color.White) else null,
+                        shape = RoundedCornerShape(8.dp), // квадратная форма
+                        border = if (pagerState.currentPage == index)
+                            BorderStroke(2.dp, Color.White)
+                        else null,
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(80.dp)
                             .clickable {
                                 selectedImageIndex = index
                             }
@@ -346,23 +696,246 @@ fun ImageGalleryDialog(
     }
 }
 
+
 @Composable
-fun ZoomableImage(url: String, modifier: Modifier = Modifier) {
+fun ZoomableImage(
+    url: String,
+    modifier: Modifier = Modifier
+) {
     var scale by remember { mutableStateOf(1f) }
-    val state = rememberTransformableState { zoomChange, _, _ ->
-        scale *= zoomChange
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    var containerSize by remember { mutableStateOf(IntSize.Zero) }
+
+    val painter = rememberImagePainter(url)
+
+    val state = rememberTransformableState { zoomChange, panChange, _ ->
+        scale = (scale * zoomChange).coerceIn(1f, 5f)
+
+
+        val newOffset = offset + panChange
+
+
+        offset = limitOffset(
+            newOffset = newOffset,
+            scale = scale,
+            containerSize = containerSize
+        )
     }
 
-    Image(
-        painter = rememberImagePainter(url),
-        contentDescription = null,
-        contentScale = ContentScale.Fit,
+    Box(
         modifier = modifier
-            .transformable(state = state)
+            .fillMaxSize()
+            .background(Color.Black)
+            .onGloballyPositioned {
+                containerSize = it.size
+            }
+            .transformable(state)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onDoubleTap = {
+                        if (scale > 1f) {
+                            scale = 1f
+                            offset = Offset.Zero
+                        } else {
+                            scale = 2f
+                        }
+                    }
+                )
+            }
             .graphicsLayer(
-                scaleX = maxOf(1f, scale),
-                scaleY = maxOf(1f, scale)
-            )
-    )
+                scaleX = scale,
+                scaleY = scale,
+                translationX = offset.x,
+                translationY = offset.y
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painter,
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
 }
+
+
+
+
+fun limitOffset(
+    newOffset: Offset,
+    scale: Float,
+    containerSize: IntSize
+): Offset {
+    if (scale <= 1f) return Offset.Zero
+
+    val maxX = (containerSize.width * (scale - 1)) / 2f
+    val maxY = (containerSize.height * (scale - 1)) / 2f
+
+    val limitedX = newOffset.x.coerceIn(-maxX, maxX)
+    val limitedY = newOffset.y.coerceIn(-maxY, maxY)
+
+    return Offset(limitedX, limitedY)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+
+@Composable
+fun ReviewDialog(
+    onDismiss: () -> Unit,
+    onSend: (rating: Int, text: String) -> Unit
+) {
+    var rating by remember { mutableStateOf(5) }
+    var text by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                // Шапка
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(primaryColor)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = "SejongApp",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.align(Alignment.CenterEnd).size(24.dp)
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = null, tint = Color.White)
+                    }
+                }
+
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = context.getString(R.string.Leave_a_review), fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = context.getString(R.string.How_do_you_rate_our_service), fontSize = 14.sp, color = Color.Gray)
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        repeat(5) { index ->
+                            LottieStar(
+                                isSelected = index < rating,
+                                onClick = { rating = index + 1 }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    OutlinedTextField(
+                        value = text,
+                        onValueChange = { text = it },
+                        placeholder = { Text(context.getString(R.string.Write_your_review_here), fontSize = 14.sp) },
+                        modifier = Modifier.fillMaxWidth().height(120.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            containerColor = Color(0xFFFCFCFC),
+                            unfocusedBorderColor = Color(0xFFE0E0E0),
+                            focusedBorderColor = Color.Gray,
+                            cursorColor = Color.Black
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = onDismiss,
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Gray)
+                        ) {
+                            Text(context.getString(R.string.Cancel))
+                        }
+
+                        Button(
+                            onClick = { onSend(rating, text)
+                                        Toast.makeText(context, context.getString(R.string.Review_sent_Thank_you), Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier
+                                .weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(context.getString(R.string.Send), color = Color.White)
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun LottieStar(
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.Asset("star.lottie")
+    )
+
+    Box(
+        modifier = Modifier
+            .size(42.dp)
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+
+        Crossfade(
+            targetState = isSelected,
+            animationSpec = tween(durationMillis = 200),
+            label = "StarCrossfade"
+        ) { targetSelected ->
+            if (targetSelected) {
+
+                LottieAnimation(
+                    composition = composition,
+                    iterations = 1,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    tint = Color(0xFFE0E0E0),
+                    modifier = Modifier.fillMaxSize().padding(4.dp)
+                )
+            }
+        }
+    }
+}
+
 

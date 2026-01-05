@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Sejong</string>
     <string name="title_activity_splash_login">SejongApp</string>
     <string name="title_activity_announcement">Announcement</string>
@@ -10,6 +10,12 @@
     <string name="ElectLib">Electronic Library</string>
     <string name="schedule">Schedule</string>
     <string name="Profile">Profile</string>
+    <string name="Magazine">Magazine"</string>
+
+
+    <string name="Attendance">Attendance</string>
+    <string name="Lesson">lesson</string>
+    <string name="skips">skips</string>
 
 
     <!--  Login Activity  -->
@@ -28,6 +34,11 @@
 
     <!-- sidebar menu-->
     <string name="Log_out">Log out</string>
+    <string name="Our_Instagram">Our Instagram</string>
+    <string name="Contact_Admin">Contact Admin</string>
+    <string name="Review">Review</string>
+
+
 
 
     <!--Schedule-->
@@ -35,7 +46,7 @@
     <string name="TIME">TIME</string>
     <string name="DAY">DAY</string>
     <string name="CLASS">CLASS</string>
-    
+
     <string-array name="week_days">
         <item>MON</item>
         <item>TUE</item>
@@ -59,7 +70,37 @@
     <string name="Edit_profile">Edit Profile</string>
     <string name="applying_changes">applying changes</string>
     <string name="refreshing_data">refreshing data</string>
+    <string name="Edit_User_Password"> Edit User Password </string>
+    <string name="Cancel">Cancel</string>
+    <string name="Save">Save</string>
+    <string name="Change_password">Change password</string>
+    <string name="old_password">Old password</string>
+    <string name="new_password">New password</string>
+    <string name="Change_Avatar">Change Avatar</string>
+    <string name="Choose_new_avatar">Choose new avatar</string>
 
 
     <string name="press_again_to_exit">Press again to exit</string>
+    <string name="title_activity_update">UpdateActivity</string>
+    <string name="title_activity_appupdateactivity">appupdateactivity</string>
+    <string name="title_activity_magazine">Magazine</string>
+
+    <!--  for Dialogs -->
+    <string name="Leave_a_review"> Leave a review</string>
+    <string name="How_do_you_rate_our_service">How do you rate our service?</string>
+    <string name="Write_your_review_here">Write your review here...</string>
+    <string name="Send">Send</string>
+    <string name="Review_sent_Thank_you">Review sent! Thank you</string>
+
+    <!--  for Appupdate -->
+    <string name="Update">Update</string>
+    <string name="Updates">Updates</string>
+    <string name="Whats_new">What’s new:</string>
+    <string name="New_update_available">New update available</string>
+    <string name="Version">Version</string>
+    
+    
+    
+
+
 </resources>

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -47,21 +48,27 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
+import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.R
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.ElectronicBookData
+import com.example.sejongapp.models.ViewModels.DownloadViewModel
 import com.example.sejongapp.models.ViewModels.ELibraryViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 
-var chosenBook: ElectronicBookData = ElectronicBookData("", "", "", "","","","","")
+
+lateinit var chosenBook: ElectronicBookData
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,13 +78,15 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
     var isSeraching by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 
+    val context = LocalContext.current
     val eLibViewModel: ELibraryViewModel = viewModel()
+    val downloadVM: DownloadViewModel = viewModel()
 
 
     val showOneBook = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit){
-        eLibViewModel.getAllBooks()
+        eLibViewModel.getAllBooks(context)
     }
 
     BackHandler {
@@ -91,9 +100,9 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 
 
-    Column {
+    Column  {
         //    The header with logo icon
-        Column {
+        Column  {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -173,6 +182,7 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 //                        When not searching
                         else{
+
                             Image(
                                 painter = painterResource(R.drawable.ic_back),
                                 contentDescription = "ic_head",
@@ -219,7 +229,7 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
             /////////////////////////////////////   BODY  /////////////////////////////////////
 
             if (showOneBook.value){
-                ShowBook(chosenBook)
+                ShowBook(chosenBook,downloadVM)
             }
             else{
                 getAndShowData(eLibViewModel, showOneBook, isSeraching, searchText)
@@ -228,13 +238,10 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
     }
 }
 
-
-
 @Composable
 fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Boolean>){
 
-
-
+    val context = LocalContext.current
 
     Card(
         modifier = Modifier
@@ -265,12 +272,12 @@ fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Bool
             ) {
 //                Title
                 Text(
-                    text = book.title,
+                    text = book.title.getLocalized(context),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = book.description,
+                    text = book.description.getLocalized(context),
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -280,17 +287,15 @@ fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Bool
 
 
                     Button(
-                        modifier = Modifier.width(100.dp).align(Alignment.End),
+                        modifier = Modifier.width(100.dp).align(Alignment.End).padding(end = 15.dp),
 
                         onClick = {
                             chosenBook = book
                             showOneBook.value = true
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2B47C)), // gold color
-                        shape = RoundedCornerShape(
-                            topStart = 8.dp,
-                            bottomStart = 8.dp
-                        ),
+                        shape = RoundedCornerShape(8.dp),
+
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
                     ) {
                         Text(LocalContext.current.getString(R.string.read))
@@ -307,24 +312,27 @@ fun getAndShowData(
     showOneBook: MutableState<Boolean>,
     isSeraching: Boolean,
     searchText: String
-){
+) {
 
     val Books by eLibViewModel.libResult.observeAsState()
     val showDialog = remember { mutableStateOf(true) }
+    val context = LocalContext.current
 
-    when (val result = Books){
+    when (val result = Books) {
         is NetworkResponse.Error -> {
             Log.d(TAG, "the book result is Error")
             Log.e(TAG, "the book result is ${result.message}")
 
-            showError(result.message){
-               eLibViewModel.resetLibResult()
+            showError(result.message) {
+                eLibViewModel.resetLibResult()
             }
 
         }
+
         NetworkResponse.Idle -> {
             Log.d(TAG, "the book result is Idle")
         }
+
         NetworkResponse.Loading -> {
             Log.d(TAG, "the book result is Loading")
 
@@ -343,28 +351,65 @@ fun getAndShowData(
         }
 
         is NetworkResponse.Success -> {
-            LazyColumn(
-                modifier = Modifier.padding(bottom = 105.dp)
-            ) {
-                if (isSeraching) {
-                    var filteredList = result.data.filter { it.title.contains(searchText, ignoreCase = true) }
-                    items(filteredList.size) {
-                        ElectronicBooksCard(filteredList[it], showOneBook)
-                    }
-                }
-                else{
-                    items(result.data.size) {
-                        ElectronicBooksCard(result.data[it], showOneBook)
-                    }
-                }
 
+            val allBooks = result.data
+
+            val filteredBooks = if (isSeraching && searchText.isNotBlank()) {
+                allBooks.filter { book ->
+                    book.title.getLocalized(context)
+                        .contains(searchText, ignoreCase = true) ||
+                    book.description.getLocalized(context)
+                        .contains(searchText, ignoreCase = true) ||
+                    book.author.contains(searchText, ignoreCase = true)
+                }
+            } else {
+                allBooks
             }
+
+            if (filteredBooks.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 100.dp),
+                    contentAlignment = Alignment.Center
+
+                ) {
+                    Text(
+                        text = "Нечего не найдено",
+                        color = Color.Gray,
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.montserrat_medium))
+                    )
+                }
+            } else {
+                LazyColumn(modifier = Modifier.padding(bottom = 105.dp)) {
+                    items(filteredBooks.size) {
+                        ElectronicBooksCard(filteredBooks[it], showOneBook)
+                    }
+                }
+//            LazyColumn(
+//                modifier = Modifier.padding(bottom = 105.dp)
+//            ) {
+//                if (isSeraching) {
+//                    var filteredList = result.data.filter { it.title.contains(searchText, ignoreCase = true) }
+//                    items(filteredList.size) {
+//                        ElectronicBooksCard(filteredList[it], showOneBook)
+//                    }
+//                }
+//                else{
+//                    items(result.data.size) {
+//                        ElectronicBooksCard(result.data[it], showOneBook)
+//                    }
+//                }
+//
+//            }
+            }
+
         }
-        null -> {}
+        null -> Unit
     }
-
-
 }
+
 
 
 
