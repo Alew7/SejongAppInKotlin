@@ -92,5 +92,15 @@
     <string name="Send">Send</string>
     <string name="Review_sent_Thank_you">Review sent! Thank you</string>
 
+    <!--  for Appupdate -->
+    <string name="Update">Update</string>
+    <string name="Updates">Updates</string>
+    <string name="Whats_new">What’s new:</string>
+    <string name="New_update_available">New update available</string>
+    <string name="Version">Version</string>
+    
+    
+    
+
 
 </resources>

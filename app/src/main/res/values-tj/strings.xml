@@ -90,6 +90,14 @@
     <string name="Review_sent_Thank_you">Шарҳ фиристода шуд! Ташаккур</string>
 
 
+    <!--  for Appupdate -->
+    <string name="Update">Навсозӣ кардан</string>
+    <string name="Updates">Навсозиҳо</string>
+    <string name="Whats_new">Чизҳои нав:</string>
+    <string name="New_update_available">Навсозии нав дастрас аст</string>
+    <string name="Version">Версия</string>
+
+
 </resources>
 
 

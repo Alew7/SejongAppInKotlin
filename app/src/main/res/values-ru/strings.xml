@@ -83,4 +83,12 @@
     <string name="Send">Отправить</string>
     <string name="Review_sent_Thank_you">Отзыв отправлен! Спасибо</string>
 
+
+    <!--  for Appupdate -->
+    <string name="Update">Обновить</string>
+    <string name="Updates">Обновления</string>
+    <string name="Whats_new">Что нового:</string>
+    <string name="New_update_available">Доступно новое обновление</string>
+    <string name="Version">Версия</string>
+
 </resources>

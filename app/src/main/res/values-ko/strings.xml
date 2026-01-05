@@ -84,5 +84,12 @@
     <string name="Send">보내기</string>
     <string name="Review_sent_Thank_you">리뷰가 전송되었습니다! 감사합니다</string>
 
+    <!--  for Appupdate -->
+    <string name="Update">업데이트하다</string>
+    <string name="Updates">업데이트</string>
+    <string name="Whats_new">새로운 기능:</string>
+    <string name="New_update_available">새로운 업데이트가 있습니다</string>
+    <string name="Version">버전</string>
+
 
 </resources>

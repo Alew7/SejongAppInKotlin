@@ -22,14 +22,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,7 +44,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,7 +51,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.R
 import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.models.DataClasses.ScheduleData
-import com.example.sejongapp.models.DataClasses.ScheduleTime
 import com.example.sejongapp.models.ViewModels.ScheduleViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.backgroundColor
@@ -183,19 +177,38 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
             }
 
 
+//            LazyColumn(
+//                modifier = Modifier.padding(bottom = 105.dp)
+//            ) {
+//                if (selectedPage != 0){
+//                    items(sortedScheduleData.size) { index ->
+//                        if (selectedPage == sortedScheduleData[index].book){
+//                            table(sortedScheduleData[index])
+//                        }
+//                    }
+//                }
+//                else{
+//                    items(sortedScheduleData.size) { index ->
+//                        table(sortedScheduleData[index])
+//                    }
+//                }
+//            }
+
+            var sortedScheduleDataa = sortScheduleData(scheduleData)
+
             LazyColumn(
                 modifier = Modifier.padding(bottom = 105.dp)
             ) {
-                if (selectedPage != 0){
-                    items(sortedScheduleData.size) { index ->
-                        if (selectedPage == sortedScheduleData[index].book){
-                            table(sortedScheduleData[index])
+                if (selectedPage != 0) {
+                    items(sortedScheduleDataa.size) { index ->
+                        if (selectedPage == sortedScheduleDataa[index].book) {
+                            table(sortedScheduleDataa[index])
                         }
                     }
-                }
-                else{
-                    items(sortedScheduleData.size) { index ->
-                        table(sortedScheduleData[index])
+                } else {
+
+                    items(sortedScheduleDataa.size) { index ->
+                        table(sortedScheduleDataa[index])
                     }
                 }
             }
@@ -397,54 +410,68 @@ fun TableRowElements(day: String, time: String,classRoom: String) {
 
 
 
-fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData>{
+//fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData>{
+//
+//
+//    Log.i(TAG, "starts soring the schedule data, the size of datas ${scheduleData.size}")
+//    var sortedScheduleData: ArrayList<ScheduleData> = arrayListOf<ScheduleData>()
+//    var i : Int = 0
+//    sortedScheduleData.add(scheduleData[0])
+//
+//    scheduleData.forEach { item->
+//
+//        if (i == 0){
+//            i++;
+//            return@forEach
+//        }
+//
+//        for (j in 0..sortedScheduleData.size-1){
+//            if (item.book < sortedScheduleData[j].book){
+//                sortedScheduleData.add(j, item)
+//                return@forEach
+//            }
+//            else if (j == sortedScheduleData.size-1){
+//                sortedScheduleData.add(item)
+//            }
+//        }
+//
+//    }
+//    Log.i(TAG, "the data is sorted")
+//    sortedScheduleData.forEach { item->
+//        Log.i(TAG, "the book : ${item.book}")
+//    }
+//    return sortedScheduleData;
+//
+//}
+fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData> {
+    Log.i(TAG, "Starts sorting the schedule data, size: ${scheduleData.size}")
 
 
-    Log.i(TAG, "starts soring the schedule data, the size of datas ${scheduleData.size}")
-    var sortedScheduleData: ArrayList<ScheduleData> = arrayListOf<ScheduleData>()
-    var i : Int = 0
-    sortedScheduleData.add(scheduleData[0])
+    val sortedList = scheduleData.sortedWith(
+        compareBy<ScheduleData> { it.book }
+            .thenBy { getLastNumber(it.group) }
+    )
 
-    scheduleData.forEach { item->
-
-        if (i == 0){
-            i++;
-            return@forEach
-        }
-
-        for (j in 0..sortedScheduleData.size-1){
-            if (item.book < sortedScheduleData[j].book){
-                sortedScheduleData.add(j, item)
-                return@forEach
-            }
-            else if (j == sortedScheduleData.size-1){
-                sortedScheduleData.add(item)
-            }
-        }
-
-    }
-    Log.i(TAG, "the data is sorted")
-    sortedScheduleData.forEach { item->
-        Log.i(TAG, "the book : ${item.book}")
-    }
-    return sortedScheduleData;
-
+    Log.i(TAG, "Data is sorted by book and last digit")
+    return ArrayList(sortedList)
 }
 fun sortScheduleByLastDigitOnly(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData>{
     return ArrayList(
         scheduleData.sortedBy { getLastNumber(it.group) }
     )
 }
+//fun getLastNumber(group: String): Int {
+//    return group.substringAfterLast("-").toIntOrNull()?:0
+//}
+
 fun getLastNumber(group: String): Int {
-    return group.substringAfterLast("-").toIntOrNull()?:0
+    return try {
+
+        group.substringAfterLast("-").filter { it.isDigit() }.toInt()
+    } catch (e: Exception) {
+        0
+    }
 }
-
-
-
-
-
-
-
 
 
 @Preview(showSystemUi = true)

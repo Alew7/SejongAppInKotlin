@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
+import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.ProgramUpdate
 import com.example.sejongapp.models.DataClasses.ProgramUpdateData
 import com.example.sejongapp.models.ViewModels.ProgramUpdateViewModel
@@ -143,7 +144,7 @@ fun AppUpdateDesign() {
 
                             Column {
                                 Text(
-                                    text = "Обновления",
+                                    text = context.getString(R.string.Updates),
                                     fontSize = 24.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black
@@ -152,7 +153,7 @@ fun AppUpdateDesign() {
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Text(
-                                    text ="Версия: " + proData[0].version,
+                                    text =context.getString(R.string.Version) + proData[0].version,
                                     fontSize = 17.sp,
                                     color = Color.Black
                                 )
@@ -160,7 +161,7 @@ fun AppUpdateDesign() {
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Text(
-                                    text = "Доступно новое обновление",
+                                    text = context.getString(R.string.New_update_available),
                                     fontSize = 15.sp,
                                     color = Color.Gray
                                 )
@@ -171,7 +172,7 @@ fun AppUpdateDesign() {
 
                         // Что нового
                         Text(
-                            text = "Что нового:",
+                            text = context.getString(R.string.Whats_new),
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                             color = Color.Black
@@ -200,7 +201,7 @@ fun AppUpdateDesign() {
                                 contentColor = Color.White
                             )
                         ) {
-                            Text(text = "Обновить", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                            Text(text = context.getString(R.string.Update), fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
 
                         }
                         Spacer(modifier = Modifier.height(10.dp))
