@@ -358,7 +358,7 @@ fun HomePage(
 
                 }
 
-                if (userData.status == UserStatusEnum.TEACHER) {
+                if (userData.status == UserStatusEnum.TEACHER || userData.status == UserStatusEnum.ADMIN) {
                     Spacer(modifier = Modifier.height(24.dp))
                     HomeMenuItem(
                         icon = R.drawable.ic_magazine2,

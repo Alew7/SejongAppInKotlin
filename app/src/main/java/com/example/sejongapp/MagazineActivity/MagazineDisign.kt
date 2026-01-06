@@ -10,6 +10,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,94 +30,96 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.ProfileActivity.ui.theme.primaryColor
-import com.example.sejongapp.R
+import com.example.sejongapp.models.DataClass2.Student
 
-data class Student(
-    val id: Int,
-    val name: String,
-    val imageResId: Int,
-    var totalNB: Int = 0,
-    var totalLate: Int = 0
-)
+import com.example.sejongapp.models.ViewModels2.MagazineViewModel
 
-val studentList = listOf(
-    Student(1, "Alisher Nosirov", R.drawable.alisher),
-    Student(2, "Alisher Nosirov", R.drawable.alisher),
-    Student(3, "Alisher Vandam", R.drawable.alisher),
-)
+
+
+
 
 @Composable
-fun MagazineDisign() {
-    val editableStudentList = remember {
-        mutableStateListOf<Student>().apply { addAll(studentList) }
+fun MagazineDesign(
+    groupId: Int,
+    viewModel: MagazineViewModel = viewModel()
+) {
+
+    val realStudents by viewModel.students.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
+
+    LaunchedEffect(groupId) {
+        viewModel.loadGroupData(groupId)
     }
 
-    // Храним, нажата ли кнопка "Сохранить" для каждого студента отдельно
+
+    val studentsData = remember { mutableStateMapOf<Int, String>() }
     val savedStates = remember { mutableStateMapOf<Int, Boolean>() }
 
-    val studentsData = remember {
-        mutableStateMapOf<Int, String>().apply {
-            editableStudentList.forEach {
-                put(it.id, "Был")
-                savedStates[it.id] = false
+
+    LaunchedEffect(realStudents) {
+        realStudents.forEach { student ->
+            if (!studentsData.containsKey(student.id)) {
+                studentsData[student.id] = "Был"
+                savedStates[student.id] = false
             }
         }
     }
 
     Box(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "Журнал посещаемости", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                InfoSelectionCard(icon = Icons.Default.DateRange, text = "10 Декабря 2025")
-                InfoSelectionCard(icon = Icons.Default.PeopleAlt, text = "Группа: Korean-101")
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                editableStudentList.forEach { student ->
-                    StudentAttendanceItem(
-                        student = student,
-                        currentStatus = studentsData[student.id] ?: "Был",
-                        // Передаем статус сохранения ИНДИВИДУАЛЬНО
-                        isSaved = savedStates[student.id] ?: false,
-
-                        onStatusChange = { newStatus ->
-                            studentsData[student.id] = newStatus
-                            savedStates[student.id] = false // Сбрасываем при смене статуса
-                        }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = {
-                    editableStudentList.forEachIndexed { index, student ->
-                        val status = studentsData[student.id]
-                        if (status == "Не был") {
-                            editableStudentList[index] = student.copy(totalNB = student.totalNB + 1)
-                        }
-                        savedStates[student.id] = true // Помечаем как сохраненный
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-                shape = MaterialTheme.shapes.medium
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = primaryColor)
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Сохранить отчёт", color = Color.White, fontSize = 16.sp)
+                Text(text = "Журнал посещаемости", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    InfoSelectionCard(icon = Icons.Default.DateRange, text = "10 Января 2026")
+                    InfoSelectionCard(icon = Icons.Default.PeopleAlt, text = "Группа ID: $groupId")
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    items(realStudents) { student ->
+                        StudentAttendanceItem(
+                            student = student,
+                            currentStatus = studentsData[student.id] ?: "Был",
+                            isSaved = savedStates[student.id] ?: false,
+                            onStatusChange = { newStatus ->
+                                studentsData[student.id] = newStatus
+                                savedStates[student.id] = false
+                            }
+                        )
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        realStudents.forEach { student ->
+                            savedStates[student.id] = true
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text(text = "Сохранить отчёт", color = Color.White, fontSize = 16.sp)
+                }
             }
         }
     }
@@ -131,28 +135,22 @@ fun StudentAttendanceItem(
     var isExpanded by remember { mutableStateOf(false) }
     val isChecked = currentStatus != "Не был"
 
-    val totalDamage = (student.totalNB * 14.2f).coerceIn(0f, 100f)
-    val healthFactor = (100f - totalDamage) / 100f
-    val animatedHealth by animateFloatAsState(targetValue = healthFactor, animationSpec = tween(800))
 
-    // ЛОГИКА ЦВЕТА
+    val totalNB = if (isSaved && currentStatus == "Не был") 1 else 0
+
+    val totalDamage = (totalNB * 14.2f).coerceIn(0f, 100f)
+    val healthFactor = (100f - totalDamage) / 100f
+
+    val animatedHealth by animateFloatAsState(
+        targetValue = healthFactor,
+        animationSpec = tween(800)
+    )
+
+
     val targetColor = when {
-        currentStatus == "Опоздал" -> {
-            if (isSaved) Color(0xFFFFF9C4) else Color(0xFFE8F5E9)
-        }
-        healthFactor > 0.7f -> {
-            if (currentStatus == "Не был" && isSaved) Color(0xFFC8E6C9)
-            else Color(0xFFE8F5E9)
-        }
-        healthFactor > 0.3f -> {
-            if (currentStatus == "Не был" && isSaved) Color(0xFFFFE0B2)
-            else Color(0xFFFFA726)
-        }
-        else -> {
-            if (isSaved && currentStatus == "Не был") Color(0xFFFFCDD2)
-            else if (currentStatus == "Не был") Color(0xFFEF5350)
-            else Color(0xFFE8F5E9)
-        }
+        currentStatus == "Опоздал" -> if (isSaved) Color(0xFFFFF9C4) else Color(0xFFE8F5E9)
+        healthFactor > 0.7f -> if (currentStatus == "Не был" && isSaved) Color(0xFFC8E6C9) else Color(0xFFE8F5E9)
+        else -> if (currentStatus == "Не был") Color(0xFFEF5350) else Color(0xFFE8F5E9)
     }
 
     val animatedBackground by animateColorAsState(targetValue = targetColor, animationSpec = tween(600))
@@ -180,17 +178,25 @@ fun StudentAttendanceItem(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = student.imageResId),
-                contentDescription = null,
-                modifier = Modifier.size(44.dp).clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(primaryColor.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = student.student_name_tj.take(1).uppercase(),
+                    color = primaryColor,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = student.name, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text(text = student.student_name_tj, fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 if (!isExpanded) {
                     Text(text = currentStatus, fontSize = 12.sp, color = statusTheme.first)
                 }
@@ -221,8 +227,7 @@ fun StudentAttendanceItem(
                         checkedBorderColor = statusTheme.first,
                         uncheckedTrackColor = Color.Red.copy(alpha = 0.1f),
                         uncheckedThumbColor = Color.White,
-                        uncheckedBorderColor = Color.Red,
-                        uncheckedIconColor = Color.Red
+                        uncheckedBorderColor = Color.Red
                     )
                 )
             }
@@ -297,8 +302,8 @@ fun RowScope.InfoSelectionCard(icon: ImageVector, text: String) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun MagazineDesignPreview() {
-    MagazineDisign()
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun MagazineDesignPreview() {
+//    MagazineDisign()
+//}

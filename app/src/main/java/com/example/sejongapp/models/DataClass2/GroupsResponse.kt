@@ -1,0 +1,23 @@
+package com.example.sejongapp.models.DataClass2
+
+data class GroupsResponse(
+    val message: String,
+    val groups: List<Group>
+)
+data class GroupDetailResponse(
+    val message: String,
+    val data: GroupDataWrapper
+)
+
+data class GroupDataWrapper(
+    val group_students: List<Student>,
+    val group_data: Group,
+//    val group_attendance: List<Attendance>
+)
+
+data class Student(
+    val id: Int,
+    val student_name_tj: String,
+    val student_name_kr: String,
+    val student_id: Int
+)

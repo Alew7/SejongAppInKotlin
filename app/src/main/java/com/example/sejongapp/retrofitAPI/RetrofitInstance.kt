@@ -5,6 +5,8 @@ import com.example.sejongapp.retrofitAPI.api.ScheduleApi
 import com.example.sejongapp.retrofitAPI.api.UserApi
 import com.example.sejongapp.retrofitAPI.api.announcementsApi
 import com.example.sejongapp.retrofitAPI.api.programupdateApi
+import com.example.sejongapp.retrofitAPI.api2.GroupsApi
+import com.example.sejongapp.retrofitAPI.api2.SejongApiService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -15,13 +17,19 @@ object RetrofitInstance {
 
     private const val baseUrl = "https://sejong-app-container-785993649958.us-central1.run.app/api/"
 
-    private const val digitalGradwbookUrl = "https://digital-gradebook-container-785993649958.us-central1.run.app/api/"
+    private const val digitalGradwbookUrl = "https://digital-gradebook-container-785993649958.us-central1.run.app/"
+
+
+
+
 
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(60, TimeUnit.SECONDS)   // time to connect to server
         .writeTimeout(120, TimeUnit.SECONDS)    // time to upload image
         .readTimeout(120, TimeUnit.SECONDS)     // time to wait for server response
         .build()
+
+
 
     private fun getInstance(): Retrofit {
         return Retrofit.Builder()
@@ -49,7 +57,13 @@ object RetrofitInstance {
 
     // 2 for 2st API
 
-
-
+    val groupsApi: GroupsApi = retrofit2().create(GroupsApi::class.java)
+    val api: SejongApiService = retrofit2().create(SejongApiService::class.java)
 }
+
+
+
+
+
+
 

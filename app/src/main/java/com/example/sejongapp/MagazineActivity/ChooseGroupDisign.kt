@@ -1,6 +1,7 @@
 package com.example.sejongapp.MagazineActivity
 
 import android.content.Intent
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
@@ -24,27 +25,38 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sejongapp.models.DataClass2.Group
+import com.example.sejongapp.models.ViewModels2.GroupsViewModel
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
+import com.example.sejongapp.utils.UserStatusEnum
 import kotlinx.coroutines.delay
 
 @Composable
-fun ChooseGroupDesign(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
+fun ChooseGroupDesign(
+    onChangeScreen: (NavigationScreenEnum) -> Unit = {},
+    viewModel: GroupsViewModel = viewModel(),
 
-    val groups = listOf(
-        "1B-1",
-        "1B-2",
-        "2A-3",
-        "3A-1",
-        "3B-1",
-        "4A"
-    )
+) {
+    BackHandler {
+        onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+    }
+    val groups by viewModel.groups.collectAsStateWithLifecycle()
+    val userData = LocalData.getUserData(LocalContext.current)
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val isAmin = userData.status == UserStatusEnum.ADMIN
 
     var startAnimation by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
+
+    LaunchedEffect (Unit) {
+        viewModel.loadMyGroups(context)
         startAnimation = true
     }
 
@@ -54,7 +66,6 @@ fun ChooseGroupDesign(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
             .background(backgroundColor)
             .padding(horizontal = 20.dp)
     ) {
-
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
@@ -71,30 +82,39 @@ fun ChooseGroupDesign(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
             modifier = Modifier.padding(top = 6.dp, bottom = 24.dp)
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
 
-            itemsIndexed(groups) { index, groupName ->
+        if (isLoading && groups.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = primaryColor)
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
 
-                var visible by remember { mutableStateOf(false) }
+                itemsIndexed(groups) { index, group ->
 
-                LaunchedEffect(startAnimation) {
-                    delay(index * 90L) // волна
-                    visible = true
-                }
 
-                AnimatedVisibility(
-                    visible = visible,
-                    enter = slideInVertically(
-                        initialOffsetY = { it / 2 },
-                        animationSpec = tween(450)
-                    ) + fadeIn(animationSpec = tween(450))
-                ) {
-                    GroupCard(groupName)
+                    var visible by remember { mutableStateOf(false) }
+
+                    LaunchedEffect(startAnimation) {
+                        delay(index * 90L)
+                        visible = true
+                    }
+
+                    AnimatedVisibility(
+                        visible = visible,
+                        enter = slideInVertically(
+                            initialOffsetY = { it / 2 },
+                            animationSpec = tween(450)
+                        ) + fadeIn(animationSpec = tween(450))
+                    ) {
+
+                        GroupCard(group = group, isAdmin = isAmin)
+                    }
                 }
             }
         }
@@ -102,8 +122,7 @@ fun ChooseGroupDesign(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 }
 
 @Composable
-fun GroupCard(groupName: String) {
-
+fun GroupCard(group: Group,isAdmin: Boolean) {
     val context = LocalContext.current
 
     ElevatedCard(
@@ -111,30 +130,27 @@ fun GroupCard(groupName: String) {
             .fillMaxWidth()
             .height(140.dp)
             .clickable {
-                context.startActivity(
-                    Intent(context, Magazine::class.java)
-                )
+                val intent = Intent(context, Magazine::class.java).apply {
+                    putExtra("GROUP_ID", group.id)
+                    putExtra("GROUP_NAME", group.name)
+                }
+                context.startActivity(intent)
             },
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = Color.White
-        ),
+        colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
         elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Surface(
                     color = primaryColor.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(12.dp)
@@ -148,7 +164,6 @@ fun GroupCard(groupName: String) {
                             .size(22.dp)
                     )
                 }
-
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = null,
@@ -158,16 +173,37 @@ fun GroupCard(groupName: String) {
 
             Column {
                 Text(
-                    text = groupName,
-                    fontSize = 20.sp,
+                    text = group.name,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF333333)
+                    color = Color(0xFF333333),
+                    maxLines = 2
+
                 )
-                Text(
-                    text = "24 студента",
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
+                if (isAdmin) {
+                    Column (
+                        modifier = Modifier.padding(top = 4.dp)
+
+                    ) {
+                        Text(
+                            text = "Преподователь: ${group.teacher_name_kr}",
+                            fontSize = 12.sp,
+                            color = primaryColor,
+                            maxLines = 1
+
+                        )
+                    }
+
+                }
+                else {
+                      Text(
+                         text = "Журнал группы",
+                         fontSize = 12.sp,
+                         color = Color.Gray,
+                         modifier = Modifier.padding(top = 4.dp)
+                      )
+
+                }
             }
         }
     }
