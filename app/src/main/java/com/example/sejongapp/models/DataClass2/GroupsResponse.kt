@@ -12,7 +12,8 @@ data class GroupDetailResponse(
 data class GroupDataWrapper(
     val group_students: List<Student>,
     val group_data: Group,
-//    val group_attendance: List<Attendance>
+    val group_schedule: GroupSchedule
+
 )
 
 data class Student(
@@ -20,4 +21,10 @@ data class Student(
     val student_name_tj: String,
     val student_name_kr: String,
     val student_id: Int
+)
+
+data class GroupSchedule(
+    val id: Int,
+    val name: String,
+    val timeslot: String
 )

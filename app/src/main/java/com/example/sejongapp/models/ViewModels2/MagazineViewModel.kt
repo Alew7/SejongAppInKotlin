@@ -11,6 +11,8 @@ import kotlinx.coroutines.launch
 
 class MagazineViewModel : ViewModel() {
     private val _students = MutableStateFlow<List<Student>>(emptyList())
+
+
     val students: StateFlow<List<Student>> = _students
 
     private val _isLoading = MutableStateFlow(false)

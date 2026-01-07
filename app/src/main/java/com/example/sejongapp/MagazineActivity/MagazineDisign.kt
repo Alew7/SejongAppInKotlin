@@ -153,12 +153,14 @@ fun StudentAttendanceItem(
         else -> if (currentStatus == "Не был") Color(0xFFEF5350) else Color(0xFFE8F5E9)
     }
 
-    val animatedBackground by animateColorAsState(targetValue = targetColor, animationSpec = tween(600))
+    val animatedBackground by
+    animateColorAsState(targetValue = targetColor,
+        animationSpec = tween(600))
 
     val statusTheme = when (currentStatus) {
         "Не был" -> Color.Red to Icons.Default.Close
         "Опоздал" -> Color(0xFFFFA500) to Icons.Default.Timer
-        else -> primaryColor to Icons.Default.Check
+        else -> Color(0xFF4CAF50) to Icons.Default.Check
     }
 
     Column(
@@ -302,8 +304,18 @@ fun RowScope.InfoSelectionCard(icon: ImageVector, text: String) {
     }
 }
 
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun MagazineDesignPreview() {
-//    MagazineDisign()
+//fun formatDate(dateStr: String): String {
+//    if (dateStr.length < 8) return dateStr
+//    val year = dataStr.substring(0,4)
+//    val month = dataStr.substring(4,6)
+//    val day = dataStr.substring(6,8).toInt().toString()
+//
+//    val monthName = when(month) {
+//        "01" -> "Января" "02" -> "Февраля" "03" -> "Марта"
+//        "04" -> "Апреля" "05" -> "Мая" "06" -> "Июня"
+//        "07" -> "Июля" "08" -> "Августа" "09" -> "Сентября"
+//        "10" -> "Октября" "11" -> "Ноября" "12" -> "Декабря"
+//        else -> month
+//    }
+//    return "$day $monthName $year"
 //}
