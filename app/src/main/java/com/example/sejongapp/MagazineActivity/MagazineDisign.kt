@@ -5,12 +5,13 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,16 +19,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,31 +34,42 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.ProfileActivity.ui.theme.primaryColor
 import com.example.sejongapp.models.DataClass2.Student
-
 import com.example.sejongapp.models.ViewModels2.MagazineViewModel
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 
-
-
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MagazineDesign(
     groupId: Int,
-    viewModel: MagazineViewModel = viewModel()
-) {
 
+) {
+    val viewModel: MagazineViewModel = viewModel ( key = "MagazineViewModel_$groupId" )
     val realStudents by viewModel.students.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val availlableDates by viewModel.availableDates.collectAsStateWithLifecycle()
+    val selectedDate by viewModel.selectedData.collectAsStateWithLifecycle()
 
+    val sheetState = rememberModalBottomSheetState()
+    var isSheetOpen by remember { mutableStateOf(false) }
+    var tempSelectedDate by remember { mutableStateOf("") }
+
+
+
+    LaunchedEffect(isSheetOpen) {
+        if (isSheetOpen) {
+            tempSelectedDate = selectedDate
+        }
+    }
 
     LaunchedEffect(groupId) {
         viewModel.loadGroupData(groupId)
     }
 
-
     val studentsData = remember { mutableStateMapOf<Int, String>() }
     val savedStates = remember { mutableStateMapOf<Int, Boolean>() }
-
 
     LaunchedEffect(realStudents) {
         realStudents.forEach { student ->
@@ -75,21 +85,29 @@ fun MagazineDesign(
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = primaryColor)
         } else {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
+                modifier = Modifier.fillMaxSize().padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = "Журнал посещаемости", fontSize = 28.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    InfoSelectionCard(icon = Icons.Default.DateRange, text = "10 Января 2026")
-                    InfoSelectionCard(icon = Icons.Default.PeopleAlt, text = "Группа ID: $groupId")
+                    Box(modifier = Modifier.weight(1f)) {
+                        InfoSelectionCard(
+                            icon = Icons.Default.DateRange,
+                            text = if (selectedDate.isEmpty()) "Loading..." else selectedDate,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = { isSheetOpen = true }
+                        )
+                    }
+                    InfoSelectionCard(
+                        icon = Icons.Default.PeopleAlt,
+                        text = "Группа ID: $groupId",
+                        modifier = Modifier.weight(1f)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
-
 
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -109,16 +127,109 @@ fun MagazineDesign(
                 }
 
                 Button(
-                    onClick = {
-                        realStudents.forEach { student ->
-                            savedStates[student.id] = true
-                        }
-                    },
+                    onClick = { realStudents.forEach { savedStates[it.id] = true } },
                     modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                     shape = MaterialTheme.shapes.medium
                 ) {
                     Text(text = "Сохранить отчёт", color = Color.White, fontSize = 16.sp)
+                }
+            }
+        }
+
+        if (isSheetOpen) {
+            ModalBottomSheet(
+                onDismissRequest = { isSheetOpen = false },
+                sheetState = sheetState,
+                containerColor = Color.White,
+                dragHandle = { BottomSheetDefaults.DragHandle(color = primaryColor) }
+            ) {
+
+                val dateParts = tempSelectedDate.split(" ")
+                val currentMonth = if (dateParts.size >= 2) dateParts[1] else "January"
+                val currentYear = if (dateParts.size >= 3) dateParts[2] else "2026"
+
+                Column(modifier = Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, bottom = 40.dp)) {
+                    Text(text = "Выберите дату урока", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    val daysOfWeek = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                        daysOfWeek.forEach { Text(it, fontSize = 12.sp, color = Color.Gray, fontWeight = FontWeight.SemiBold) }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(7),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        val offset = getFirstDayOffset(currentMonth, currentYear)
+                        items(offset) { Spacer(modifier = Modifier.fillMaxSize()) }
+
+                        val daysInMonth = getDaysInMonth(currentMonth, currentYear)
+                        items(daysInMonth) { index ->
+                            val day = index + 1
+                            val dateString = "$day $currentMonth $currentYear"
+                            val isEnabled = availlableDates.contains(dateString)
+                            val isSelected = tempSelectedDate == dateString
+                            val isFuture = isDateInFuture(dateString)
+
+                            Box(
+                                modifier = Modifier
+                                    .aspectRatio(1f)
+                                    .clip(CircleShape)
+                                    .background(
+                                        when {
+                                            isSelected -> primaryColor
+                                            isEnabled && !isFuture -> primaryColor.copy(alpha = 0.15f)
+                                            else -> Color.Transparent
+                                        }
+                                    )
+                                    .clickable(enabled = isEnabled && !isFuture) {
+                                        tempSelectedDate = dateString
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (isFuture && isEnabled) {
+                                    Icon(Icons.Default.Lock, null, modifier = Modifier.size(16.dp), tint = Color.LightGray)
+                                } else {
+                                    Text(
+                                        text = day.toString(),
+                                        fontSize = 16.sp,
+                                        fontWeight = if (isEnabled) FontWeight.Bold else FontWeight.Normal,
+                                        color = when {
+                                            isSelected -> Color.White
+                                            isEnabled && !isFuture -> primaryColor
+                                            else -> Color.Gray.copy(alpha = 0.4f)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    val isFutureSelected = isDateInFuture(tempSelectedDate)
+                    Button(
+                        onClick = {
+                            viewModel.updateSelectedDate(tempSelectedDate)
+                            isSheetOpen = false
+                        },
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isFutureSelected) Color(0xFFE0E0E0) else primaryColor
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = if (isFutureSelected) "Недоступно (Будущее)" else "Подтвердить выбор",
+                            color = if (isFutureSelected) Color.Gray else Color.White
+                        )
+                    }
                 }
             }
         }
@@ -188,7 +299,7 @@ fun StudentAttendanceItem(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = student.student_name_tj.take(1).uppercase(),
+                    text = student.student_name_en.take(1).uppercase(),
                     color = primaryColor,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
@@ -198,7 +309,7 @@ fun StudentAttendanceItem(
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = student.student_name_tj, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text(text = student.student_name_en, fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 if (!isExpanded) {
                     Text(text = currentStatus, fontSize = 12.sp, color = statusTheme.first)
                 }
@@ -275,12 +386,17 @@ fun StudentAttendanceItem(
 
 @SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
-fun RowScope.InfoSelectionCard(icon: ImageVector, text: String) {
+fun InfoSelectionCard(
+    icon: ImageVector,
+    text: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
     Card(
-        modifier = Modifier
-            .weight(1f)
+        modifier = modifier
+
             .height(48.dp)
-            .clickable(interactionSource = MutableInteractionSource(), indication = null) { },
+            .clickable(interactionSource = MutableInteractionSource(), indication = null) { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -304,18 +420,36 @@ fun RowScope.InfoSelectionCard(icon: ImageVector, text: String) {
     }
 }
 
-//fun formatDate(dateStr: String): String {
-//    if (dateStr.length < 8) return dateStr
-//    val year = dataStr.substring(0,4)
-//    val month = dataStr.substring(4,6)
-//    val day = dataStr.substring(6,8).toInt().toString()
-//
-//    val monthName = when(month) {
-//        "01" -> "Января" "02" -> "Февраля" "03" -> "Марта"
-//        "04" -> "Апреля" "05" -> "Мая" "06" -> "Июня"
-//        "07" -> "Июля" "08" -> "Августа" "09" -> "Сентября"
-//        "10" -> "Октября" "11" -> "Ноября" "12" -> "Декабря"
-//        else -> month
-//    }
-//    return "$day $monthName $year"
-//}
+fun isDateInFuture(dateStr: String): Boolean {
+    return try {
+        val sdf = SimpleDateFormat("d MMMM yyyy", Locale.ENGLISH)
+        val date = sdf.parse(dateStr)
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+        }.time
+        date?.after(today) ?: false
+    } catch (e: Exception) { false }
+}
+
+fun getFirstDayOffset(month: String, year: String): Int {
+    return try {
+        val sdf = SimpleDateFormat("MMMM yyyy", Locale.ENGLISH)
+        val date = sdf.parse("$month $year")
+        val calendar = Calendar.getInstance()
+        if (date != null) calendar.time = date
+        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        if (dayOfWeek == Calendar.SUNDAY) 6 else dayOfWeek - 2
+    } catch (e: Exception) { 0 }
+}
+
+fun getDaysInMonth(month: String, year: String): Int {
+    return try {
+        val sdf = SimpleDateFormat("MMMM yyyy", Locale.ENGLISH)
+        val date = sdf.parse("$month $year")
+        val calendar = Calendar.getInstance()
+        if (date != null) {
+            calendar.time = date
+            calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        } else 31
+    } catch (e: Exception) { 31 }
+}
