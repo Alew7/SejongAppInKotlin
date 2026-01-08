@@ -19,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -80,24 +79,47 @@ fun MagazineDesign(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(backgroundColor))
+    {
         if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = primaryColor)
+            CircularProgressIndicator(
+                modifier = Modifier
+               .align(Alignment.Center),
+                color = primaryColor
+            )
         } else {
             Column(
-                modifier = Modifier.fillMaxSize().padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Журнал посещаемости", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "Журнал посещаемости",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Box(modifier = Modifier.weight(1f)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp))
+                {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f))
+                    {
                         InfoSelectionCard(
                             icon = Icons.Default.DateRange,
                             text = if (selectedDate.isEmpty()) "Loading..." else selectedDate,
                             modifier = Modifier.fillMaxWidth(),
-                            onClick = { isSheetOpen = true }
+                            onClick = {
+                                isSheetOpen = true
+                            }
                         )
                     }
                     InfoSelectionCard(
@@ -127,12 +149,20 @@ fun MagazineDesign(
                 }
 
                 Button(
-                    onClick = { realStudents.forEach { savedStates[it.id] = true } },
-                    modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 16.dp),
+                    onClick = {
+                        realStudents.forEach { savedStates[it.id] = true } },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(top = 16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Text(text = "Сохранить отчёт", color = Color.White, fontSize = 16.sp)
+                    Text(
+                        text = "Сохранить отчёт",
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
                 }
             }
         }
@@ -149,13 +179,38 @@ fun MagazineDesign(
                 val currentMonth = if (dateParts.size >= 2) dateParts[1] else "January"
                 val currentYear = if (dateParts.size >= 3) dateParts[2] else "2026"
 
-                Column(modifier = Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, bottom = 40.dp)) {
-                    Text(text = "Выберите дату урока", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 24.dp, bottom = 40.dp))
+                {
+                    Text(
+                        text = "Выберите дату урока",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    val daysOfWeek = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-                        daysOfWeek.forEach { Text(it, fontSize = 12.sp, color = Color.Gray, fontWeight = FontWeight.SemiBold) }
+                    val daysOfWeek = listOf(
+                        "Mon",
+                        "Tue",
+                        "Wed",
+                        "Thu",
+                        "Fri",
+                        "Sat",
+                        "Sun"
+                    )
+
+                    Row(modifier = Modifier
+                        .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround)
+                    {
+                        daysOfWeek.forEach { Text(
+                            it,
+                            fontSize = 12.sp,
+                            color = Color.Gray,
+                            fontWeight = FontWeight.SemiBold)
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -194,7 +249,12 @@ fun MagazineDesign(
                                 contentAlignment = Alignment.Center
                             ) {
                                 if (isFuture && isEnabled) {
-                                    Icon(Icons.Default.Lock, null, modifier = Modifier.size(16.dp), tint = Color.LightGray)
+                                    Icon(
+                                        Icons.Default.Lock,
+                                        null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = Color.LightGray
+                                    )
                                 } else {
                                     Text(
                                         text = day.toString(),
@@ -219,7 +279,9 @@ fun MagazineDesign(
                             viewModel.updateSelectedDate(tempSelectedDate)
                             isSheetOpen = false
                         },
-                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (isFutureSelected) Color(0xFFE0E0E0) else primaryColor
                         ),
@@ -259,14 +321,22 @@ fun StudentAttendanceItem(
 
 
     val targetColor = when {
-        currentStatus == "Опоздал" -> if (isSaved) Color(0xFFFFF9C4) else Color(0xFFE8F5E9)
-        healthFactor > 0.7f -> if (currentStatus == "Не был" && isSaved) Color(0xFFC8E6C9) else Color(0xFFE8F5E9)
-        else -> if (currentStatus == "Не был") Color(0xFFEF5350) else Color(0xFFE8F5E9)
+        currentStatus == "Опоздал" -> if (isSaved)
+            Color(0xFFFFF9C4)
+        else Color(0xFFE8F5E9)
+        healthFactor > 0.7f -> if (currentStatus == "Не был" && isSaved)
+            Color(0xFFC8E6C9)
+        else Color(0xFFE8F5E9)
+        else -> if (currentStatus == "Не был")
+            Color(0xFFEF5350)
+        else Color(0xFFE8F5E9)
     }
 
     val animatedBackground by
-    animateColorAsState(targetValue = targetColor,
-        animationSpec = tween(600))
+    animateColorAsState(
+        targetValue = targetColor,
+        animationSpec = tween(600)
+    )
 
     val statusTheme = when (currentStatus) {
         "Не был" -> Color.Red to Icons.Default.Close
@@ -288,7 +358,9 @@ fun StudentAttendanceItem(
             .animateContentSize()
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -308,10 +380,21 @@ fun StudentAttendanceItem(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = student.student_name_en, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Text(
+                    text = student.student_name_en,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
                 if (!isExpanded) {
-                    Text(text = currentStatus, fontSize = 12.sp, color = statusTheme.first)
+                    Text(
+                        text = currentStatus,
+                        fontSize = 12.sp,
+                        color = statusTheme.first
+                    )
                 }
             }
 
@@ -321,7 +404,9 @@ fun StudentAttendanceItem(
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
-                    ) { isExpanded = !isExpanded }
+                    ) {
+                        isExpanded = !isExpanded
+                    }
             ) {
                 Switch(
                     checked = isChecked,
@@ -370,8 +455,15 @@ fun StudentAttendanceItem(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(icon, contentDescription = null, tint = itemColor, modifier = Modifier.size(20.dp))
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = itemColor,
+                        modifier = Modifier.size(20.dp)
+                    )
+
                     Spacer(modifier = Modifier.width(12.dp))
+
                     Text(
                         text = statusName,
                         fontSize = 14.sp,
@@ -394,22 +486,40 @@ fun InfoSelectionCard(
 ) {
     Card(
         modifier = modifier
-
             .height(48.dp)
-            .clickable(interactionSource = MutableInteractionSource(), indication = null) { onClick() },
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = null
+            ) {
+                onClick()
+              },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(imageVector = icon, contentDescription = null, tint = primaryColor)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector = icon,
+                    contentDescription = null,
+                    tint = primaryColor
+                )
+
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text, fontSize = 14.sp, color = Color.Black)
+
+                Text(
+                    text,
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
             }
+
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = null,

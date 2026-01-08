@@ -7,5 +7,4 @@ data class Group(
     val teacher_name_kr: String,
     val schedule: String,
     val time: String
-
 )

@@ -17,8 +17,8 @@ class Magazine : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         val groupId = intent.getIntExtra("GROUP_ID", -1)
-        val groupName = intent.getStringExtra("GROUP_NAME") ?: "Журнал"
         enableEdgeToEdge()
         setContent {
             MagazineDesign(groupId = groupId)
