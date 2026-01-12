@@ -19,9 +19,10 @@ class Magazine : ComponentActivity() {
 
 
         val groupId = intent.getIntExtra("GROUP_ID", -1)
+        val groupName = intent.getStringExtra("GROUP_NAME") ?: "Неизвестный"
         enableEdgeToEdge()
         setContent {
-            MagazineDesign(groupId = groupId)
+            MagazineDesign(groupId = groupId, groupName = groupName)
         }
     }
 }

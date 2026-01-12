@@ -1,10 +1,21 @@
 package com.example.sejongapp.MagazineActivity
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -24,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.ProfileActivity.ui.theme.primaryColor
+import com.example.sejongapp.models.DataClass2.Group
 import com.example.sejongapp.models.DataClass2.Student
 import com.example.sejongapp.models.ViewModels2.MagazineViewModel
 import java.text.SimpleDateFormat
@@ -43,6 +56,7 @@ import java.util.Locale
 @Composable
 fun MagazineDesign(
     groupId: Int,
+    groupName: String
 
 ) {
     val viewModel: MagazineViewModel = viewModel ( key = "MagazineViewModel_$groupId" )
@@ -55,6 +69,14 @@ fun MagazineDesign(
     var isSheetOpen by remember { mutableStateOf(false) }
     var tempSelectedDate by remember { mutableStateOf("") }
 
+
+
+    var triggerOpeningAnimatin by remember { mutableStateOf(false)}
+
+    LaunchedEffect (Unit){
+        kotlinx.coroutines.delay(300)
+        triggerOpeningAnimatin = true
+    }
 
 
     LaunchedEffect(isSheetOpen) {
@@ -124,7 +146,7 @@ fun MagazineDesign(
                     }
                     InfoSelectionCard(
                         icon = Icons.Default.PeopleAlt,
-                        text = "Группа ID: $groupId",
+                        text = groupName,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -230,7 +252,11 @@ fun MagazineDesign(
                             val dateString = "$day $currentMonth $currentYear"
                             val isEnabled = availlableDates.contains(dateString)
                             val isSelected = tempSelectedDate == dateString
+                            val isToday = !isDateInFuture(dateString)
                             val isFuture = isDateInFuture(dateString)
+
+                            val showLock = isEnabled && (isFuture || (isToday && !triggerOpeningAnimatin))
+
 
                             Box(
                                 modifier = Modifier
@@ -248,24 +274,37 @@ fun MagazineDesign(
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
-                                if (isFuture && isEnabled) {
-                                    Icon(
-                                        Icons.Default.Lock,
-                                        null,
-                                        modifier = Modifier.size(16.dp),
-                                        tint = Color.LightGray
-                                    )
-                                } else {
-                                    Text(
-                                        text = day.toString(),
-                                        fontSize = 16.sp,
-                                        fontWeight = if (isEnabled) FontWeight.Bold else FontWeight.Normal,
-                                        color = when {
-                                            isSelected -> Color.White
-                                            isEnabled && !isFuture -> primaryColor
-                                            else -> Color.Gray.copy(alpha = 0.4f)
-                                        }
-                                    )
+
+                                AnimatedContent(
+                                    targetState = showLock,
+                                    transitionSpec = {
+
+                                        (fadeIn(animationSpec = tween(500)) + scaleIn(initialScale = 0.8f))
+                                            .togetherWith(fadeOut(animationSpec = tween(500)) + scaleOut(targetScale = 0.8f))
+                                    },
+                                    label = "LockToNumberTransition"
+                                ) { targetIsFuture ->
+                                    if (targetIsFuture) {
+
+                                        Icon(
+                                            imageVector = Icons.Default.Lock,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp),
+                                            tint = Color.LightGray.copy(alpha = 0.6f)
+                                        )
+                                    } else {
+
+                                        Text(
+                                            text = day.toString(),
+                                            fontSize = 16.sp,
+                                            fontWeight = if (isEnabled) FontWeight.Bold else FontWeight.Normal,
+                                            color = when {
+                                                isSelected -> Color.White
+                                                isEnabled && !isFuture -> primaryColor
+                                                else -> Color.Gray.copy(alpha = 0.4f)
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }
