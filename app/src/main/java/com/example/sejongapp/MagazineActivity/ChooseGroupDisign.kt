@@ -25,10 +25,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClass2.Group
 import com.example.sejongapp.models.ViewModels2.GroupsViewModel
 import com.example.sejongapp.ui.theme.backgroundColor
@@ -69,14 +69,14 @@ fun ChooseGroupDesign(
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "Мои группы",
+            text = context.getString(R.string.My_groups),
             fontSize = 28.sp,
             fontWeight = FontWeight.ExtraBold,
             color = Color(0xFF1A1A1A)
         )
 
         Text(
-            text = "Выберите группу для ведения журнала",
+            text = context.getString(R.string.Select_a_group_for_logging),
             fontSize = 14.sp,
             color = Color.Gray,
             modifier = Modifier.padding(top = 6.dp, bottom = 24.dp)
@@ -197,7 +197,7 @@ fun GroupCard(group: Group,isAdmin: Boolean) {
                 }
                 else {
                       Text(
-                         text = "Журнал группы",
+                         text = context.getString(R.string.Group_Gradebook),
                          fontSize = 12.sp,
                          color = Color.Gray,
                          modifier = Modifier.padding(top = 4.dp)

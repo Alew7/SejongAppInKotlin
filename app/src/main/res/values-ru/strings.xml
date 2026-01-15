@@ -64,7 +64,7 @@
     <string name="Edit_User_Password">Изменить пароль пользователя</string>
     <string name="Cancel">Отмена</string>
     <string name="Save">Сохранить</string>
-    <string name="Change_password">Изминить пароль</string>
+    <string name="Change_password">Изменить пароль</string>
     <string name="old_password">Старый пароль</string>
     <string name="new_password">Новый пароль</string>
     <string name="Change_Avatar">Изменить аватар</string>
@@ -88,5 +88,15 @@
     <string name="Whats_new">Что нового:</string>
     <string name="New_update_available">Доступно новое обновление</string>
     <string name="Version">Версия</string>
+
+
+    <!--  for Magazin -->
+    <string name="Select_a_group_for_logging">Выберите группу для ведения журнала</string>
+    <string name="My_groups">Мои группы</string>
+    <string name="Group_Gradebook">Журнал группы</string>
+    <string name="attendance_gradebook">Журнал посещаемости</string>
+    <string name="Save_Report">Сохранить отчёт</string>
+
+
 
 </resources>

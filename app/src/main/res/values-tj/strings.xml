@@ -98,6 +98,15 @@
     <string name="Version">Версия</string>
 
 
+    <!--  for Magazin -->
+    <string name="Select_a_group_for_logging">Гурӯҳро барои пешбурди журнал интихоб кунед</string>
+    <string name="My_groups">Гурӯҳҳои ман</string>
+    <string name="Group_Gradebook">Журнали гурӯҳ</string>
+    <string name="attendance_gradebook">Журнали ҳозиршавӣ</string>
+    <string name="Save_Report">Ҳисоботро нигоҳ доштан</string>
+
+
+
 </resources>
 
 

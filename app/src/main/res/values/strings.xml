@@ -98,9 +98,23 @@
     <string name="Whats_new">What’s new:</string>
     <string name="New_update_available">New update available</string>
     <string name="Version">Version</string>
-    
-    
-    
+
+
+    <!--  for Magazin -->
+    <string name="Select_a_group_for_logging">Select a group for logging</string>
+    <string name="My_groups">My groups</string>
+    <string name="Group_Gradebook">Group Gradebook</string>
+    <string name="attendance_gradebook">Attendance gradebook</string>
+    <string name="Save_Report">Save Report</string>
+
+
+
+
+
+
+
+
+
 
 
 </resources>

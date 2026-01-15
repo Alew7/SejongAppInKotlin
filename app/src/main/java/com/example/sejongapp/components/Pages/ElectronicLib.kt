@@ -175,11 +175,8 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
                                 )
 
-
                             }
-
                         }
-
 //                        When not searching
                         else{
 
@@ -344,7 +341,7 @@ fun getAndShowData(
 
             ) {
                 CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = primaryColor,
                     trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 )
             }

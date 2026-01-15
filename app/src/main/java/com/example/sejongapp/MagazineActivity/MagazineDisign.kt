@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.ProfileActivity.ui.theme.backgroundColor
 import com.example.sejongapp.ProfileActivity.ui.theme.primaryColor
+import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClass2.Group
 import com.example.sejongapp.models.DataClass2.Student
 import com.example.sejongapp.models.ViewModels2.MagazineViewModel
@@ -68,6 +70,8 @@ fun MagazineDesign(
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by remember { mutableStateOf(false) }
     var tempSelectedDate by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
 
 
 
@@ -119,7 +123,7 @@ fun MagazineDesign(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Журнал посещаемости",
+                    text = context.getString(R.string.attendance_gradebook),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -146,6 +150,7 @@ fun MagazineDesign(
                     }
                     InfoSelectionCard(
                         icon = Icons.Default.PeopleAlt,
+                        showArrow = false,
                         text = groupName,
                         modifier = Modifier.weight(1f)
                     )
@@ -181,7 +186,7 @@ fun MagazineDesign(
                     shape = MaterialTheme.shapes.medium
                 ) {
                     Text(
-                        text = "Сохранить отчёт",
+                        text = context.getString(R.string.Save_Report),
                         color = Color.White,
                         fontSize = 16.sp
                     )
@@ -519,6 +524,7 @@ fun StudentAttendanceItem(
 @Composable
 fun InfoSelectionCard(
     icon: ImageVector,
+    showArrow: Boolean = true,
     text: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
@@ -531,7 +537,7 @@ fun InfoSelectionCard(
                 indication = null
             ) {
                 onClick()
-              },
+            },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -550,21 +556,23 @@ fun InfoSelectionCard(
                     tint = primaryColor
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(9.dp))
 
                 Text(
                     text,
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     color = Color.Black
                 )
             }
 
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowDown,
-                contentDescription = null,
-                tint = primaryColor,
-                modifier = Modifier.size(20.dp)
-            )
+            if (showArrow) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = primaryColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }
