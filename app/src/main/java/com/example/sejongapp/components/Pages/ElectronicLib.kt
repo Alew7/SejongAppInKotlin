@@ -348,7 +348,6 @@ fun getAndShowData(
         }
 
         is NetworkResponse.Success -> {
-
             val allBooks = result.data
 
             val filteredBooks = if (isSeraching && searchText.isNotBlank()) {
