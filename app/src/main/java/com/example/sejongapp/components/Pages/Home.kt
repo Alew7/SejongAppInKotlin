@@ -15,18 +15,17 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -34,11 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
@@ -47,10 +44,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import com.example.sejongapp.Appupdate.appupdateactivity
-import com.example.sejongapp.MagazineActivity.Magazine
 import com.example.sejongapp.MainActivity
 import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
@@ -188,7 +183,90 @@ fun HomePage(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-//            Spacer(modifier = Modifier.weight(1f)) //  верх
+            if (userData.status == UserStatusEnum.TEACHER || userData.status == UserStatusEnum.ADMIN) {
+                Spacer (modifier = Modifier.height(24.dp))
+                Card(
+                    modifier = Modifier
+                        .size(width = 350.dp, height = 140.dp)
+                        .scale(cardScale.value)
+                        .clickable (
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ){
+                            (onChangeScreen.invoke(NavigationScreenEnum.MAGAZINES))
+                        }
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+
+                            Box(
+                                modifier = Modifier
+                                    .size(54.dp)
+                                    .background(
+                                        brush = Brush.linearGradient(
+                                            colors = listOf(Color(0xFFBFA353), Color(0xFFE5D192))
+                                        ),
+                                        shape = RoundedCornerShape(18.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.MenuBook,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(26.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            Column {
+                                Text(
+                                    text = "Журнал группы",
+                                    fontSize = 17.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color(0xFF1A1A1A),
+                                    letterSpacing = 0.5.sp
+                                )
+
+                                Spacer(modifier = Modifier.height(4.dp))
+
+
+                                Text (
+                                    text = "Мои группы",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF757575)
+                                )
+                            }
+                        }
+                        Spacer (modifier = Modifier.width(6.dp))
+
+
+                        Box(contentAlignment = Alignment.Center) {
+                            Image (
+                                painter = painterResource(R.drawable.ic_edit),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(30.dp)
+                            )
+
+                        }
+                    }
+                }
+            }
+
 
             if (userData.status == UserStatusEnum.STUDENT) {
                 Spacer (modifier = Modifier.height(24.dp))
@@ -211,7 +289,6 @@ fun HomePage(
 
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
-
 
                             Box(
                                 modifier = Modifier
@@ -358,15 +435,15 @@ fun HomePage(
 
                 }
 
-                if (userData.status == UserStatusEnum.TEACHER) {
-                    Spacer(modifier = Modifier.height(24.dp))
-                    HomeMenuItem(
-                        icon = R.drawable.ic_magazine2,
-                        text = R.string.Magazine,
-                        scale = scale.value,
-                        iconSize = 100.dp
-                    ) { onChangeScreen(NavigationScreenEnum.MAGAZINES) }
-                }
+//                if (userData.status == UserStatusEnum.TEACHER || userData.status == UserStatusEnum.ADMIN) {
+//                    Spacer(modifier = Modifier.height(24.dp))
+//                    HomeMenuItem(
+//                        icon = R.drawable.ic_magazine2,
+//                        text = R.string.Magazine,
+//                        scale = scale.value,
+//                        iconSize = 100.dp
+//                    ) { onChangeScreen(NavigationScreenEnum.MAGAZINES) }
+//                }
 
 
             }

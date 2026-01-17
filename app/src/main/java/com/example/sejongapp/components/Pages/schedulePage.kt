@@ -233,7 +233,7 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
 
             ) {
                 CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = primaryColor,
                     trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 )
             }

@@ -219,7 +219,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
             ) {
                 CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = primaryColor,
                     trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 )
             }

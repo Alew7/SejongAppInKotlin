@@ -92,4 +92,14 @@
     <string name="Version">버전</string>
 
 
+
+    <!--  for Magazin -->
+    <string name="Select_a_group_for_logging">기록할 그룹을 선택하세요</string>
+    <string name="My_groups">내 그룹</string>
+    <string name="Group_Gradebook">그룹 성적부</string>
+    <string name="attendance_gradebook">출석부</string>
+    <string name="Save_Report">보고서 저장</string>
+
+
+
 </resources>
