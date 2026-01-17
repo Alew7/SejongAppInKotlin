@@ -5,8 +5,9 @@ import com.example.sejongapp.retrofitAPI.api.ScheduleApi
 import com.example.sejongapp.retrofitAPI.api.UserApi
 import com.example.sejongapp.retrofitAPI.api.announcementsApi
 import com.example.sejongapp.retrofitAPI.api.programupdateApi
-import com.example.sejongapp.retrofitAPI.api2.GroupsApi
-import com.example.sejongapp.retrofitAPI.api2.SejongApiService
+import com.example.sejongapp.retrofitAPI.gradeBookapi.GroupsApi
+import com.example.sejongapp.retrofitAPI.gradeBookapi.SejongApiService
+import com.example.sejongapp.retrofitAPI.gradeBookapi.TeacherApi
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -39,7 +40,7 @@ object RetrofitInstance {
             .build()
 
     }
-    private fun retrofit2(): Retrofit {
+    private fun getGradeBookInstance(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(digitalGradwbookUrl)
             .client(okHttpClient)
@@ -57,8 +58,9 @@ object RetrofitInstance {
 
     // 2 for 2st API
 
-    val groupsApi: GroupsApi = retrofit2().create(GroupsApi::class.java)
-    val api: SejongApiService = retrofit2().create(SejongApiService::class.java)
+    val groupsApi: GroupsApi = getGradeBookInstance().create(GroupsApi::class.java)
+    val teacherApi: TeacherApi = getGradeBookInstance().create(TeacherApi::class.java)
+    val sejongApiService: SejongApiService = getGradeBookInstance().create(SejongApiService::class.java)
 }
 
 
