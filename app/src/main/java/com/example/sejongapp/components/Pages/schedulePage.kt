@@ -48,10 +48,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sejongapp.Activities.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.R
-import com.example.sejongapp.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.models.DataClasses.ScheduleData
-import com.example.sejongapp.models.ViewModels.ScheduleViewModel
+import com.example.sejongapp.models.ViewModels.UserViewModels.ScheduleViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.lightGray
@@ -72,8 +72,8 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 
     if (LocalData.getSavedToken(context) == "null"){
-        Log.i(com.example.sejongapp.SpleshLoginPages.TAG, "The token is ${LocalData.getSavedToken(context)}")
-        val intent = Intent (context, SplashLoginActivity :: class.java)
+        Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
+        val intent = Intent (context, SplashLoginActivity:: class.java)
         context.startActivity(intent)
 
     }

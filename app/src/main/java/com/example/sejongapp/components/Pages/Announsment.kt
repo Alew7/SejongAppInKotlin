@@ -1,5 +1,6 @@
 package com.example.sejongapp.Pages
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.util.Log
@@ -36,11 +37,11 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
-import com.example.sejongapp.AnnousmentActivity.AnnousmentActivity
+import com.example.sejongapp.Activities.AnnousmentActivity.AnnousmentActivity
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.AnnouncementDateItem
-import com.example.sejongapp.models.ViewModels.AnnouncmentsViewModel
+import com.example.sejongapp.models.ViewModels.UserViewModels.AnnouncmentsViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.brightBackgroundColor
 import com.example.sejongapp.ui.theme.darkGray
@@ -51,6 +52,7 @@ const val TAG = "AnnouncmentsViewModel_TAG"
 
 
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

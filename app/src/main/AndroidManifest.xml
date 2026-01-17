@@ -22,28 +22,28 @@
         android:theme="@style/Theme.SejongApp"
         tools:targetApi="31">
         <activity
-            android:name=".MagazineActivity.Magazine"
+            android:name=".Activities.GradeBookActivity.GradeBookActivity"
             android:exported="false"
             android:label="@string/title_activity_magazine"
             android:theme="@style/Theme.SejongApp" />
 
         <activity
-            android:name=".Appupdate.appupdateactivity"
+            android:name=".Activities.AppUpdate.appupdateactivity"
             android:exported="false"
             android:label="@string/title_activity_update"
             android:theme="@style/Theme.SejongApp" /> <!-- The line of code above is for being able to make requiest to backend in HTTP because modern phones block all not HTTPS host! -->
         <activity
-            android:name=".AnnousmentActivity.AnnousmentActivity"
+            android:name=".Activities.AnnousmentActivity.AnnousmentActivity"
             android:exported="false"
             android:label="@string/title_activity_announcement"
             android:theme="@style/Theme.SejongApp" />
         <activity
-            android:name=".ProfileActivity.ProfileActivity"
+            android:name=".Activities.ProfileActivity.ProfileActivity"
             android:exported="false"
             android:label="@string/title_activity_profile"
             android:theme="@style/Theme.SejongApp" /> <!-- SplashLoginActivity — теперь стартовая -->
         <activity
-            android:name=".SpleshLoginPages.SplashLoginActivity"
+            android:name=".Activities.SpleshLoginPages.SplashLoginActivity"
             android:exported="true"
             android:label="@string/title_activity_splash_login"
             android:theme="@style/Theme.SejongApp">
