@@ -2,7 +2,6 @@ package com.example.sejongapp.components.Pages
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -30,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.models.DataClasses.ElectronicBookData
-import com.example.sejongapp.models.ViewModels.DownloadViewModel
+import com.example.sejongapp.models.ViewModels.UserViewModels.DownloadViewModel
 
 
 

@@ -1,7 +1,7 @@
 package com.example.sejongapp.NavBar
 
 
-import LocalData.deletToken
+import LocalData.deleteToken
 import LocalData.getUserData
 import android.content.Context
 import android.content.Intent
@@ -54,11 +54,10 @@ import com.example.sejongapp.Pages.AnnousmentPage
 import com.example.sejongapp.components.Pages.ElectronicLibraryPage
 import com.example.sejongapp.components.Pages.HomePage
 import com.example.sejongapp.components.Pages.Schedule
-import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.Content
 import com.example.sejongapp.models.DataClasses.Title
-import com.example.sejongapp.models.ViewModels.UserViewModel
+import com.example.sejongapp.models.ViewModels.UserViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.WarmBeige
 import com.example.sejongapp.ui.theme.backgroundColor
@@ -69,10 +68,12 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.height
-import com.example.sejongapp.MagazineActivity.ChooseGroupDesign
+import com.example.sejongapp.Activities.GradeBookActivity.ChooseGroupDesign
+import com.example.sejongapp.Activities.GradeBookActivity.LoginCheck
+import com.example.sejongapp.Activities.GradeBookActivity.MagazineDesign
+import com.example.sejongapp.Activities.ProfileActivity.ProfileActivity
 import com.example.sejongapp.TelegramManager.TelegramManager
 import com.example.sejongapp.components.ReviewDialog
-import com.example.sejongapp.utils.UserStatusEnum
 
 
 const val TAG = "TAG_NavBar"
@@ -389,7 +390,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                                 indication = null,
                                 interactionSource = remember {MutableInteractionSource()}
                             ) {
-                                deletToken(context)
+                                deleteToken(context)
                                 scope.launch {drawerState.close()}
                             },
                         shape = MaterialTheme.shapes.medium,
@@ -480,7 +481,19 @@ fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScree
         NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.LIBRARY -> ElectronicLibraryPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied
-        NavigationScreenEnum.MAGAZINES -> ChooseGroupDesign(onChangeScreen = onChangeScreen)
+        NavigationScreenEnum.MAGAZINES -> {
+
+            var isLoggedIn by remember { mutableStateOf(false) }
+
+            if (!isLoggedIn) {
+                LoginCheck (){
+                    isLoggedIn = it
+                }
+            } else {
+                ChooseGroupDesign(onChangeScreen = onChangeScreen)
+            }
+
+        }
 
     }
 }

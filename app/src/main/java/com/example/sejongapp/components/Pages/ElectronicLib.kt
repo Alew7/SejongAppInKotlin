@@ -60,8 +60,8 @@ import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.R
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.ElectronicBookData
-import com.example.sejongapp.models.ViewModels.DownloadViewModel
-import com.example.sejongapp.models.ViewModels.ELibraryViewModel
+import com.example.sejongapp.models.ViewModels.UserViewModels.DownloadViewModel
+import com.example.sejongapp.models.ViewModels.UserViewModels.ELibraryViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.ui.theme.primaryColor

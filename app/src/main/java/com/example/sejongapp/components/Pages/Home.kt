@@ -2,12 +2,10 @@ package com.example.sejongapp.components.Pages
 
 import LocalData
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -17,10 +15,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,12 +41,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sejongapp.Appupdate.appupdateactivity
+import com.example.sejongapp.Activities.AppUpdate.appupdateactivity
+import com.example.sejongapp.Activities.ProfileActivity.ProfileActivity
 import com.example.sejongapp.MainActivity
-import com.example.sejongapp.ProfileActivity.ProfileActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
-import com.example.sejongapp.models.ViewModels.UserViewModel
+import com.example.sejongapp.models.ViewModels.UserViewModels.UserViewModel
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum

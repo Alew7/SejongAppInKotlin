@@ -8,7 +8,6 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2024.04.01"
-firebaseAppdistributionGradle = "5.1.1"
 runtimeLivedata = "1.8.1"
 animationCoreLint = "1.8.2"
 appcompat = "1.7.1"
@@ -16,7 +15,6 @@ material = "1.13.0"
 activity = "1.10.0"
 constraintlayout = "2.2.1"
 googleGmsGoogleServices = "4.4.4"
-firebaseFirestore = "26.1.0"
 #workRuntimeKtx = "2.11.0"
 # kotlin 1.9.0
 [libraries]
@@ -39,8 +37,8 @@ androidx-animation-core-lint = { group = "androidx.compose.animation", name = "a
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
-androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout"}
+
 
 
 [plugins]
