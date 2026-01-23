@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +53,9 @@ import com.example.sejongapp.Activities.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.ScheduleData
 import com.example.sejongapp.models.ViewModels.UserViewModels.ScheduleViewModel
+import com.example.sejongapp.models.ViewModels.UserViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
+import com.example.sejongapp.room.RoomUserViewModel
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.lightGray
 import com.example.sejongapp.ui.theme.primaryColor
@@ -69,6 +72,20 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
     val scheduleResult = scheduleViewModel.scheduleResult.observeAsState(NetworkResponse.Idle)
 
     val context = LocalContext.current
+    val roomviewModel: RoomUserViewModel = viewModel()
+    val userState by roomviewModel.user.collectAsState()
+
+    val token = LocalData.getSavedToken(context)
+
+
+    LaunchedEffect(Unit) {
+        roomviewModel.loadUser(token)
+    }
+
+
+
+
+
 
 
     if (LocalData.getSavedToken(context) == "null"){

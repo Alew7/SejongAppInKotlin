@@ -9,19 +9,30 @@ import androidx.lifecycle.viewModelScope
 import com.example.sejongapp.models.DataClasses.ScheduleData
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.retrofitAPI.RetrofitInstance
+import com.example.sejongapp.room.AppDatabase
+import com.example.sejongapp.room.RoomForSchedule.ScheduleRepository
 import kotlinx.coroutines.launch
 
 class ScheduleViewModel: ViewModel() {
+
+
     companion object {
         private const val TAG = "ScheduleViewModel_TAG"
     }
 
 
 
+
+
     private val scheduleApi =  RetrofitInstance.scheduleApi
+    private val scheduleDao = AppDatabase.getDatabase(App.instance).scheduleDao()
+    private val repository = ScheduleRepository(scheduleApi, scheduleDao)
+
+
 
     private val _scheduleResult = MutableLiveData<NetworkResponse<ArrayList<ScheduleData>>>()
     val scheduleResult : MutableLiveData<NetworkResponse<ArrayList<ScheduleData>>> = _scheduleResult
+
 
 
     fun getAllSchedules(context: Context){
@@ -32,6 +43,11 @@ class ScheduleViewModel: ViewModel() {
 
 
             try {
+
+                val data = repository.getSchedules(user_token)
+
+                _scheduleResult.value = NetworkResponse.Success(ArrayList(data))
+
                 val response = scheduleApi.getSchedules(user_token)
                 if (response.isSuccessful) {
                     Log.i(TAG, "data successfully taken " + response.body().toString())

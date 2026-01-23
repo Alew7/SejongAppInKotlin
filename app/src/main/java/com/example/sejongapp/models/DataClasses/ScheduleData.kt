@@ -6,3 +6,5 @@ data class ScheduleData(
     val teacher: String,
     val time: List<ScheduleTime>
 )
+
+

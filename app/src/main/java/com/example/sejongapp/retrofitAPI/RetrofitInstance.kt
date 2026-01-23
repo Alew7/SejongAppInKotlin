@@ -21,6 +21,14 @@ object RetrofitInstance {
     private const val digitalGradwbookUrl = "http://192.168.0.114:3000/"
 
 
+    val api: UserApi by lazy {
+        Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(UserApi::class.java)
+    }
+
 
 
 
