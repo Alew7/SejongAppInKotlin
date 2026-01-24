@@ -3,6 +3,7 @@ import LocalData
 import android.content.Intent
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,23 +11,29 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +51,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -261,167 +270,199 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
 
 
 // a compose func for pagination (the one that sorts data from all to the specific group)
+//@Composable
+//fun PaginationSelector(
+//    pages: List<String> = listOf(LocalContext.current.getString(R.string.All), "1", "2", "3", "4","5","6","7"),
+//    selectedIndex: Int,
+//    onSelected: (Int) -> Unit
+//) {
+//    LazyRow(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(16.dp),
+//        horizontalArrangement = Arrangement.spacedBy(12.dp)
+//    ) {
+//        itemsIndexed(pages) { index, label ->
+//            val isSelected = index == selectedIndex
+//
+//            Box(
+//                modifier = Modifier
+//                    .size(40.dp)
+//                    .clip(CircleShape)
+//                    .background(
+//                        if (isSelected) primaryColor
+//                        else lightGray
+//                    )
+//                    .clickable { onSelected(index) },
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(
+//                    text = label,
+//                    color = Color.Black,
+//                    fontWeight = FontWeight.Bold,
+//                    fontSize = 14.sp
+//                )
+//            }
+//        }
+//    }
+//}
 @Composable
 fun PaginationSelector(
-    pages: List<String> = listOf(LocalContext.current.getString(R.string.All), "1", "2", "3", "4","5","6","7"),
+    pages: List<String> = listOf(LocalContext.current.getString(R.string.All), "1", "2", "3", "4", "5", "6", "7"),
     selectedIndex: Int,
     onSelected: (Int) -> Unit
 ) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
         itemsIndexed(pages) { index, label ->
             val isSelected = index == selectedIndex
 
-            Box(
+            Card(
                 modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(
-                        if (isSelected) primaryColor
-                        else lightGray
-                    )
-                    .clickable { onSelected(index) },
-                contentAlignment = Alignment.Center
+                    .size(46.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onSelected(index) },
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = if (isSelected) 6.dp else 1.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isSelected) primaryColor else Color.White
+                ),
+                border = if (!isSelected) BorderStroke(1.dp, Color.LightGray.copy(0.5f)) else null
             ) {
-                Text(
-                    text = label,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
-                )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = label,
+                        color = if (isSelected) Color.White else Color.Black,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.montserrat_medium))
+                    )
+                }
             }
         }
     }
 }
 
-
 @Composable
 fun table(scheduleData: ScheduleData) {
-
     val context = LocalContext.current
 
 
-    ElevatedCard(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(6.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
+            .padding(horizontal = 20.dp, vertical = 10.dp)
+            .background(Color.White, RoundedCornerShape(24.dp))
+            .padding(20.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
 
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom
         ) {
-            // Название группы
-            Text(
-                text = scheduleData.group,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = primaryColor,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Заголовок таблицы
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+            Column {
                 Text(
-                    text = context.getString(R.string.DAY),
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp,
-                    color = Color.Gray
+                    text = scheduleData.group,
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFF1A1A1A),
+                    letterSpacing = (-1).sp
                 )
                 Text(
-                    text = context.getString(R.string.TIME),
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp,
-                    color = Color.Gray
+                    text = "Преподаватель: ${scheduleData.teacher}",
+                    fontSize = 13.sp,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Medium
                 )
-                Text (
-                    text = context.getString(R.string.CLASS),
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp,
-                    color = Color.Gray
-                )
-
-
             }
 
-            Divider(
-                color = Color(0xFFE0E0E0),
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 8.dp)
+
+            Text(
+                text = "КНИГА ${scheduleData.book}",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = primaryColor,
+                modifier = Modifier
+                    .background(primaryColor.copy(0.1f), RoundedCornerShape(6.dp))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
             )
+        }
 
-            // Список дней
-            scheduleData.time.forEachIndexed { index, time,  ->
-                TableRowElements(
-                    day = weekDays[time.day].toString(),
-                    time = "${time.start_time} - ${time.end_time}",
-                    classRoom = "${time.classroom}"
+        Spacer(modifier = Modifier.height(20.dp))
 
+        // Список дней
+        scheduleData.time.forEach { time ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
+                Box(
+                    modifier = Modifier
+                        .width(4.dp)
+                        .height(35.dp)
+                        .clip(CircleShape)
+                        .background(primaryColor)
                 )
 
-                if (index != scheduleData.time.lastIndex) {
-                    Divider(color = Color(0xFFE0E0E0), thickness = 1.dp)
+                Spacer(modifier = Modifier.width(12.dp))
+
+
+                Text(
+                    text = weekDays[time.day].toString().take(3).uppercase(),
+                    modifier = Modifier.width(45.dp),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFF1A1A1A)
+                )
+
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "${time.start_time} — ${time.end_time}",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF444444)
+                    )
+                }
+
+
+                Box(
+                    modifier = Modifier
+                        .background(Color(0xFFF0F2F5), RoundedCornerShape(10.dp))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = "класс. ${time.classroom}",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF555555)
+                    )
                 }
             }
 
 
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Учитель
-            Text(
-                text = scheduleData.teacher,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF757575),
-                modifier = Modifier.align(Alignment.End)
+            Divider(
+                color = Color(0xFFF5F5F5),
+                thickness = 1.dp,
+                modifier = Modifier.padding(start = 16.dp)
             )
-
-
         }
-    }
-}
-
-@Composable
-fun TableRowElements(day: String, time: String,classRoom: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = day,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black
-        )
-        Text(
-            text = time,
-            fontSize = 16.sp,
-            color = Color(0xFF424242)
-        )
-        Text (
-            text = classRoom,
-            fontSize = 16.sp,
-            color = Color(0xFF424242)
-        )
     }
 }
 
