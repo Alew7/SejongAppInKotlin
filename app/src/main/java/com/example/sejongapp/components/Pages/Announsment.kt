@@ -48,6 +48,7 @@ import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.utils.NavigationScreenEnum
 
 
+
 const val TAG = "AnnouncmentsViewModel_TAG"
 
 
@@ -228,10 +229,15 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
         }
         is NetworkResponse.Success -> {
             Log.v(TAG, "AnnouncementPage: Success got data!")
-            Log.i(TAG, "AnnouncementPage: the fetched data is ${(result as NetworkResponse.Success<AnnouncementDateItem>).data}")
+            Log.i(TAG, "AnnouncementPage: the fetched data is ${(result as NetworkResponse.Success<List<AnnouncementDateItem>>).data}")
 
-//            val announcementData: List<AnnouncementDateItem> = (result as NetworkResponse.Success<List<AnnouncementDateItem>>).data
-            val allAnnouncements = (result as NetworkResponse.Success<List<AnnouncementDateItem>>).data
+            val rawData = (result as NetworkResponse.Success<List<AnnouncementDateItem>>).data
+
+
+            val allAnnouncements = remember(rawData) {
+                rawData.sortedByDescending{ it.time_posted }
+
+            }
             Log.i(TAG, "AnnouncementPage: the data is in the var and its $allAnnouncements")
             Log.i(TAG, "AnnouncementPage: the data size is ${allAnnouncements.size}")
 
@@ -241,7 +247,10 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
             else {
                 allAnnouncements.filter { item ->
                     item.title.getLocalized(context).contains(searchText, ignoreCase = true) ||
-                    item.content.getLocalized(context).contains(searchText, ignoreCase = true)
+                    item.content.getLocalized(context).contains(searchText, ignoreCase = true)||
+                    item.time_posted.contains(searchText, ignoreCase = true)
+
+
                 }
             }
 
@@ -294,63 +303,84 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
-
-
     val context = LocalContext.current
-    val imgSize = 64.dp
+    val imgSize = 75.dp
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(horizontal = 16.dp, vertical = 6.dp)
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
-            ) {
-                onClick()
-            },
-        shape = RoundedCornerShape(15.dp),
-//        elevation = CardDefaults.cardElevation(20.dp),
+            ) { onClick() },
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = brightBackgroundColor,
-        )
+            containerColor = Color.White,
+        ),
+        elevation = CardDefaults.cardElevation(4.dp) // Чтобы карточка "парила"
     ) {
-        Row(modifier = Modifier.padding(16.dp)) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // КВАДРАТНОЕ ФОТО
             val firstImage = annData.images?.firstOrNull()?.let { fixGoogleDriveLink(it) }
-            Image(
-                painter = rememberImagePainter(firstImage),
-                contentDescription = "annousment_img",
-                modifier = Modifier.size(imgSize)
-                    .clip(RoundedCornerShape(15.dp))
 
+            Box(
+                modifier = Modifier
+                    .size(imgSize)
+                    .clip(RoundedCornerShape(8.dp)) // Слегка закругляем углы самого фото
+                    .background(Color.LightGray.copy(alpha = 0.4f))
+            ) {
+                Image(
+                    painter = rememberImagePainter(firstImage),
+                    contentDescription = "announcement_img",
+                    // ВОТ ЭТО ДЕЛАЕТ ФОТО В ТОЧНЫЙ РАЗМЕР КВАДРАТА
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
+            Spacer(modifier = Modifier.width(15.dp))
 
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = annData.title.getLocalized(context),
                     fontFamily = FontFamily(Font(R.font.montserrat_medium)),
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
+
                 Text(
                     text = annData.content.getLocalized(context),
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     fontFamily = FontFamily(Font(R.font.montserrat_medium)),
-                    fontWeight = FontWeight.Bold,
+                    color = Color.DarkGray,
                     modifier = Modifier.padding(top = 4.dp),
                     maxLines = 1,
                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
 
-                )
-                Text(
-                    text = annData.time_posted,
-                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
+                Spacer (modifier = Modifier.height(5.dp))
+
+                Surface(
+                    color = primaryColor.copy(alpha = 0.12f),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = annData.time_posted,
+                        fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                        fontWeight = FontWeight.Light,
+                        fontSize = 11.sp,
+                        color = primaryColor,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+
             }
         }
     }
@@ -370,3 +400,7 @@ fun fixGoogleDriveLink(url: String): String {
         url
     }
 }
+
+
+
+
