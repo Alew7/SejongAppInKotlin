@@ -3,6 +3,7 @@ package com.example.sejongapp.components.Pages
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -236,67 +238,91 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 }
 
 @Composable
-fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Boolean>){
-
+fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Boolean>) {
     val context = LocalContext.current
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFDF5)) // light background
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                chosenBook = book
+                showOneBook.value = true
+            },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp)
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Book Image
-            Image(
-                painter = rememberImagePainter(data = book.cover),
-                contentDescription = "Book cover",
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Box(
+                modifier = Modifier
+                    .size(width = 75.dp, height = 100.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFFF5F5F5))
+            ) {
+                Image(
+                    painter = rememberImagePainter(data = book.cover),
+                    contentDescription = null,
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
 
             Column(
-                modifier = Modifier
-                    .weight(1f)
+                modifier = Modifier.weight(1f)
             ) {
-//                Title
+                // ЗАГОЛОВОК
                 Text(
                     text = book.title.getLocalized(context),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = book.description.getLocalized(context),
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2,
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1A1A1A),
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                // ОПИСАНИЕ
+                Text(
+                    text = book.description.getLocalized(context),
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    maxLines = 2,
+                    lineHeight = 16.sp,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
 
 
-                    Button(
-                        modifier = Modifier.width(100.dp).align(Alignment.End).padding(end = 15.dp),
-
-                        onClick = {
-                            chosenBook = book
-                            showOneBook.value = true
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2B47C)), // gold color
-                        shape = RoundedCornerShape(8.dp),
-
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
-                    ) {
-                        Text(LocalContext.current.getString(R.string.read))
-                    }
+                Button(
+                    onClick = {
+                        chosenBook = book
+                        showOneBook.value = true
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2B47C)),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .height(34.dp),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 0.dp)
+                ) {
+                    Text(
+                        text = context.getString(R.string.read).uppercase(),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                }
             }
         }
     }
@@ -348,7 +374,6 @@ fun getAndShowData(
         }
 
         is NetworkResponse.Success -> {
-
             val allBooks = result.data
 
             val filteredBooks = if (isSeraching && searchText.isNotBlank()) {

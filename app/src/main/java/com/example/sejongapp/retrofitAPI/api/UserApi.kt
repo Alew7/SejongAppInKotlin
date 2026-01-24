@@ -8,6 +8,7 @@ import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserDataDTO
 import com.example.sejongapp.models.DataClasses.loginRequestData
 import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
+import com.example.sejongapp.room.UserDto
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -52,5 +53,10 @@ interface UserApi {
         @Header("token") token: String,
         @Part new_avatar: MultipartBody.Part
     ): Response<ChangeUserAvatarInfo>
+
+    @GET ("profile/")
+    suspend fun getProfile (
+        @Header("token") token: String
+    ): Response<UserDataDTO>
 
 }

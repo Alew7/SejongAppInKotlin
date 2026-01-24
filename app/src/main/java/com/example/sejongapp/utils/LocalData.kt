@@ -52,7 +52,7 @@ object LocalData {
 
     fun getSavedTeacherToken(context: Context): String {
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
-        return prefs.getString("Teacher_Token_TAG", "null") ?: "null"
+        return prefs.getString("TeacherToken", "null") ?: "null"
     }
 
     fun setTeacherToken(context: Context,token: String) {

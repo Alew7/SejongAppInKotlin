@@ -59,6 +59,7 @@ import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.models.ViewModels.UserViewModels.UserViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
+import com.example.sejongapp.room.RoomUserViewModel
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.ui.theme.secondaryColor
@@ -71,6 +72,7 @@ const val TAG = "TAG_ProfilePage"
 @Composable
 fun ProfilePage() {
     val userViewModel : UserViewModel = viewModel()
+
     val context = LocalContext.current
     val userData = remember { getUserData(context)}
     var showEditDialog by remember { mutableStateOf(false) }
@@ -80,9 +82,18 @@ fun ProfilePage() {
     var showUserAvatarDialog by remember { mutableStateOf(false) }
     var avatarChanged by remember { mutableStateOf(false) }
     var showSuccessAnomation by remember { mutableStateOf(false) }
-
-
     var isChangingPassword by remember { mutableStateOf(false) }
+
+    val roomviewModel: RoomUserViewModel = viewModel()
+    val user = roomviewModel.user
+    val token = LocalData.getSavedToken(context)
+
+    LaunchedEffect(Unit) {
+        roomviewModel.loadUser(token)
+    }
+
+
+
 
 
     BoxWithConstraints(

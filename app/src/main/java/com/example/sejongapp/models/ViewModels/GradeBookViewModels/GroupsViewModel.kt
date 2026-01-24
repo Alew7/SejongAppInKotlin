@@ -24,11 +24,12 @@ class GroupsViewModel : ViewModel() {
         val userData = LocalData.getUserData(context)
         val myNameKr = userData?.fullname ?: ""
         val isAdmin = userData?.status == UserStatusEnum.ADMIN
+        val token = LocalData.getSavedTeacherToken(context)
 
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val response = RetrofitInstance.groupsApi.getGroups()
+                val response = RetrofitInstance.groupsApi.getGroups(token)
 
                 val finalGroups = if (isAdmin) {
                     response.groups

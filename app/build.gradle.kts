@@ -3,6 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
 
+    id("com.google.devtools.ksp")
+
+
 
 }
 
@@ -71,7 +74,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-//    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.firebase.sessions)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -102,12 +105,18 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.0.0")
 
 
-
-
     // build.gradle (app)
 
         implementation ("com.google.accompanist:accompanist-pager:0.31.5-beta") // последняя версия
         implementation ("com.google.accompanist:accompanist-pager-indicators:0.31.5-beta")
+
+
+    // room
+    val room_version = "2.6.0"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+
+    ksp("androidx.room:room-compiler:$room_version")
 
     
 }

@@ -12,16 +12,25 @@ import com.example.sejongapp.retrofitAPI.RetrofitInstance
 import kotlinx.coroutines.launch
 
 class ScheduleViewModel: ViewModel() {
+
+
     companion object {
         private const val TAG = "ScheduleViewModel_TAG"
     }
 
 
 
+
+
     private val scheduleApi =  RetrofitInstance.scheduleApi
+
+
+
+
 
     private val _scheduleResult = MutableLiveData<NetworkResponse<ArrayList<ScheduleData>>>()
     val scheduleResult : MutableLiveData<NetworkResponse<ArrayList<ScheduleData>>> = _scheduleResult
+
 
 
     fun getAllSchedules(context: Context){
@@ -32,6 +41,8 @@ class ScheduleViewModel: ViewModel() {
 
 
             try {
+
+
                 val response = scheduleApi.getSchedules(user_token)
                 if (response.isSuccessful) {
                     Log.i(TAG, "data successfully taken " + response.body().toString())
