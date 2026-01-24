@@ -318,19 +318,19 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
         ),
-        elevation = CardDefaults.cardElevation(4.dp) // Чтобы карточка "парила"
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // КВАДРАТНОЕ ФОТО
+
             val firstImage = annData.images?.firstOrNull()?.let { fixGoogleDriveLink(it) }
 
             Box(
                 modifier = Modifier
                     .size(imgSize)
-                    .clip(RoundedCornerShape(8.dp)) // Слегка закругляем углы самого фото
+                    .clip(RoundedCornerShape(8.dp))
                     .background(Color.LightGray.copy(alpha = 0.4f))
             ) {
                 Image(
