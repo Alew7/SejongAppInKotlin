@@ -3,6 +3,12 @@ import LocalData
 import android.content.Intent
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,6 +39,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +56,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -187,125 +195,84 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
     val scheduleState by viewModel.scheduleResult.observeAsState()
 
-    when (val result = scheduleState) {
-        is NetworkResponse.Success -> {
-            Log.d(TAG, "the schedule result is Successful")
-            Log.i(TAG, "the schedule result is $result")
 
-            var scheduleData: ArrayList<ScheduleData> = arrayListOf()
-            scheduleData = result.data as? ArrayList<ScheduleData> ?: arrayListOf()
+    androidx.compose.animation.AnimatedContent(
+        targetState = scheduleState,
+        label = "screenTransition"
+    ) { state ->
+        when (val result = state) {
+            is NetworkResponse.Success -> {
 
-//            var sortedScheduleData: ArrayList<ScheduleData> = sortScheduleData(scheduleData)
-            var sortedScheduleData = if (selectedPage == 0) {
-                sortScheduleData(scheduleData)
-            } else {
-                sortScheduleByLastDigitOnly(scheduleData)
-            }
+                Log.d(TAG, "the schedule result is Successful")
+                Log.i(TAG, "the schedule result is $result")
+
+                val scheduleData = result.data as? ArrayList<ScheduleData> ?: arrayListOf()
 
 
-//            LazyColumn(
-//                modifier = Modifier.padding(bottom = 105.dp)
-//            ) {
-//                if (selectedPage != 0){
-//                    items(sortedScheduleData.size) { index ->
-//                        if (selectedPage == sortedScheduleData[index].book){
-//                            table(sortedScheduleData[index])
-//                        }
-//                    }
-//                }
-//                else{
-//                    items(sortedScheduleData.size) { index ->
-//                        table(sortedScheduleData[index])
-//                    }
-//                }
-//            }
+                val sortedScheduleDataa = sortScheduleData(scheduleData)
 
-            var sortedScheduleDataa = sortScheduleData(scheduleData)
 
-            LazyColumn(
-                modifier = Modifier.padding(bottom = 105.dp)
-            ) {
-                if (selectedPage != 0) {
-                    items(sortedScheduleDataa.size) { index ->
-                        if (selectedPage == sortedScheduleDataa[index].book) {
-                            table(sortedScheduleDataa[index])
-                        }
-                    }
+                val filteredData = if (selectedPage != 0) {
+                    sortedScheduleDataa.filter { it.book == selectedPage }
                 } else {
+                    sortedScheduleDataa
+                }
 
-                    items(sortedScheduleDataa.size) { index ->
-                        table(sortedScheduleDataa[index])
+                LazyColumn(
+                    modifier = Modifier.padding(bottom = 105.dp),
+                    contentPadding = PaddingValues(vertical = 8.dp)
+                ) {
+                    itemsIndexed(
+                        items = filteredData,
+                        key = { _, item -> "${item.group}_${item.book}" }
+                    ) { index, item ->
+
+
+                        val visibleState = remember(selectedPage) {
+                            MutableTransitionState(false).apply { targetState = true }
+                        }
+
+
+                        AnimatedVisibility(
+                            visibleState = visibleState,
+                            enter = fadeIn(animationSpec = tween(500, delayMillis = index * 50)) +
+                                    slideInVertically(
+                                        initialOffsetY = { 40 },
+                                        animationSpec = tween(500, delayMillis = index * 50)
+                                    )
+                        ) {
+                            table(item)
+                        }
                     }
                 }
             }
-        }
-        is NetworkResponse.Error -> {
-            Log.d(TAG, "the schedule result is Error")
-            Log.e(TAG, "the schedule result is ${result.message}")
-
-            Text(
-                text = result.message,
-                color = Color.Red
-            )
-        }
-        is NetworkResponse.Loading -> {
-            Log.d(TAG, "the schedule result is Loading")
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                contentAlignment = Alignment.Center
-
-            ) {
-                CircularProgressIndicator(
-                    color = primaryColor,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            is NetworkResponse.Error -> {
+                Log.d(TAG, "the schedule result is Error")
+                Log.e(TAG, "the schedule result is ${result.message}")
+                Text(
+                    text = result.message,
+                    color = Color.Red,
+                    modifier = Modifier
+                        .padding(16.dp)
                 )
             }
+            is NetworkResponse.Loading -> {
+                Log.d(TAG, "the schedule result is Loading")
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = primaryColor)
+                }
+            }
+            else -> {}
         }
-        else -> {}
     }
 }
 
 
-// a compose func for pagination (the one that sorts data from all to the specific group)
-//@Composable
-//fun PaginationSelector(
-//    pages: List<String> = listOf(LocalContext.current.getString(R.string.All), "1", "2", "3", "4","5","6","7"),
-//    selectedIndex: Int,
-//    onSelected: (Int) -> Unit
-//) {
-//    LazyRow(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(16.dp),
-//        horizontalArrangement = Arrangement.spacedBy(12.dp)
-//    ) {
-//        itemsIndexed(pages) { index, label ->
-//            val isSelected = index == selectedIndex
-//
-//            Box(
-//                modifier = Modifier
-//                    .size(40.dp)
-//                    .clip(CircleShape)
-//                    .background(
-//                        if (isSelected) primaryColor
-//                        else lightGray
-//                    )
-//                    .clickable { onSelected(index) },
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Text(
-//                    text = label,
-//                    color = Color.Black,
-//                    fontWeight = FontWeight.Bold,
-//                    fontSize = 14.sp
-//                )
-//            }
-//        }
-//    }
-//}
 @Composable
 fun PaginationSelector(
     pages: List<String> = listOf(LocalContext.current.getString(R.string.All), "1", "2", "3", "4", "5", "6", "7"),
@@ -359,7 +326,6 @@ fun PaginationSelector(
 fun table(scheduleData: ScheduleData) {
     val context = LocalContext.current
 
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -367,7 +333,7 @@ fun table(scheduleData: ScheduleData) {
             .background(Color.White, RoundedCornerShape(24.dp))
             .padding(20.dp)
     ) {
-
+        // Шапка карточки (Группа и Преподаватель)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -389,7 +355,6 @@ fun table(scheduleData: ScheduleData) {
                 )
             }
 
-
             Text(
                 text = "КНИГА ${scheduleData.book}",
                 fontSize = 12.sp,
@@ -403,8 +368,11 @@ fun table(scheduleData: ScheduleData) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Список дней
-        scheduleData.time.forEach { time ->
+
+        val sortedTimeList = scheduleData.time.sortedBy { it.day }
+
+
+        sortedTimeList.forEach { time ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -422,16 +390,16 @@ fun table(scheduleData: ScheduleData) {
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-
+                // Название дня (MON, TUE и т.д.)
                 Text(
-                    text = weekDays[time.day].toString().take(3).uppercase(),
+                    text = weekDays[time.day]?.take(3)?.uppercase() ?: "???",
                     modifier = Modifier.width(45.dp),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Black,
                     color = Color(0xFF1A1A1A)
                 )
 
-
+                // Время занятия
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "${time.start_time} — ${time.end_time}",
@@ -441,7 +409,7 @@ fun table(scheduleData: ScheduleData) {
                     )
                 }
 
-
+                // Номер кабинета
                 Box(
                     modifier = Modifier
                         .background(Color(0xFFF0F2F5), RoundedCornerShape(10.dp))
@@ -456,7 +424,6 @@ fun table(scheduleData: ScheduleData) {
                 }
             }
 
-
             Divider(
                 color = Color(0xFFF5F5F5),
                 thickness = 1.dp,
@@ -468,39 +435,7 @@ fun table(scheduleData: ScheduleData) {
 
 
 
-//fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData>{
-//
-//
-//    Log.i(TAG, "starts soring the schedule data, the size of datas ${scheduleData.size}")
-//    var sortedScheduleData: ArrayList<ScheduleData> = arrayListOf<ScheduleData>()
-//    var i : Int = 0
-//    sortedScheduleData.add(scheduleData[0])
-//
-//    scheduleData.forEach { item->
-//
-//        if (i == 0){
-//            i++;
-//            return@forEach
-//        }
-//
-//        for (j in 0..sortedScheduleData.size-1){
-//            if (item.book < sortedScheduleData[j].book){
-//                sortedScheduleData.add(j, item)
-//                return@forEach
-//            }
-//            else if (j == sortedScheduleData.size-1){
-//                sortedScheduleData.add(item)
-//            }
-//        }
-//
-//    }
-//    Log.i(TAG, "the data is sorted")
-//    sortedScheduleData.forEach { item->
-//        Log.i(TAG, "the book : ${item.book}")
-//    }
-//    return sortedScheduleData;
-//
-//}
+
 fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData> {
     Log.i(TAG, "Starts sorting the schedule data, size: ${scheduleData.size}")
 
@@ -513,14 +448,8 @@ fun sortScheduleData(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleD
     Log.i(TAG, "Data is sorted by book and last digit")
     return ArrayList(sortedList)
 }
-fun sortScheduleByLastDigitOnly(scheduleData: ArrayList<ScheduleData>): ArrayList<ScheduleData>{
-    return ArrayList(
-        scheduleData.sortedBy { getLastNumber(it.group) }
-    )
-}
-//fun getLastNumber(group: String): Int {
-//    return group.substringAfterLast("-").toIntOrNull()?:0
-//}
+
+
 
 fun getLastNumber(group: String): Int {
     return try {
@@ -530,6 +459,8 @@ fun getLastNumber(group: String): Int {
         0
     }
 }
+
+
 
 
 @Preview(showSystemUi = true)
