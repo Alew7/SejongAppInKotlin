@@ -41,8 +41,10 @@ import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.backgroundCo
 import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.primaryColor
 
 import com.example.sejongapp.R
+import com.example.sejongapp.models.DataClasses.StudentGroups.GroupDetailResponse
 import com.example.sejongapp.models.DataClasses.StudentGroups.Student
-import com.example.sejongapp.models.ViewModels.GradeBookViewModels.MagazineViewModel
+import com.example.sejongapp.models.ViewModels.GradeBookViewModels.GroupDetailsViewModel
+import com.example.sejongapp.retrofitAPI.NetworkResponse
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -50,12 +52,15 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MagazineDesign(
+fun GroupDetailPage(
     groupId: Int,
     groupName: String
 
 ) {
-    val viewModel: MagazineViewModel = viewModel ( key = "MagazineViewModel_$groupId" )
+    val viewModel: GroupDetailsViewModel = viewModel ( key = "MagazineViewModel_$groupId" )
+
+    val TheRecievedData by viewModel.data.collectAsStateWithLifecycle()
+
     val realStudents by viewModel.students.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val availlableDates by viewModel.availableDates.collectAsStateWithLifecycle()
@@ -74,6 +79,7 @@ fun MagazineDesign(
     LaunchedEffect (Unit){
         kotlinx.coroutines.delay(300)
         triggerOpeningAnimatin = true
+//        viewModel.loadGroupData(groupId, context)
     }
 
 
@@ -84,7 +90,7 @@ fun MagazineDesign(
     }
 
     LaunchedEffect(groupId) {
-        viewModel.loadGroupData(groupId)
+        viewModel.loadGroupData(groupId, context)
     }
 
     val studentsData = remember { mutableStateMapOf<Int, String>() }
@@ -103,94 +109,109 @@ fun MagazineDesign(
         .fillMaxSize()
         .background(backgroundColor))
     {
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-               .align(Alignment.Center),
-                color = primaryColor
-            )
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = context.getString(R.string.attendance_gradebook),
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold
+
+        when(TheRecievedData){
+            is NetworkResponse.Error -> {
+
+            }
+            NetworkResponse.Idle -> {
+
+            }
+            NetworkResponse.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.Center),
+                    color = primaryColor
                 )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Row(
+            }
+            is NetworkResponse.Success -> {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp))
+                        .fillMaxSize()
+                        .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                )
                 {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f))
-                    {
-                        InfoSelectionCard(
-                            icon = Icons.Default.DateRange,
-                            text = if (selectedDate.isEmpty()) "Loading..." else selectedDate,
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                isSheetOpen = true
-                            }
-                        )
-                    }
-                    InfoSelectionCard(
-                        icon = Icons.Default.PeopleAlt,
-                        showArrow = false,
-                        text = groupName,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
 
-                Spacer(modifier = Modifier.height(20.dp))
-
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    items(realStudents) { student ->
-                        StudentAttendanceItem(
-                            student = student,
-                            currentStatus = studentsData[student.id] ?: "Был",
-                            isSaved = savedStates[student.id] ?: false,
-                            onStatusChange = { newStatus ->
-                                studentsData[student.id] = newStatus
-                                savedStates[student.id] = false
-                            }
-                        )
-                    }
-                }
-
-                Button(
-                    onClick = {
-                        realStudents.forEach { savedStates[it.id] = true } },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .padding(top = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-                    shape = MaterialTheme.shapes.medium
-                ) {
                     Text(
-                        text = context.getString(R.string.Save_Report),
-                        color = Color.White,
-                        fontSize = 16.sp
+                        text = context.getString(R.string.attendance_gradebook),
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold
                     )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp))
+                    {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f))
+                        {
+                            InfoSelectionCard(
+                                icon = Icons.Default.DateRange,
+                                text = if (selectedDate.isEmpty()) "Loading..." else selectedDate,
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = {
+                                    isSheetOpen = true
+                                }
+                            )
+                        }
+                        InfoSelectionCard(
+                            icon = Icons.Default.PeopleAlt,
+                            showArrow = false,
+                            text = groupName,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        val items = (TheRecievedData as NetworkResponse.Success<GroupDetailResponse>).data
+                        items(items.data.group_students) { student ->
+                            StudentAttendanceItem(
+                                student = student,
+                                currentStatus = studentsData[student.id] ?: "Был",
+                                isSaved = savedStates[student.id] ?: false,
+                                onStatusChange = { newStatus ->
+                                    studentsData[student.id] = newStatus
+                                    savedStates[student.id] = false
+                                }
+                            )
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            realStudents.forEach { savedStates[it.id] = true } },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .padding(top = 16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Text(
+                            text = context.getString(R.string.Save_Report),
+                            color = Color.White,
+                            fontSize = 16.sp
+                        )
+                    }
                 }
             }
         }
 
 
 
-        if (isSheetOpen) {
+
+        if (isSheetOpen)
+        {
             ModalBottomSheet(
                 onDismissRequest = { isSheetOpen = false },
                 sheetState = sheetState,

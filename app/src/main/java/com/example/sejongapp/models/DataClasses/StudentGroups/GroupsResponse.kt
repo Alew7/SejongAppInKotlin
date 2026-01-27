@@ -16,7 +16,8 @@ data class TeachersGroupResponse(
 data class GroupDataWrapper(
     val group_students: List<Student>,
     val group_data: Group,
-    val group_schedule: GroupSchedule
+    val group_schedule: GroupSchedule,
+    val group_attendance: List<groupAttendanceData>
 
 )
 

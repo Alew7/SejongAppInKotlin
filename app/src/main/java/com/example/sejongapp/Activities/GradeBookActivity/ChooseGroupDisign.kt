@@ -209,8 +209,8 @@ fun GroupCard(group: Group, isAdmin: Boolean) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewChooseGroup() {
-    ChooseGroupDesign()
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun PreviewChooseGroup() {
+//    ChooseGroupDesign()
+//}

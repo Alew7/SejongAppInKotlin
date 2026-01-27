@@ -70,7 +70,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.height
 import com.example.sejongapp.Activities.GradeBookActivity.ChooseGroupDesign
 import com.example.sejongapp.Activities.GradeBookActivity.LoginCheck
-import com.example.sejongapp.Activities.GradeBookActivity.MagazineDesign
 import com.example.sejongapp.Activities.ProfileActivity.ProfileActivity
 import com.example.sejongapp.TelegramManager.TelegramManager
 import com.example.sejongapp.components.ReviewDialog

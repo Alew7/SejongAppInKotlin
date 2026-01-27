@@ -6,7 +6,6 @@ import com.example.sejongapp.retrofitAPI.api.UserApi
 import com.example.sejongapp.retrofitAPI.api.announcementsApi
 import com.example.sejongapp.retrofitAPI.api.programupdateApi
 import com.example.sejongapp.retrofitAPI.gradeBookapi.GroupsApi
-import com.example.sejongapp.retrofitAPI.gradeBookapi.SejongApiService
 import com.example.sejongapp.retrofitAPI.gradeBookapi.TeacherApi
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -70,5 +69,4 @@ object RetrofitInstance {
 
     val groupsApi: GroupsApi = getGradeBookInstance().create(GroupsApi::class.java)
     val teacherApi: TeacherApi = getGradeBookInstance().create(TeacherApi::class.java)
-    val sejongApiService: SejongApiService = getGradeBookInstance().create(SejongApiService::class.java)
 }
