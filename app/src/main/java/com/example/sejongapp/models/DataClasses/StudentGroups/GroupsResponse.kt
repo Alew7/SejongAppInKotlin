@@ -1,13 +1,17 @@
 package com.example.sejongapp.models.DataClasses.StudentGroups
 
-data class GroupsResponse(
-    val message: String,
-    val groups: List<Group>
-)
+
 data class GroupDetailResponse(
     val message: String,
     val data: GroupDataWrapper
 )
+
+data class TeachersGroupResponse(
+    val message: String,
+    val data: List<Group>
+)
+
+
 
 data class GroupDataWrapper(
     val group_students: List<Student>,

@@ -173,7 +173,7 @@ fun GroupCard(group: Group, isAdmin: Boolean) {
 
             Column {
                 Text(
-                    text = group.name,
+                    text = group.name ,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF333333),

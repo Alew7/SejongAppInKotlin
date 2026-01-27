@@ -235,10 +235,10 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
 
                         AnimatedVisibility(
                             visibleState = visibleState,
-                            enter = fadeIn(animationSpec = tween(500, delayMillis = index * 50)) +
+                            enter = fadeIn(animationSpec = tween(400, delayMillis = index * 50)) +
                                     slideInVertically(
                                         initialOffsetY = { 40 },
-                                        animationSpec = tween(500, delayMillis = index * 50)
+                                        animationSpec = tween(400, delayMillis = index * 50)
                                     )
                         ) {
                             table(item)
