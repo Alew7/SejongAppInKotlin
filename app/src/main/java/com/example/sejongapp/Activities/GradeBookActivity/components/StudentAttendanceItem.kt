@@ -51,7 +51,8 @@ fun StudentAttendanceItem(
 ) {
 
 
-    var isExpanded by remember { mutableStateOf(false) } // отвечает за раскрытие списка студентов
+//    var isExpanded by remember { mutableStateOf(false) } // отвечает за раскрытие списка студентов
+        var isExpanded by remember  (student.id) { mutableStateOf(false) }
     val isChecked = currentStatus != "Не был" // Switch считается включонным если студент не Был
 
 

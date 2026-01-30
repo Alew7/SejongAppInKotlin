@@ -17,7 +17,7 @@ object RetrofitInstance {
 
     private const val baseUrl = "https://sejong-app-container-785993649958.us-central1.run.app/api/"
 
-    private const val digitalGradwbookUrl = "http://192.168.0.101:3000/"
+    private const val digitalGradwbookUrl = "http://192.168.0.103:3000/"
 
 
     val api: UserApi by lazy {

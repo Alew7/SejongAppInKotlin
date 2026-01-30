@@ -39,6 +39,7 @@ object LocalData {
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
         val editor = prefs.edit()
         editor.remove("token").apply()
+        editor.remove("TeacherToken").apply()
         Log.i("Token_TAG", "Token after deletion: ${prefs.getString("token", "null")}")
 
         Log.i("Token_TAG", "The token has deleted")

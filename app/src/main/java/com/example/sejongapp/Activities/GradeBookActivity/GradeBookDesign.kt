@@ -98,6 +98,7 @@ fun GroupDetailPage(
     val studentsData = remember { mutableStateMapOf<Int, String>() }
     val savedStates = remember { mutableStateMapOf<Int, Boolean>() }
 
+    
     LaunchedEffect(realStudents) {
         realStudents.forEach { student ->
             if (!studentsData.containsKey(student.id)) {
@@ -176,7 +177,13 @@ fun GroupDetailPage(
                         modifier = Modifier.weight(1f)
                     ) {
                         val items = (TheRecievedData as NetworkResponse.Success<GroupDetailResponse>).data
-                        items(items.data.group_students) { student ->
+
+
+
+                        items(
+                            items.data.group_students,
+                            key = { student -> student.id }
+                        ) { student ->
                             StudentAttendanceItem(
                                 student = student,
                                 currentStatus = studentsData[student.id] ?: "Был",

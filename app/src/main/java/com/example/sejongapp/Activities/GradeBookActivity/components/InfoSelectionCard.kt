@@ -62,7 +62,8 @@ fun InfoSelectionCard(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(imageVector = icon,
+                Icon(
+                    imageVector = icon,
                     contentDescription = null,
                     tint = primaryColor
                 )
