@@ -10,6 +10,7 @@ import com.example.sejongapp.models.DataClasses.StudentGroups.GroupDataWrapper
 import com.example.sejongapp.models.DataClasses.StudentGroups.GroupDetailResponse
 import com.example.sejongapp.models.DataClasses.StudentGroups.GroupSchedule
 import com.example.sejongapp.models.DataClasses.StudentGroups.Student
+import com.example.sejongapp.models.DataClasses.apiResponse.SaveStudentAttendance
 import com.example.sejongapp.models.DataClasses.apiResponse.StudentAttendanceRequest
 import com.example.sejongapp.models.DataClasses.apiResponse.messageResponse
 import com.example.sejongapp.retrofitAPI.NetworkResponse
@@ -150,7 +151,8 @@ class GroupDetailsViewModel(application: Application) : AndroidViewModel(applica
                 Log.d(TAG, "Executing request to: save-attendance")
                 Log.d(TAG, "Auth Header: $token")
 
-                val response  = RetrofitInstance.groupsApi.saveStudentAttendance(token, attendance)
+                val response  = RetrofitInstance.groupsApi.saveStudentAttendance(token,
+                    SaveStudentAttendance(attendance))
 
 
                 if (response.isSuccessful){
@@ -169,5 +171,9 @@ class GroupDetailsViewModel(application: Application) : AndroidViewModel(applica
                 _groupAttendanceRequest.value = NetworkResponse.Error("Ошибка соединения: ${e.localizedMessage}")
             }
         }
+    }
+
+    fun resetGroupAttendance(){
+        _groupAttendanceRequest.value = NetworkResponse.Idle
     }
 }

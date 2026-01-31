@@ -170,7 +170,8 @@ fun LoginCheck(callback: (correctPassword: Boolean) -> Unit) {
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = primaryColor,
                             unfocusedBorderColor = Color.LightGray,
-                            focusedLabelColor = Color.Black
+                            focusedLabelColor = Color.Black,
+                            cursorColor = Color.Black
                         )
                     )
 

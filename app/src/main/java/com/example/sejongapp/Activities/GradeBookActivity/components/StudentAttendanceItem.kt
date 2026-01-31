@@ -206,16 +206,16 @@ fun StudentAttendanceItem(
         /* ----------- ВЫПАДАЮШИЙ СПИСОК ------------- */
 
         if (isExpanded) {
-            val options = listOf("Был", "Опоздал", "Не был")
+            val options = listOf("present", "absent", "late")
             options.forEach { statusName ->
                 val icon = when(statusName) {
-                    "Был" -> Icons.Default.Check
-                    "Опоздал" -> Icons.Default.Timer
+                    "present" -> Icons.Default.Check
+                    "absent" -> Icons.Default.Timer
                     else -> Icons.Default.Close
                 }
                 val itemColor = when (statusName) {
-                    "Не был" -> Color.Red
-                    "Опоздал" -> Color(0xFFFFA500)
+                    "late" -> Color.Red
+                    "absent" -> Color(0xFFFFA500)
                     else -> primaryColor
                 }
 

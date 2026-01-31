@@ -1,6 +1,7 @@
 package com.example.sejongapp.Activities.GradeBookActivity
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
@@ -46,6 +47,7 @@ import com.example.sejongapp.Activities.GradeBookActivity.components.StudentAtte
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.StudentGroups.GroupDetailResponse
 import com.example.sejongapp.models.DataClasses.StudentGroups.Student
+import com.example.sejongapp.models.DataClasses.apiResponse.StudentAttendanceRequest
 import com.example.sejongapp.models.ViewModels.GradeBookViewModels.GroupDetailsViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import java.text.SimpleDateFormat
@@ -60,6 +62,8 @@ fun GroupDetailPage(
     groupName: String
 
 ) {
+
+    val studentAttendanceHashMap = HashMap<Int, StudentAttendanceRequest>()
     val viewModel: GroupDetailsViewModel = viewModel ( key = "MagazineViewModel_$groupId" )
 
     val TheRecievedData by viewModel.data.collectAsStateWithLifecycle()
@@ -67,6 +71,7 @@ fun GroupDetailPage(
     val realStudents by viewModel.students.collectAsStateWithLifecycle()
     val availlableDates by viewModel.availableDates.collectAsStateWithLifecycle()
     val selectedDate by viewModel.selectedData.collectAsStateWithLifecycle()
+    val attendanceRequest by viewModel.groupAttendanceRequest.collectAsStateWithLifecycle()
 
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by remember { mutableStateOf(false) }
@@ -98,7 +103,7 @@ fun GroupDetailPage(
     val studentsData = remember { mutableStateMapOf<Int, String>() }
     val savedStates = remember { mutableStateMapOf<Int, Boolean>() }
 
-    
+
     LaunchedEffect(realStudents) {
         realStudents.forEach { student ->
             if (!studentsData.containsKey(student.id)) {
@@ -113,12 +118,147 @@ fun GroupDetailPage(
         .background(backgroundColor))
     {
 
-        when(TheRecievedData){
-            is NetworkResponse.Error -> {
-
-            }
+        when(attendanceRequest){
+            is NetworkResponse.Error ->{}
             NetworkResponse.Idle -> {
+                when(TheRecievedData){
+                    is NetworkResponse.Error -> {
 
+                    }
+                    NetworkResponse.Idle -> {
+
+                    }
+                    NetworkResponse.Loading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(Alignment.Center),
+                            color = primaryColor
+                        )
+                    }
+                    is NetworkResponse.Success -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        )
+                        {
+
+                            Text(
+                                text = context.getString(R.string.attendance_gradebook),
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp))
+                            {
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f))
+                                {
+                                    InfoSelectionCard(
+                                        icon = Icons.Default.DateRange,
+                                        text = if (selectedDate.isEmpty()) "Loading..." else selectedDate,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onClick = {
+                                            isSheetOpen = true
+                                        }
+                                    )
+                                }
+                                InfoSelectionCard(
+                                    icon = Icons.Default.PeopleAlt,
+                                    showArrow = false,
+                                    text = groupName,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                val items = (TheRecievedData as NetworkResponse.Success<GroupDetailResponse>).data
+
+
+
+                                items(
+                                    items.data.group_students,
+                                    key = { student -> student.student_id } // Используем student_id
+                                ) { student ->
+                                    StudentAttendanceItem(
+                                        student = student,
+                                        // Теперь UI берет статус напрямую из нашей мапы состояний
+                                        currentStatus = studentsData[student.student_id] ?: "present",
+                                        isSaved = savedStates[student.student_id] ?: false,
+                                        onStatusChange = { newStatus ->
+                                            // 1. Сразу обновляем визуальный список
+                                            studentsData[student.student_id] = newStatus
+
+                                            // 2. Сразу создаем/обновляем объект для отправки в бэкенд
+                                            val modifiedStudentData = StudentAttendanceRequest(
+                                                student_id = student.student_id, // Используем student_id, чтобы не было 0
+                                                group_id = groupId,
+                                                date = convertDateToBackendFormat(selectedDate),
+                                                status = newStatus,
+                                                group_name = groupName
+                                            )
+                                            studentAttendanceHashMap[student.student_id] = modifiedStudentData
+
+                                            // 3. Сбрасываем флаг "сохранено", так как статус изменился
+                                            savedStates[student.student_id] = false
+                                        }
+                                    )
+                                }
+                            }
+
+
+////                    submitting the student attendance
+                            Button(
+                                onClick = {
+                                    val successData = (TheRecievedData as? NetworkResponse.Success<GroupDetailResponse>)?.data
+
+                                    // Создаем список для ВСЕХ студентов, чтобы не было "пустых" строк на сайте
+                                    val finalAttendanceList = successData?.data?.group_students?.map { student ->
+                                        // Если мы меняли статус вручную — берем из мапы, иначе ставим "present"
+                                        studentAttendanceHashMap[student.student_id] ?: StudentAttendanceRequest(
+                                            student_id = student.student_id, // Используй именно student_id!
+                                            group_id = groupId,
+                                            date = convertDateToBackendFormat(selectedDate), // Дата без пробелов
+                                            status = "present", // По умолчанию все "Был", если не выбрано иное
+                                            group_name = groupName
+                                        )
+                                    } ?: emptyList()
+
+                                    viewModel.saveGroupAttendance(context, finalAttendanceList)
+
+                                    // Обновляем визуальные галочки "сохранено"
+                                    successData?.data?.group_students?.forEach {
+                                        savedStates[it.student_id] = true
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp)
+                                    .padding(top = 16.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                                shape = MaterialTheme.shapes.medium
+                            ) {
+                                Text(
+                                    text = context.getString(R.string.Save_Report),
+                                    color = Color.White,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    }
+                }
             }
             NetworkResponse.Loading -> {
                 CircularProgressIndicator(
@@ -126,95 +266,16 @@ fun GroupDetailPage(
                         .align(Alignment.Center),
                     color = primaryColor
                 )
+                Toast.makeText(context, "Loading the data", Toast.LENGTH_SHORT).show()
             }
-            is NetworkResponse.Success -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                )
-                {
+            is NetworkResponse.Success<*> -> {
+                Toast.makeText(context, "Attendance saved", Toast.LENGTH_LONG).show()
+                viewModel.resetGroupAttendance()
 
-                    Text(
-                        text = context.getString(R.string.attendance_gradebook),
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp))
-                    {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f))
-                        {
-                            InfoSelectionCard(
-                                icon = Icons.Default.DateRange,
-                                text = if (selectedDate.isEmpty()) "Loading..." else selectedDate,
-                                modifier = Modifier.fillMaxWidth(),
-                                onClick = {
-                                    isSheetOpen = true
-                                }
-                            )
-                        }
-                        InfoSelectionCard(
-                            icon = Icons.Default.PeopleAlt,
-                            showArrow = false,
-                            text = groupName,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        val items = (TheRecievedData as NetworkResponse.Success<GroupDetailResponse>).data
-
-
-
-                        items(
-                            items.data.group_students,
-                            key = { student -> student.id }
-                        ) { student ->
-                            StudentAttendanceItem(
-                                student = student,
-                                currentStatus = studentsData[student.id] ?: "Был",
-                                isSaved = savedStates[student.id] ?: false,
-                                onStatusChange = { newStatus ->
-                                    studentsData[student.id] = newStatus
-                                    savedStates[student.id] = false
-                                }
-                            )
-                        }
-                    }
-
-                    Button(
-                        onClick = {
-                            realStudents.forEach { savedStates[it.id] = true } },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .padding(top = 16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        Text(
-                            text = context.getString(R.string.Save_Report),
-                            color = Color.White,
-                            fontSize = 16.sp
-                        )
-                    }
-                }
             }
         }
+
+
 
         // Функция календаря
         if (isSheetOpen) {
@@ -268,4 +329,18 @@ fun getDaysInMonth(month: String, year: String): Int {
             calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         } else 31
     } catch (e: Exception) { 31 }
+}
+fun convertDateToBackendFormat(dateStr: String): String {
+    return try {
+        // Вход: "2 February 2026"
+        val inputFormat = SimpleDateFormat("d MMMM yyyy", Locale.ENGLISH)
+
+
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
+
+        val date = inputFormat.parse(dateStr)
+        date?.let { outputFormat.format(it) } ?: dateStr
+    } catch (e: Exception) {
+        dateStr
+    }
 }

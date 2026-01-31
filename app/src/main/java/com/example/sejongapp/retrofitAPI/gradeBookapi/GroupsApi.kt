@@ -2,6 +2,7 @@ package com.example.sejongapp.retrofitAPI.gradeBookapi
 
 import com.example.sejongapp.models.DataClasses.StudentGroups.GroupDetailResponse
 import com.example.sejongapp.models.DataClasses.StudentGroups.TeachersGroupResponse
+import com.example.sejongapp.models.DataClasses.apiResponse.SaveStudentAttendance
 import com.example.sejongapp.models.DataClasses.apiResponse.StudentAttendanceRequest
 import com.example.sejongapp.models.DataClasses.apiResponse.messageResponse
 import retrofit2.Response
@@ -26,10 +27,10 @@ interface GroupsApi {
     ): Response<GroupDetailResponse>
 
 
-    @POST("save-attendance")
+    @POST("mobile/save-attendance")
     suspend fun saveStudentAttendance(
         @Header("token") token: String,
-        @Body request: List<StudentAttendanceRequest>
+        @Body request: SaveStudentAttendance
     ): Response<messageResponse>
 
 }
