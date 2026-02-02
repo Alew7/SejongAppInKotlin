@@ -49,72 +49,50 @@ fun StudentAttendanceItem(
     currentStatus: String,
     onStatusChange: (String) -> Unit
 ) {
+    var isExpanded by remember { mutableStateOf(false) }
+    val isChecked = currentStatus != "absent"
 
 
-//    var isExpanded by remember { mutableStateOf(false) } // отвечает за раскрытие списка студентов
-        var isExpanded by remember  (student.id) { mutableStateOf(false) }
-    val isChecked = currentStatus != "Не был" // Switch считается включонным если студент не Был
+    val totalNB = if (isSaved && currentStatus == "absent") 1 else 0
 
-
-
-    /* ------------------ ЛОГИКА ЗДОРОВИЯ -----------------*/
-
-
-    val totalNB = if (isSaved && currentStatus == "Не был") 1 else 0
-
-    // каждый пропуск отнимает 14.2%
     val totalDamage = (totalNB * 14.2f).coerceIn(0f, 100f)
-
     val healthFactor = (100f - totalDamage) / 100f
-
-
-    // анимация изменения здоровия
 
     val animatedHealth by animateFloatAsState(
         targetValue = healthFactor,
         animationSpec = tween(800)
     )
 
-    /* --------------------- ЦВЕТ ФОНА------------------------------*/
-
-    // Выбираем цвет фона в зависимости от статуса и здоровья
 
     val targetColor = when {
-        currentStatus == "Опоздал" -> if (isSaved)
+        currentStatus == "late" -> if (isSaved)
             Color(0xFFFFF9C4)
         else Color(0xFFE8F5E9)
-        healthFactor > 0.7f -> if (currentStatus == "Не был" && isSaved)
+        healthFactor > 0.7f -> if (currentStatus == "absent" && isSaved)
             Color(0xFFC8E6C9)
         else Color(0xFFE8F5E9)
-        else -> if (currentStatus == "Не был")
+        else -> if (currentStatus == "absent")
             Color(0xFFEF5350)
         else Color(0xFFE8F5E9)
     }
 
-    // плавная анимация смена цвета
     val animatedBackground by
     animateColorAsState(
         targetValue = targetColor,
         animationSpec = tween(600)
     )
 
-    /* ---------------- ИКОНКА + ЦВЕТ СТАТУСА ----------*/
-
     val statusTheme = when (currentStatus) {
-        "Не был" -> Color.Red to Icons.Default.Close
-        "Опоздал" -> Color(0xFFFFA500) to Icons.Default.Timer
+        "absent" -> Color.Red to Icons.Default.Close
+        "late" -> Color(0xFFFFA500) to Icons.Default.Timer
         else -> Color(0xFF4CAF50) to Icons.Default.Check
     }
-
-    /*------------------ КАРТОЧКА СТУДЕНТА ---------------- */
-
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
             .background(Color.White)
-            // рисуем цветную полосу здоровя
             .drawBehind {
                 drawRect(
                     color = animatedBackground,
@@ -129,8 +107,6 @@ fun StudentAttendanceItem(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Аватарка студентов
-
             Box(
                 modifier = Modifier
                     .size(44.dp)
@@ -148,7 +124,6 @@ fun StudentAttendanceItem(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // имя студентов и его статус
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -158,7 +133,6 @@ fun StudentAttendanceItem(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
-                // показываем список
                 if (!isExpanded) {
                     Text(
                         text = currentStatus,
@@ -167,7 +141,6 @@ fun StudentAttendanceItem(
                     )
                 }
             }
-
 
             Box(
                 modifier = Modifier
@@ -179,7 +152,6 @@ fun StudentAttendanceItem(
                         isExpanded = !isExpanded
                     }
             ) {
-                // Switch используем как индикатор статус
                 Switch(
                     checked = isChecked,
                     onCheckedChange = null,
@@ -203,19 +175,17 @@ fun StudentAttendanceItem(
             }
         }
 
-        /* ----------- ВЫПАДАЮШИЙ СПИСОК ------------- */
-
         if (isExpanded) {
-            val options = listOf("present", "absent", "late")
+            val options = listOf("present", "late", "absent")
             options.forEach { statusName ->
                 val icon = when(statusName) {
                     "present" -> Icons.Default.Check
-                    "absent" -> Icons.Default.Timer
+                    "late" -> Icons.Default.Timer
                     else -> Icons.Default.Close
                 }
                 val itemColor = when (statusName) {
-                    "late" -> Color.Red
-                    "absent" -> Color(0xFFFFA500)
+                    "absent" -> Color.Red
+                    "late" -> Color(0xFFFFA500)
                     else -> primaryColor
                 }
 

@@ -63,7 +63,8 @@ fun GroupDetailPage(
 
 ) {
 
-    val studentAttendanceHashMap = HashMap<Int, StudentAttendanceRequest>()
+//    val studentAttendanceHashMap =  HashMap<Int, StudentAttendanceRequest>()
+    val studentAttendanceHashMap = remember { mutableStateMapOf<Int,StudentAttendanceRequest>() }
     val viewModel: GroupDetailsViewModel = viewModel ( key = "MagazineViewModel_$groupId" )
 
     val TheRecievedData by viewModel.data.collectAsStateWithLifecycle()
@@ -106,9 +107,18 @@ fun GroupDetailPage(
 
     LaunchedEffect(realStudents) {
         realStudents.forEach { student ->
-            if (!studentsData.containsKey(student.id)) {
-                studentsData[student.id] = "Был"
-                savedStates[student.id] = false
+            if (!studentsData.containsKey(student.student_id)) {
+                studentsData[student.student_id] = "present"
+                savedStates[student.student_id] = false
+
+                // СРАЗУ кладем дефолтное значение в мапу для отправки
+                studentAttendanceHashMap[student.student_id] = StudentAttendanceRequest(
+                    student_id = student.student_id,
+                    group_id = groupId,
+                    date = convertDateToBackendFormat(selectedDate),
+                    status = "present",
+                    group_name = groupName
+                )
             }
         }
     }
@@ -194,11 +204,11 @@ fun GroupDetailPage(
                                 ) { student ->
                                     StudentAttendanceItem(
                                         student = student,
-                                        // Теперь UI берет статус напрямую из нашей мапы состояний
+
                                         currentStatus = studentsData[student.student_id] ?: "present",
                                         isSaved = savedStates[student.student_id] ?: false,
                                         onStatusChange = { newStatus ->
-                                            // 1. Сразу обновляем визуальный список
+
                                             studentsData[student.student_id] = newStatus
 
                                             // 2. Сразу создаем/обновляем объект для отправки в бэкенд
@@ -222,25 +232,27 @@ fun GroupDetailPage(
 ////                    submitting the student attendance
                             Button(
                                 onClick = {
+                                    // Берем ВСЕХ студентов из загруженных данных
                                     val successData = (TheRecievedData as? NetworkResponse.Success<GroupDetailResponse>)?.data
+                                    val allStudents = successData?.data?.group_students ?: emptyList()
 
-                                    // Создаем список для ВСЕХ студентов, чтобы не было "пустых" строк на сайте
-                                    val finalAttendanceList = successData?.data?.group_students?.map { student ->
-                                        // Если мы меняли статус вручную — берем из мапы, иначе ставим "present"
+                                    // Формируем список: если мы меняли статус — он в мапе, если нет — берем статус из studentsData
+                                    val finalAttendanceList = allStudents.map { student ->
                                         studentAttendanceHashMap[student.student_id] ?: StudentAttendanceRequest(
-                                            student_id = student.student_id, // Используй именно student_id!
+                                            student_id = student.student_id,
                                             group_id = groupId,
-                                            date = convertDateToBackendFormat(selectedDate), // Дата без пробелов
-                                            status = "present", // По умолчанию все "Был", если не выбрано иное
+                                            date = convertDateToBackendFormat(selectedDate),
+                                            status = studentsData[student.student_id] ?: "present",
                                             group_name = groupName
                                         )
-                                    } ?: emptyList()
+                                    }
 
-                                    viewModel.saveGroupAttendance(context, finalAttendanceList)
+                                    if (finalAttendanceList.isNotEmpty()) {
+                                        viewModel.saveGroupAttendance(context, finalAttendanceList)
 
-                                    // Обновляем визуальные галочки "сохранено"
-                                    successData?.data?.group_students?.forEach {
-                                        savedStates[it.student_id] = true
+                                        allStudents.forEach { student ->
+                                            savedStates[student.student_id] = true
+                                        }
                                     }
                                 },
                                 modifier = Modifier
@@ -278,14 +290,16 @@ fun GroupDetailPage(
 
 
         // Функция календаря
+        // Внутри GroupDetailPage.kt
+        // В GroupDetailPage.kt
         if (isSheetOpen) {
             LessonDateBottomSheet(
                 sheetState = sheetState,
                 availableDates = availlableDates,
                 selectedDate = selectedDate,
                 onDismiss = { isSheetOpen = false },
-                onDateConfirm = {
-                    viewModel.updateSelectedDate(selectedDate)
+                onDateConfirm = { newChosenDate -> // Добавь этот параметр
+                    viewModel.updateSelectedDate(newChosenDate) // Передай его сюда
                     isSheetOpen = false
                 }
             )

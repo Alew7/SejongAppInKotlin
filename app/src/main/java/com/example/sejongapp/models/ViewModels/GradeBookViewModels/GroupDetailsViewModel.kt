@@ -116,17 +116,23 @@ class GroupDetailsViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun parseSchedule(schedule: GroupSchedule) {
-        val result = mutableListOf<String>()
+        val allScheduleDates = mutableListOf<String>()
+
+        // Собираем все даты из расписания
         schedule.days.forEach { (year, months) ->
             months.forEach { (month, days) ->
-                days.forEach { day -> result.add("$day $month $year") }
+                days.forEach { day ->
+                    allScheduleDates.add("$day $month $year")
+                }
             }
         }
-        _availableDates.value = result
 
-        //  Если для этой группы еще нет сохраненной даты, ставим первую из расписания
-        if (_selectedDate.value.isEmpty() && result.isNotEmpty()) {
-            updateSelectedDate(result.first())
+        // Теперь в availableDates кладем ВООБЩЕ ВСЕ даты из расписания
+        _availableDates.value = allScheduleDates
+
+        // Если дата еще не выбрана, выбираем ближайшую (первую)
+        if (_selectedDate.value.isEmpty() && allScheduleDates.isNotEmpty()) {
+            updateSelectedDate(allScheduleDates.first())
         }
     }
 
