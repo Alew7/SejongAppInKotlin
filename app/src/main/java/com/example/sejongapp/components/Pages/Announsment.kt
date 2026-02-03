@@ -371,8 +371,9 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
                     color = primaryColor.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
+                    val dateOnly = annData.time_posted.split(" ").firstOrNull() ?: ""
                     Text(
-                        text = annData.time_posted,
+                        text = dateOnly,
                         fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
                         fontWeight = FontWeight.Light,
                         fontSize = 11.sp,
@@ -400,7 +401,3 @@ fun fixGoogleDriveLink(url: String): String {
         url
     }
 }
-
-
-
-
