@@ -92,7 +92,9 @@ fun ChooseGroupDesign(
                 columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxWidth(),
+                    contentPadding = PaddingValues(bottom = 100.dp)
             ) {
 
                 itemsIndexed(groups) { index, group ->
