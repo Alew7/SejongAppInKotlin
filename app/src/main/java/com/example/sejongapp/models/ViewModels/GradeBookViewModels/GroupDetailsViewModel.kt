@@ -10,6 +10,7 @@ import com.example.sejongapp.models.DataClasses.StudentGroups.GroupDataWrapper
 import com.example.sejongapp.models.DataClasses.StudentGroups.GroupDetailResponse
 import com.example.sejongapp.models.DataClasses.StudentGroups.GroupSchedule
 import com.example.sejongapp.models.DataClasses.StudentGroups.Student
+import com.example.sejongapp.models.DataClasses.StudentGroups.groupAttendanceData
 import com.example.sejongapp.models.DataClasses.apiResponse.SaveStudentAttendance
 import com.example.sejongapp.models.DataClasses.apiResponse.StudentAttendanceRequest
 import com.example.sejongapp.models.DataClasses.apiResponse.messageResponse
@@ -57,6 +58,16 @@ class GroupDetailsViewModel(application: Application) : AndroidViewModel(applica
     // Переменная для хранения текущего ID группы
     private var currentGroupId: Int = -1
 
+    private val _studentSkips = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val studentSkips: StateFlow<Map<String, Int>> = _studentSkips.asStateFlow()
+
+    private val _studentPresents = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val studentPresents = _studentPresents.asStateFlow()
+
+
+
+
+
     fun loadGroupData(groupId: Int, context: Context) {
 
         val token = LocalData.getSavedTeacherToken(context)
@@ -90,8 +101,9 @@ class GroupDetailsViewModel(application: Application) : AndroidViewModel(applica
                     if (body != null){
                         Log.i(TAG, "Success! the data is ${body.data} groups")
                         _data.value = NetworkResponse.Success(body)
-
                         _students.value = body.data.group_students
+                        calculateSkips(body.data.group_attendance)
+
                         parseSchedule(body.data.group_schedule)
                     }
                     else{
@@ -179,7 +191,26 @@ class GroupDetailsViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    private fun calculateSkips(attendance: List<groupAttendanceData>) {
+        val skipsMap = mutableMapOf<String, Int>()
+        val presentsMap = mutableMapOf<String, Int>()
+
+        attendance.forEach { record ->
+            val sId = record.student_id
+            if (record.status == "absent") {
+                skipsMap[sId] = (skipsMap[sId] ?: 0) + 1
+            } else if (record.status == "present") {
+                presentsMap[sId] = (presentsMap[sId] ?: 0) + 1
+            }
+        }
+        _studentSkips.value = skipsMap
+        _studentPresents.value = presentsMap
+    }
+
     fun resetGroupAttendance(){
         _groupAttendanceRequest.value = NetworkResponse.Idle
     }
+
+
+
 }

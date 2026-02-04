@@ -73,6 +73,7 @@ import com.example.sejongapp.Activities.GradeBookActivity.LoginCheck
 import com.example.sejongapp.Activities.ProfileActivity.ProfileActivity
 import com.example.sejongapp.TelegramManager.TelegramManager
 import com.example.sejongapp.components.ReviewDialog
+import com.example.sejongapp.models.ViewModels.GradeBookViewModels.GroupDetailsViewModel
 
 
 const val TAG = "TAG_NavBar"
@@ -99,6 +100,9 @@ fun NavBar(modifier: Modifier = Modifier) {
     var showReviewDialog by remember { mutableStateOf(false) }
 
 
+
+
+    val groupDetailsViewModel: GroupDetailsViewModel = viewModel()
 
 
 
@@ -476,7 +480,7 @@ fun NavBar(modifier: Modifier = Modifier) {
 fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScreenEnum,onChangeScreen : (NavigationScreenEnum) -> Unit) {
     when(selectedIndex) {
         NavigationScreenEnum.ANNOUNCEMENTS -> AnnousmentPage(onChangeScreen = onChangeScreen)
-        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen, viewModel = UserViewModel())
+        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen, viewModel = UserViewModel(), Student_skips = GroupDetailsViewModel())
         NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.LIBRARY -> ElectronicLibraryPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied

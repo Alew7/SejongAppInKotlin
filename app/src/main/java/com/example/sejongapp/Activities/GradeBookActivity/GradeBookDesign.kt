@@ -299,7 +299,7 @@ fun GroupDetailPage(
                 selectedDate = selectedDate,
                 onDismiss = { isSheetOpen = false },
                 onDateConfirm = { newChosenDate -> // Добавь этот параметр
-                    viewModel.updateSelectedDate(newChosenDate) // Передай его сюда
+//                    viewModel.updateSelectedDate(newChosenDate) // Передай его сюда
                     isSheetOpen = false
                 }
             )

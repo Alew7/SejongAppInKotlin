@@ -41,11 +41,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sejongapp.Activities.AppUpdate.appupdateactivity
 import com.example.sejongapp.Activities.ProfileActivity.ProfileActivity
 import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
+import com.example.sejongapp.models.ViewModels.GradeBookViewModels.GroupDetailsViewModel
 import com.example.sejongapp.models.ViewModels.UserViewModels.UserViewModel
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
@@ -56,20 +58,51 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomePage(
     onChangeScreen: (NavigationScreenEnum) -> Unit,
-    viewModel: UserViewModel
+    viewModel: UserViewModel,
+    Student_skips: GroupDetailsViewModel
 ) {
+
 
     val context = LocalContext.current
     val iconSize = 80.dp
 
     val cardScale = remember { Animatable(0.8f) }
     val scale = remember { Animatable(0.2f) }
-    var progressTarget by remember { mutableStateOf(0f) }
+
 
     var isClickedOnce by remember { mutableStateOf(false) }
     val userData: UserData = LocalData.getUserData(context)
 
-    //  Back press logic
+
+
+
+    val studentSkips by Student_skips.studentSkips.collectAsStateWithLifecycle()
+    val studentPresents by Student_skips.studentPresents.collectAsStateWithLifecycle()
+
+    val myId = userData.username
+    val myGroupId = userData.groups.firstOrNull()?.toIntOrNull() ?: -1
+
+
+    val skipsCount = studentSkips[myId] ?: 0
+    val presentsCount = studentPresents[myId] ?: 0
+
+    val totalLessons = skipsCount + presentsCount
+
+
+
+    val calculatedProgress = (1.0f - (skipsCount * 0.03f)).coerceIn(0f, 1.0f)
+
+
+
+
+    var progressTarget by remember { mutableStateOf(0f) }
+
+    LaunchedEffect(calculatedProgress) {
+        progressTarget = calculatedProgress
+    }
+
+
+    //  Back press logicу
     BackHandler {
         if (isClickedOnce) {
             (context as MainActivity).finish()
@@ -98,12 +131,12 @@ fun HomePage(
         )
     }
 
-    LaunchedEffect (Unit){
-        cardScale.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(800)
-        )
-    }
+//    LaunchedEffect (Unit){
+//        cardScale.animateTo(
+//            targetValue = 1f,
+//            animationSpec = tween(800)
+//        )
+//    }
 
     val animatedprogress by animateFloatAsState(
         targetValue = progressTarget,
@@ -325,7 +358,7 @@ fun HomePage(
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
                                         Text(
-                                            text = "12 " + context.getString(R.string.Lesson),
+                                            text = "$presentsCount " + context.getString(R.string.Lesson),
                                             fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = Color(0xFF2E7D32),
@@ -334,7 +367,7 @@ fun HomePage(
                                     }
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "0 " + context.getString(R.string.skips),
+                                        text = "$skipsCount " + context.getString(R.string.skips),
                                         fontSize = 12.sp,
                                         color = Color(0xFF757575)
                                     )
