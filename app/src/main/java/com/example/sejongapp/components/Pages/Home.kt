@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sejongapp.Activities.AppUpdate.appupdateactivity
 import com.example.sejongapp.Activities.ProfileActivity.ProfileActivity
 import com.example.sejongapp.MainActivity
@@ -59,10 +60,10 @@ import kotlinx.coroutines.delay
 fun HomePage(
     onChangeScreen: (NavigationScreenEnum) -> Unit,
     viewModel: UserViewModel,
-    Student_skips: GroupDetailsViewModel
+
 ) {
 
-
+    val studentSkipsViewModel: GroupDetailsViewModel = viewModel()
     val context = LocalContext.current
     val iconSize = 80.dp
 
@@ -76,10 +77,10 @@ fun HomePage(
 
 
 
-    val studentSkips by Student_skips.studentSkips.collectAsStateWithLifecycle()
-    val studentPresents by Student_skips.studentPresents.collectAsStateWithLifecycle()
+    val studentSkips by studentSkipsViewModel.studentSkips.collectAsStateWithLifecycle()
+    val studentPresents by studentSkipsViewModel.studentPresents.collectAsStateWithLifecycle()
 
-    val myId = userData.username
+    val myId = userData.fullname
     val myGroupId = userData.groups.firstOrNull()?.toIntOrNull() ?: -1
 
 
@@ -131,12 +132,18 @@ fun HomePage(
         )
     }
 
-//    LaunchedEffect (Unit){
-//        cardScale.animateTo(
-//            targetValue = 1f,
-//            animationSpec = tween(800)
-//        )
-//    }
+    LaunchedEffect(myGroupId) {
+        if (myGroupId != -1) {
+            studentSkipsViewModel.loadGroupData(myGroupId, context)
+        }
+    }
+
+    LaunchedEffect (Unit){
+        cardScale.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(800)
+        )
+    }
 
     val animatedprogress by animateFloatAsState(
         targetValue = progressTarget,
@@ -222,7 +229,7 @@ fun HomePage(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ){
-                            (onChangeScreen.invoke(NavigationScreenEnum.MAGAZINES))
+                            (onChangeScreen(NavigationScreenEnum.MAGAZINES))
                         }
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     shape = RoundedCornerShape(20.dp),
@@ -289,6 +296,8 @@ fun HomePage(
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(30.dp)
+
+
                             )
 
                         }

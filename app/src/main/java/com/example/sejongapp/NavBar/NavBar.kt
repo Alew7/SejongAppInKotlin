@@ -480,17 +480,21 @@ fun NavBar(modifier: Modifier = Modifier) {
 fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScreenEnum,onChangeScreen : (NavigationScreenEnum) -> Unit) {
     when(selectedIndex) {
         NavigationScreenEnum.ANNOUNCEMENTS -> AnnousmentPage(onChangeScreen = onChangeScreen)
-        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen, viewModel = UserViewModel(), Student_skips = GroupDetailsViewModel())
+        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen, viewModel = UserViewModel(),)
         NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.LIBRARY -> ElectronicLibraryPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied
         NavigationScreenEnum.MAGAZINES -> {
 
-            var isLoggedIn by remember { mutableStateOf(false) }
+            val context = LocalContext.current
+            val teacherToken = remember { LocalData.getSavedTeacherToken(context) }
+            var hasAccess by remember { mutableStateOf(teacherToken != "null") }
 
-            if (!isLoggedIn) {
-                LoginCheck (){
-                    isLoggedIn = it
+
+
+            if (!hasAccess) {
+                LoginCheck { success ->
+                    if (success) hasAccess = true
                 }
             } else {
                 ChooseGroupDesign(onChangeScreen = onChangeScreen)

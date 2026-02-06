@@ -42,38 +42,62 @@ import androidx.compose.ui.unit.sp
 import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.primaryColor
 import com.example.sejongapp.models.DataClasses.StudentGroups.Student
 
+
+
 @Composable
 fun StudentAttendanceItem(
     isSaved: Boolean,
     student: Student,
     currentStatus: String,
+    allSkips: Int,
     onStatusChange: (String) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     val isChecked = currentStatus != "absent"
 
 
-    val totalNB = if (isSaved && currentStatus == "absent") 1 else 0
+    val displaySkips = if (currentStatus == "absent" && !isSaved) allSkips + 1 else allSkips
 
-    val totalDamage = (totalNB * 14.2f).coerceIn(0f, 100f)
+
+    val totalDamage = (displaySkips * 14.2f).coerceIn(0f, 100f)
+
+
     val healthFactor = (100f - totalDamage) / 100f
 
     val animatedHealth by animateFloatAsState(
         targetValue = healthFactor,
-        animationSpec = tween(800)
+        animationSpec = tween(800),
+        label = "healthAnimation"
     )
 
 
+//    val targetColor = when {
+//        currentStatus == "late" -> if (isSaved)
+//            Color(0xFFFFF9C4)
+//        else Color(0xFFE8F5E9)
+//        healthFactor > 0.7f -> if (currentStatus == "absent" && isSaved)
+//            Color(0xFFC8E6C9)
+//        else Color(0xFFE8F5E9)
+//        else -> if (currentStatus == "absent")
+//            Color(0xFFEF5350)
+//        else Color(0xFFE8F5E9)
+//    }
+
     val targetColor = when {
-        currentStatus == "late" -> if (isSaved)
-            Color(0xFFFFF9C4)
-        else Color(0xFFE8F5E9)
-        healthFactor > 0.7f -> if (currentStatus == "absent" && isSaved)
-            Color(0xFFC8E6C9)
-        else Color(0xFFE8F5E9)
-        else -> if (currentStatus == "absent")
-            Color(0xFFEF5350)
-        else Color(0xFFE8F5E9)
+
+        currentStatus == "late" -> Color(0xFFFFF9C4)
+
+
+        currentStatus == "absent" -> {
+            when {
+                healthFactor > 0.7f -> Color(0xFFC8E6C9)
+                healthFactor > 0.3f -> Color(0xFFFFF9C4)
+                else -> Color(0xFFFFCDD2)
+            }
+        }
+
+
+        else -> Color(0xFFE8F5E9)
     }
 
     val animatedBackground by
@@ -219,3 +243,4 @@ fun StudentAttendanceItem(
         }
     }
 }
+

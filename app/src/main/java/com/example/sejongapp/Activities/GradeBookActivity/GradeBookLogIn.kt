@@ -73,7 +73,7 @@ fun LoginCheck(callback: (correctPassword: Boolean) -> Unit) {
     val teacherTokenResult = userViewModel.teacherTokenResult.observeAsState()
     val context = LocalContext.current
     var passwordVisible by remember { mutableStateOf(false) }
-    val tokenResult = LocalData.getSavedToken(context)
+
 
     var isLoading = teacherTokenResult.value is NetworkResponse.Loading
     val token = LocalData.getSavedTeacherToken(context)
