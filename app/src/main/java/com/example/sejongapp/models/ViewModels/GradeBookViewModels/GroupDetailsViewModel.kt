@@ -64,6 +64,9 @@ class GroupDetailsViewModel(application: Application) : AndroidViewModel(applica
     private val _studentPresents = MutableStateFlow<Map<String, Int>>(emptyMap())
     val studentPresents = _studentPresents.asStateFlow()
 
+    private val _studentLates = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val studentLates: StateFlow<Map<String, Int>> = _studentLates.asStateFlow()
+
 
 
 
@@ -194,17 +197,19 @@ class GroupDetailsViewModel(application: Application) : AndroidViewModel(applica
     private fun calculateSkips(attendance: List<groupAttendanceData>) {
         val skipsMap = mutableMapOf<String, Int>()
         val presentsMap = mutableMapOf<String, Int>()
+        val latesMap = mutableMapOf<String, Int>() // Для опозданий
 
         attendance.forEach { record ->
             val sId = record.student_id
-            if (record.status == "absent") {
-                skipsMap[sId] = (skipsMap[sId] ?: 0) + 1
-            } else if (record.status == "present") {
-                presentsMap[sId] = (presentsMap[sId] ?: 0) + 1
+            when (record.status) {
+                "absent" -> skipsMap[sId] = (skipsMap[sId] ?: 0) + 1
+                "present" -> presentsMap[sId] = (presentsMap[sId] ?: 0) + 1
+                "late" -> latesMap[sId] = (latesMap[sId] ?: 0) + 1 // Считаем опоздания
             }
         }
         _studentSkips.value = skipsMap
         _studentPresents.value = presentsMap
+        _studentLates.value = latesMap // Сохраняем результат
     }
 
     fun resetGroupAttendance(){

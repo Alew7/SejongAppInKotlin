@@ -10,7 +10,16 @@
     <string name="ElectLib"> Библиотека</string>
     <string name="schedule">Расписание</string>
     <string name="Profile">Профиль</string>
-    <string name="Magazine">Журнал</string>
+    <string name="GradeBook">Журнал</string>
+    <string name="My_group">Моя группа</string>
+    <string name="Group_Journal">Журнал группы</string>
+
+
+
+
+
+
+
 
 
     <string name="Attendance">Посещаемость</string>
@@ -91,9 +100,9 @@
 
 
     <!--  for Magazin -->
-    <string name="Select_a_group_for_logging">Выберите группу для ведения журнала</string>
+    <string name="Select_a_group_for_logging">Выберите группу для журнала</string>
     <string name="My_groups">Мои группы</string>
-    <string name="Group_Gradebook">Журнал группы</string>
+    <string name="Group_Gradebook">Классный журнал</string>
     <string name="attendance_gradebook">Журнал посещаемости</string>
     <string name="Save_Report">Сохранить отчёт</string>
 

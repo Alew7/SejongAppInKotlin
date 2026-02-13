@@ -33,9 +33,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
+import com.example.sejongapp.DialogModels.ImageGalleryDialog
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.R
-import com.example.sejongapp.components.ImageGalleryDialog
 import com.example.sejongapp.models.DataClasses.AnnouncementDateItem
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
@@ -130,7 +130,6 @@ fun AnnousmentDetailPage(annData: AnnouncementDateItem) {
             }
 
             item {
-
                 Text(
                     text = annData.title.getLocalized(context) ?: "NULL",
                     fontFamily = FontFamily(Font(R.font.montserrat_semibold)),

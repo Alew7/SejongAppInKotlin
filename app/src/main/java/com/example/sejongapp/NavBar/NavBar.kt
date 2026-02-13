@@ -71,8 +71,8 @@ import androidx.compose.foundation.layout.height
 import com.example.sejongapp.Activities.GradeBookActivity.ChooseGroupDesign
 import com.example.sejongapp.Activities.GradeBookActivity.LoginCheck
 import com.example.sejongapp.Activities.ProfileActivity.ProfileActivity
+import com.example.sejongapp.DialogModels.ReviewDialog
 import com.example.sejongapp.TelegramManager.TelegramManager
-import com.example.sejongapp.components.ReviewDialog
 import com.example.sejongapp.models.ViewModels.GradeBookViewModels.GroupDetailsViewModel
 
 
@@ -480,7 +480,7 @@ fun NavBar(modifier: Modifier = Modifier) {
 fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScreenEnum,onChangeScreen : (NavigationScreenEnum) -> Unit) {
     when(selectedIndex) {
         NavigationScreenEnum.ANNOUNCEMENTS -> AnnousmentPage(onChangeScreen = onChangeScreen)
-        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen, viewModel = UserViewModel(),)
+        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen,)
         NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.LIBRARY -> ElectronicLibraryPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied
@@ -564,11 +564,7 @@ fun openTelegram(context: Context,username: String) {
 
 
 
-//@Preview (showBackground = true, showSystemUi = true)
-//@Composable
-//private  fun Preview () {
-//    NavBar()
-//}
+
 
 
 

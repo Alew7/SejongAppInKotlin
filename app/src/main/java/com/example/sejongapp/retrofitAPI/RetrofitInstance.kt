@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
 
-    private const val baseUrl = "https://sejong-app-container-785993649958.us-central1.run.app/api/"
+    private const val baseUrl = "https://sejong-app-container-847502443673.us-central1.run.app/api/"
 
     private const val digitalGradwbookUrl = "https://digital-gradebook-container-847502443673.us-central1.run.app"
 

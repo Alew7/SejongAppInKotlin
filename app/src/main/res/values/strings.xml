@@ -10,7 +10,11 @@
     <string name="ElectLib">Electronic Library</string>
     <string name="schedule">Schedule</string>
     <string name="Profile">Profile</string>
-    <string name="Magazine">Magazine"</string>
+    <string name="GradeBook">GradeBook</string>
+    <string name="My_group">My group</string>
+    <string name="Group_Journal"> Group Journal </string>
+
+
 
 
     <string name="Attendance">Attendance</string>
@@ -106,15 +110,6 @@
     <string name="Group_Gradebook">Group Gradebook</string>
     <string name="attendance_gradebook">Attendance gradebook</string>
     <string name="Save_Report">Save Report</string>
-
-
-
-
-
-
-
-
-
 
 
 </resources>

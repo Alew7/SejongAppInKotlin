@@ -47,10 +47,10 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.sejongapp.DialogModels.EditAvatarUser
+import com.example.sejongapp.DialogModels.EditUserDialog
+import com.example.sejongapp.DialogModels.EditUserPasswordDialog
 import com.example.sejongapp.R
-import com.example.sejongapp.components.EditAvatarUser
-import com.example.sejongapp.components.EditUserDialog
-import com.example.sejongapp.components.EditUserPasswordDialog
 import com.example.sejongapp.components.LoadingDialog
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserAvatarInfo

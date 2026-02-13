@@ -43,7 +43,7 @@ import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.primaryColor
 import com.example.sejongapp.Activities.GradeBookActivity.components.InfoSelectionCard
 import com.example.sejongapp.Activities.GradeBookActivity.components.LessonDateBottomSheet
 import com.example.sejongapp.Activities.GradeBookActivity.components.StudentAttendanceItem
-
+import com.example.sejongapp.DialogModels.StudentInfoBottomSheet
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.StudentGroups.GroupDetailResponse
 import com.example.sejongapp.models.DataClasses.StudentGroups.Student
@@ -61,42 +61,29 @@ import java.util.Locale
 fun GroupDetailPage(
     groupId: Int,
     groupName: String
-
 ) {
-
-//    val studentAttendanceHashMap =  HashMap<Int, StudentAttendanceRequest>()
-    val studentAttendanceHashMap = remember { mutableStateMapOf<Int,StudentAttendanceRequest>() }
-    val viewModel: GroupDetailsViewModel = viewModel ( key = "MagazineViewModel_$groupId" )
+    val studentAttendanceHashMap = remember { mutableStateMapOf<Int, StudentAttendanceRequest>() }
+    val viewModel: GroupDetailsViewModel = viewModel(key = "MagazineViewModel_$groupId")
 
     val TheRecievedData by viewModel.data.collectAsStateWithLifecycle()
-
     val realStudents by viewModel.students.collectAsStateWithLifecycle()
     val availlableDates by viewModel.availableDates.collectAsStateWithLifecycle()
     val selectedDate by viewModel.selectedData.collectAsStateWithLifecycle()
     val attendanceRequest by viewModel.groupAttendanceRequest.collectAsStateWithLifecycle()
 
+    val allSkipsMap by viewModel.studentSkips.collectAsStateWithLifecycle()
+    val allPresentsMap by viewModel.studentPresents.collectAsStateWithLifecycle()
+
+
+    val allLatesMap by viewModel.studentLates.collectAsStateWithLifecycle()
+
+    // --- НОВОЕ СОСТОЯНИЕ ДЛЯ ИНФО-ОКНА ---
+    var selectedStudentForInfo by remember { mutableStateOf<Student?>(null) }
+    // -------------------------------------
+
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by remember { mutableStateOf(false) }
-    var tempSelectedDate by remember { mutableStateOf("") }
     val context = LocalContext.current
-
-
-
-    var triggerOpeningAnimatin by remember { mutableStateOf(false)}
-
-    LaunchedEffect (Unit){
-        kotlinx.coroutines.delay(300)
-        triggerOpeningAnimatin = true
-
-    }
-
-
-
-    LaunchedEffect(isSheetOpen) {
-        if (isSheetOpen) {
-            tempSelectedDate = selectedDate
-        }
-    }
 
     LaunchedEffect(groupId) {
         viewModel.loadGroupData(groupId, context)
@@ -105,72 +92,27 @@ fun GroupDetailPage(
     val studentsData = remember { mutableStateMapOf<Int, String>() }
     val savedStates = remember { mutableStateMapOf<Int, Boolean>() }
 
-    val allSkipsMap by viewModel.studentSkips.collectAsStateWithLifecycle()
-
-
-    // Следим за студентами И датой. Как только дата меняется, обновляем UI
     LaunchedEffect(realStudents, selectedDate) {
         val successData = (TheRecievedData as? NetworkResponse.Success<GroupDetailResponse>)?.data
         val attendanceHistory = successData?.data?.group_attendance ?: emptyList()
 
         realStudents.forEach { student ->
-            // 1. Узнаем, какой статус был в базе на ЭТУ дату
             val savedStatus = getStatusDate(student.student_id, selectedDate, attendanceHistory)
-
-            // 2. Проверяем, есть ли ВООБЩЕ запись в базе на эту дату для этого студента
             val hasRecordInDatabase = attendanceHistory.any {
                 it.student_id == student.student_id.toString() &&
                         convertDateToBackendFormat(selectedDate) == it.date
             }
-
-            // 3. Обновляем состояние UI
             studentsData[student.student_id] = savedStatus
-            savedStates[student.student_id] = hasRecordInDatabase // Вот это теперь управляет "закраской"
-
-            // 4. Готовим мапу для отправки (чтобы если нажать "Сохранить", улетела правильная дата)
-            studentAttendanceHashMap[student.student_id] = StudentAttendanceRequest(
-                student_id = student.student_id,
-                group_id = groupId,
-                date = convertDateToBackendFormat(selectedDate),
-                status = savedStatus,
-                group_name = groupName
-            )
+            savedStates[student.student_id] = hasRecordInDatabase
         }
     }
-//    LaunchedEffect(realStudents) {
-//        realStudents.forEach { student ->
-//            if (!studentsData.containsKey(student.student_id)) {
-//                studentsData[student.student_id] = "present"
-//                savedStates[student.student_id] = false
-//
-//                // СРАЗУ кладем дефолтное значение в мапу для отправки
-//                studentAttendanceHashMap[student.student_id] = StudentAttendanceRequest(
-//                    student_id = student.student_id,
-//                    group_id = groupId,
-//                    date = convertDateToBackendFormat(selectedDate),
-//                    status = "present",
-//                    group_name = groupName
-//                )
-//            }
-//        }
-//    }
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(backgroundColor))
-    {
-
-        when(attendanceRequest){
-            is NetworkResponse.Error ->{}
+    Box(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
+        when (attendanceRequest) {
+            is NetworkResponse.Error -> {}
             NetworkResponse.Idle -> {
-                when(TheRecievedData){
-                    is NetworkResponse.Error -> {
-
-                    }
-                    NetworkResponse.Idle -> {
-
-                    }
-                    NetworkResponse.Loading -> {
+                when (TheRecievedData) {
+                    is NetworkResponse.Loading -> {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .align(Alignment.Center),
@@ -183,9 +125,7 @@ fun GroupDetailPage(
                                 .fillMaxSize()
                                 .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
-                        )
-                        {
-
+                        ) {
                             Text(
                                 text = context.getString(R.string.attendance_gradebook),
                                 fontSize = 28.sp,
@@ -194,22 +134,13 @@ fun GroupDetailPage(
 
                             Spacer(modifier = Modifier.height(20.dp))
 
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(10.dp))
-                            {
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f))
-                                {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Box(modifier = Modifier.weight(1f)) {
                                     InfoSelectionCard(
                                         icon = Icons.Default.DateRange,
                                         text = if (selectedDate.isEmpty()) "Loading..." else selectedDate,
                                         modifier = Modifier.fillMaxWidth(),
-                                        onClick = {
-                                            isSheetOpen = true
-                                        }
+                                        onClick = { isSheetOpen = true }
                                     )
                                 }
                                 InfoSelectionCard(
@@ -226,78 +157,43 @@ fun GroupDetailPage(
                                 verticalArrangement = Arrangement.spacedBy(12.dp),
                                 modifier = Modifier.weight(1f)
                             ) {
-                                val items = (TheRecievedData as NetworkResponse.Success<GroupDetailResponse>).data
-
-
+                                val responseData = (TheRecievedData as NetworkResponse.Success<GroupDetailResponse>).data
 
                                 items(
-                                    items.data.group_students,
+                                    responseData.data.group_students,
                                     key = { student -> student.student_id }
                                 ) { student ->
-
-                                    // ИСПРАВЛЕНИЕ ТУТ: добавляем .toString(), чтобы тип совпал с Map<String, Int>
-                                    val totalSkipsInHistory = allSkipsMap[student.student_id.toString()] ?: 0
+                                    // Безопасно достаем скипы
+                                    val totalSkipsInHistory = (allSkipsMap[student.student_id.toString()] as? Int) ?: 0
 
                                     StudentAttendanceItem(
                                         student = student,
                                         currentStatus = studentsData[student.student_id] ?: "present",
                                         isSaved = savedStates[student.student_id] ?: false,
                                         allSkips = totalSkipsInHistory,
+                                        selectedData = selectedDate,
+                                        onClickListener = {
+                                            // ОТКРЫВАЕМ ОКНО ИНФО
+                                            selectedStudentForInfo = student
+                                        },
                                         onStatusChange = { newStatus ->
-
                                             studentsData[student.student_id] = newStatus
-
-                                            val modifiedStudentData = StudentAttendanceRequest(
+                                            studentAttendanceHashMap[student.student_id] = StudentAttendanceRequest(
                                                 student_id = student.student_id,
                                                 group_id = groupId,
                                                 date = convertDateToBackendFormat(selectedDate),
                                                 status = newStatus,
                                                 group_name = groupName
                                             )
-                                            studentAttendanceHashMap[student.student_id] = modifiedStudentData
                                             savedStates[student.student_id] = false
                                         }
                                     )
                                 }
-//                                items(
-//                                    items.data.group_students,
-//                                    key = { student -> student.student_id } // Используем student_id
-//                                ) { student ->
-//                                    StudentAttendanceItem(
-//                                        student = student,
-//
-//                                        currentStatus = studentsData[student.student_id] ?: "present",
-//                                        isSaved = savedStates[student.student_id] ?: false,
-//                                        onStatusChange = { newStatus ->
-//
-//                                            studentsData[student.student_id] = newStatus
-//
-//                                            // 2. Сразу создаем/обновляем объект для отправки в бэкенд
-//                                            val modifiedStudentData = StudentAttendanceRequest(
-//                                                student_id = student.student_id, // Используем student_id, чтобы не было 0
-//                                                group_id = groupId,
-//                                                date = convertDateToBackendFormat(selectedDate),
-//                                                status = newStatus,
-//                                                group_name = groupName
-//                                            )
-//                                            studentAttendanceHashMap[student.student_id] = modifiedStudentData
-//
-//                                            // 3. Сбрасываем флаг "сохранено", так как статус изменился
-//                                            savedStates[student.student_id] = false
-//                                        }
-//                                    )
-//                                }
                             }
 
-
-////                    submitting the student attendance
                             Button(
                                 onClick = {
-                                    // Берем ВСЕХ студентов из загруженных данных
-                                    val successData = (TheRecievedData as? NetworkResponse.Success<GroupDetailResponse>)?.data
-                                    val allStudents = successData?.data?.group_students ?: emptyList()
-
-                                    // Формируем список: если мы меняли статус — он в мапе, если нет — берем статус из studentsData
+                                    val allStudents = (TheRecievedData as? NetworkResponse.Success<GroupDetailResponse>)?.data?.data?.group_students ?: emptyList()
                                     val finalAttendanceList = allStudents.map { student ->
                                         studentAttendanceHashMap[student.student_id] ?: StudentAttendanceRequest(
                                             student_id = student.student_id,
@@ -307,19 +203,11 @@ fun GroupDetailPage(
                                             group_name = groupName
                                         )
                                     }
-
                                     if (finalAttendanceList.isNotEmpty()) {
                                         viewModel.saveGroupAttendance(context, finalAttendanceList)
-
-                                        allStudents.forEach { student ->
-                                            savedStates[student.student_id] = true
-                                        }
                                     }
                                 },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(56.dp)
-                                    .padding(top = 16.dp),
+                                modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 16.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                                 shape = MaterialTheme.shapes.medium
                             ) {
@@ -331,6 +219,7 @@ fun GroupDetailPage(
                             }
                         }
                     }
+                    else -> {}
                 }
             }
             NetworkResponse.Loading -> {
@@ -339,33 +228,70 @@ fun GroupDetailPage(
                         .align(Alignment.Center),
                     color = primaryColor
                 )
-                Toast.makeText(context, "Loading the data", Toast.LENGTH_SHORT).show()
             }
             is NetworkResponse.Success<*> -> {
                 Toast.makeText(context, "Attendance saved", Toast.LENGTH_LONG).show()
                 viewModel.resetGroupAttendance()
-
             }
         }
 
-
-
-        // Функция календаря
-        // Внутри GroupDetailPage.kt
-        // В GroupDetailPage.kt
         if (isSheetOpen) {
             LessonDateBottomSheet(
                 sheetState = sheetState,
                 availableDates = availlableDates,
                 selectedDate = selectedDate,
                 onDismiss = { isSheetOpen = false },
-                onDateConfirm = { newChosenDate -> // Добавь этот параметр
-                    viewModel.updateSelectedDate(newChosenDate) // Передай его сюда
+                onDateConfirm = { newChosenDate ->
+                    viewModel.updateSelectedDate(newChosenDate)
                     isSheetOpen = false
                 }
             )
         }
 
+
+        if (selectedStudentForInfo != null) {
+            val student = selectedStudentForInfo!!
+            val sId = student.student_id.toString()
+
+            // 1. Берем данные из базы (которые уже сохранены)
+            val baseSkips = (allSkipsMap[sId] as? Int) ?: 0
+            val basePresents = (allPresentsMap[sId] as? Int) ?: 0
+            val baseLates = (allLatesMap[sId] as? Int) ?: 0
+
+
+            // Это нужно, чтобы статистика в инфо-окне обновилась ДО нажатия кнопки "Сохранить"
+            val currentStatus = studentsData[student.student_id]
+            val savedStatusInDb = getStatusDate(student.student_id, selectedDate,
+                (TheRecievedData as? NetworkResponse.Success)?.data?.data?.group_attendance ?: emptyList())
+
+            // Логика корректировки: если статус изменился в UI, корректируем цифры для визуализации
+            var finalSkips = baseSkips
+            var finalPresents = basePresents
+            var finalLates = baseLates
+
+            if (currentStatus != savedStatusInDb) {
+
+                when(savedStatusInDb) {
+                    "absent" -> finalSkips--
+                    "present" -> finalPresents--
+                    "late" -> finalLates--
+                }
+
+                when(currentStatus) {
+                    "absent" -> finalSkips++
+                    "present" -> finalPresents++
+                    "late" -> finalLates++
+                }
+            }
+
+            StudentInfoBottomSheet(
+                student = student,
+                allSkips = finalSkips.coerceAtLeast(0),
+                presents = finalPresents.coerceAtLeast(0),
+                lates = finalLates.coerceAtLeast(0),
+                onDismiss = { selectedStudentForInfo = null }
+            )
+        }
     }
 }
 
@@ -382,6 +308,8 @@ fun isDateInFuture(dateStr: String): Boolean {
         date?.after(today) ?: false
     } catch (e: Exception) { false }
 }
+
+
 
 fun getFirstDayOffset(month: String, year: String): Int {
     return try {
@@ -405,9 +333,10 @@ fun getDaysInMonth(month: String, year: String): Int {
         } else 31
     } catch (e: Exception) { 31 }
 }
+
 fun convertDateToBackendFormat(dateStr: String): String {
     return try {
-        // Вход: "2 February 2026"
+
         val inputFormat = SimpleDateFormat("d MMMM yyyy", Locale.ENGLISH)
 
 

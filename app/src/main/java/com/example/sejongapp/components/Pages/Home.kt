@@ -59,18 +59,20 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomePage(
     onChangeScreen: (NavigationScreenEnum) -> Unit,
-    viewModel: UserViewModel,
+
 
 ) {
 
     val studentSkipsViewModel: GroupDetailsViewModel = viewModel()
-    val context = LocalContext.current
+
     val iconSize = 80.dp
 
     val cardScale = remember { Animatable(0.8f) }
     val scale = remember { Animatable(0.2f) }
 
 
+
+    val context = LocalContext.current
     var isClickedOnce by remember { mutableStateOf(false) }
     val userData: UserData = LocalData.getUserData(context)
 
@@ -270,7 +272,7 @@ fun HomePage(
 
                             Column {
                                 Text(
-                                    text = "Журнал группы",
+                                    text = context.getString(R.string.Group_Journal),
                                     fontSize = 17.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = Color(0xFF1A1A1A),
@@ -281,7 +283,7 @@ fun HomePage(
 
 
                                 Text (
-                                    text = "Мои группы",
+                                    text = context.getString(R.string.Group_Gradebook),
                                     fontSize = 12.sp,
                                     color = Color(0xFF757575)
                                 )
