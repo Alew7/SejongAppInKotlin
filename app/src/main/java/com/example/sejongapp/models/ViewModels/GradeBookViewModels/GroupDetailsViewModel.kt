@@ -194,13 +194,16 @@ class GroupDetailsViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+
+
     private fun calculateSkips(attendance: List<groupAttendanceData>) {
         val skipsMap = mutableMapOf<String, Int>()
         val presentsMap = mutableMapOf<String, Int>()
         val latesMap = mutableMapOf<String, Int>() // Для опозданий
 
+
         attendance.forEach { record ->
-            val sId = record.student_id
+            val sId = record.student_id.trim()
             when (record.status) {
                 "absent" -> skipsMap[sId] = (skipsMap[sId] ?: 0) + 1
                 "present" -> presentsMap[sId] = (presentsMap[sId] ?: 0) + 1

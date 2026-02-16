@@ -37,6 +37,12 @@ fun StudentAttendanceItem(
     onClickListener: () -> Unit,
     onStatusChange: (String) -> Unit
 ) {
+
+    val statusTranslation = mapOf(
+        "present" to "출석",
+        "late" to "지각",
+        "absent" to "결석"
+    )
     var showMenu by remember { mutableStateOf(false) }
     val isChecked = currentStatus != "absent"
 
@@ -117,7 +123,7 @@ fun StudentAttendanceItem(
                     maxLines = 1
                 )
                 Text(
-                    text = currentStatus
+                    text = statusTranslation[currentStatus] ?: currentStatus
                         .replaceFirstChar { it.uppercase() },
                     fontSize = 12.sp,
                     color = statusTheme.first
@@ -159,7 +165,7 @@ fun StudentAttendanceItem(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                "Present",
+                                "출석",
                                 fontSize = 14.sp
                             )
                         },
@@ -180,7 +186,7 @@ fun StudentAttendanceItem(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                "Late",
+                                "지각",
                                 fontSize = 14.sp
                             )
                         },
@@ -200,7 +206,7 @@ fun StudentAttendanceItem(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                "Absent",
+                                "결석",
                                 fontSize = 14.sp
                             )
                         },

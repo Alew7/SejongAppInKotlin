@@ -113,6 +113,9 @@ dependencies {
         implementation ("com.google.accompanist:accompanist-pager:0.31.5-beta") // последняя версия
         implementation ("com.google.accompanist:accompanist-pager-indicators:0.31.5-beta")
 
+    implementation("androidx.exifinterface:exifinterface:1.3.6") // не оригинал
+
+
 
     // room
     val room_version = "2.6.0"

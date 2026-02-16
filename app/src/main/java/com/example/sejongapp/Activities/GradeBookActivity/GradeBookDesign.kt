@@ -62,6 +62,8 @@ fun GroupDetailPage(
     groupId: Int,
     groupName: String
 ) {
+
+
     val studentAttendanceHashMap = remember { mutableStateMapOf<Int, StudentAttendanceRequest>() }
     val viewModel: GroupDetailsViewModel = viewModel(key = "MagazineViewModel_$groupId")
 
@@ -127,7 +129,7 @@ fun GroupDetailPage(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = context.getString(R.string.attendance_gradebook),
+                                text = "출석부",
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -212,7 +214,7 @@ fun GroupDetailPage(
                                 shape = MaterialTheme.shapes.medium
                             ) {
                                 Text(
-                                    text = context.getString(R.string.Save_Report),
+                                    text = "보고서 저장",
                                     color = Color.White,
                                     fontSize = 16.sp
                                 )
@@ -357,7 +359,6 @@ fun getStatusDate(
     val backendDate = convertDateToBackendFormat(dateStr)
     val record = attendance.find {
         it.student_id == studentId.toString() && it.date == backendDate
-     }
+    }
     return record?.status ?: "present"
 }
-

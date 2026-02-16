@@ -101,10 +101,11 @@
 
     <!--  for Magazin -->
     <string name="Select_a_group_for_logging">Выберите группу для журнала</string>
+    <string name="Save_Report">Сохранить отчёт</string>
     <string name="My_groups">Мои группы</string>
     <string name="Group_Gradebook">Классный журнал</string>
     <string name="attendance_gradebook">Журнал посещаемости</string>
-    <string name="Save_Report">Сохранить отчёт</string>
+
 
 
 

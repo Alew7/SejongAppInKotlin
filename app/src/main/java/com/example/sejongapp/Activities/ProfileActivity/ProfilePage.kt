@@ -2,8 +2,10 @@ package com.example.sejongapp.Activities.ProfileActivity
 
 import LocalData
 import LocalData.getUserData
+import android.R.attr.bitmap
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.graphics.Bitmap
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -42,7 +44,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -50,6 +54,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.DialogModels.EditAvatarUser
 import com.example.sejongapp.DialogModels.EditUserDialog
 import com.example.sejongapp.DialogModels.EditUserPasswordDialog
+import com.example.sejongapp.DialogModels.fixRotation
 import com.example.sejongapp.R
 import com.example.sejongapp.components.LoadingDialog
 import com.example.sejongapp.components.showError
@@ -165,6 +170,7 @@ fun ProfilePage() {
             Spacer(modifier = Modifier.height(screenHeight * 0.03f))
 
             // Аватар
+
             Box(
                 modifier = Modifier
                     .size(avatarSize)
@@ -175,16 +181,25 @@ fun ProfilePage() {
             ) {
                 if (userData.avatar.isNotEmpty()) {
 
-                    Image(
-                        painter = rememberImagePainter(userData.avatar),
+                    AsyncImage(
+                        model = userData.avatar,
                         contentDescription = "userAvatar",
                         modifier = Modifier
-                            .fillMaxSize()
-                            .size(avatarSize * 0.9f)
+                            .size(avatarSize)
+                            .aspectRatio(1f)
                             .clip(CircleShape),
-//                            .rotate(90f),
                         contentScale = ContentScale.Crop
+
                     )
+//                    Image(
+//                        painter = rememberImagePainter(userData.avatar),
+//                        contentDescription = "userAvatar",
+//                        modifier = Modifier
+//                            .fillMaxSize()
+//                            .size(avatarSize * 0.9f)
+//                            .clip(CircleShape),
+//                        contentScale = ContentScale.Crop
+//                    )
                 } else {
                     Icon(
                         imageVector = Icons.Default.Person,
@@ -356,25 +371,45 @@ fun ProfilePage() {
         }
 
         // Edit Avatar dialog
-        if (showUserAvatarDialog) {
-            EditAvatarUser(
-                userData = userData,
-                onDismiss = {
-                    showUserAvatarDialog = false
-                    avatarChanged = false
-                            },
-                onSave = {uri ->
-                    var token = LocalData.getSavedToken(context)
-                    userViewModel.changeUserAvatar(context, token, uri)
-                    showUserAvatarDialog = false
-                    showLoadingDialog = true
-                    avatarChanged = true
-                }
-            )
-        }
+//        if (showUserAvatarDialog) {
+//            EditAvatarUser(
+//                userData = userData,
+//                onDismiss = {
+//                    showUserAvatarDialog = false
+//                    avatarChanged = false
+//                            },
+//                onSave = {bitmap ->
+//                    val bitmap = fixRotation(context,bitmap)
+//                    var token = LocalData.getSavedToken(context)
+//                    userViewModel.changeUserAvatar(context, token, bitmap)
+//                    showUserAvatarDialog = false
+//                    showLoadingDialog = true
+//                    avatarChanged = true
+//                }
+//            )
+//        }
+
+    if (showUserAvatarDialog) {
+        EditAvatarUser(
+            userData = userData,
+            onDismiss = {
+                showUserAvatarDialog = false
+                avatarChanged = false
+            },
+            onSave = { bitmap ->
+                val token = LocalData.getSavedToken(context)
+                userViewModel.changeUserAvatar(context, token, bitmap)
+
+                showUserAvatarDialog = false
+                showLoadingDialog = true
+                avatarChanged = true
+            }
+        )
+    }
 
 
-        //     Loading dialogs for showing and handling the user changing requests
+
+    //     Loading dialogs for showing and handling the user changing requests
         if(showLoadingDialog){
             if (avatarChanged){
                 val result by userViewModel.userAvatarResult.observeAsState(NetworkResponse.Idle)
@@ -412,7 +447,7 @@ fun ProfilePage() {
                                 status = theUserData.status,
                                 groups = theUserData.groups
 
-                            )
+                                )
                             )
 
 

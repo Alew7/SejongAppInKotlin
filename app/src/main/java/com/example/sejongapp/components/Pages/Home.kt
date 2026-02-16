@@ -2,6 +2,7 @@ package com.example.sejongapp.components.Pages
 
 import LocalData
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
@@ -64,6 +65,44 @@ fun HomePage(
 ) {
 
     val studentSkipsViewModel: GroupDetailsViewModel = viewModel()
+    val allStudents by studentSkipsViewModel.students.collectAsStateWithLifecycle()
+    val studentSkips by studentSkipsViewModel.studentSkips.collectAsStateWithLifecycle()
+    val studentPresents by studentSkipsViewModel.studentPresents.collectAsStateWithLifecycle()
+
+    val context = LocalContext.current
+    val userData: UserData = LocalData.getUserData(context)
+
+
+    val myGroupId = remember(userData.groups) {
+        val groupName = userData.groups.firstOrNull() ?: ""
+        when {
+            groupName.contains("4A-1") -> 17
+            else -> groupName.toIntOrNull() ?: -1
+        }
+    }
+
+    val skipsCount = remember(studentSkips, allStudents, userData.fullname) {
+        val myName = userData.fullname.trim().lowercase()
+
+        val myProfile = allStudents.find {
+            it.student_name_en.trim().lowercase() == myName ||
+                    it.student_name_tj.trim().lowercase() == myName
+        }
+        // Получаем ID как строку (ключ для мапы)
+        val myIdKey = myProfile?.student_id?.toString() ?.trim() ?: ""
+        studentSkips[myIdKey] ?: 0
+    }
+
+    val presentsCount = remember(studentPresents, allStudents, userData.fullname) {
+        val myName = userData.fullname.trim().lowercase()
+        val myProfile = allStudents.find {
+            it.student_name_en.trim().lowercase() == myName ||
+                    it.student_name_tj.trim().lowercase() == myName
+        }
+        val myIdKey = myProfile?.student_id?.toString() ?: ""
+        studentPresents[myIdKey] ?: 0
+    }
+
 
     val iconSize = 80.dp
 
@@ -72,24 +111,8 @@ fun HomePage(
 
 
 
-    val context = LocalContext.current
+
     var isClickedOnce by remember { mutableStateOf(false) }
-    val userData: UserData = LocalData.getUserData(context)
-
-
-
-
-    val studentSkips by studentSkipsViewModel.studentSkips.collectAsStateWithLifecycle()
-    val studentPresents by studentSkipsViewModel.studentPresents.collectAsStateWithLifecycle()
-
-    val myId = userData.fullname
-    val myGroupId = userData.groups.firstOrNull()?.toIntOrNull() ?: -1
-
-
-    val skipsCount = studentSkips[myId] ?: 0
-    val presentsCount = studentPresents[myId] ?: 0
-
-    val totalLessons = skipsCount + presentsCount
 
 
 
@@ -137,6 +160,8 @@ fun HomePage(
     LaunchedEffect(myGroupId) {
         if (myGroupId != -1) {
             studentSkipsViewModel.loadGroupData(myGroupId, context)
+        } else {
+            Log.e("HOME_DEBUG", "ID ГРУППЫ НЕ НАЙДЕН: ${userData.groups}")
         }
     }
 
@@ -158,9 +183,7 @@ fun HomePage(
         else -> lerp(primaryColor,Color(0xFF2E7D32), (animatedprogress - 0.5f) * 2f)
 
     }
-    LaunchedEffect(Unit) {
-        progressTarget = 1.0f
-    }
+
 
     Box(
         modifier = Modifier
@@ -272,7 +295,7 @@ fun HomePage(
 
                             Column {
                                 Text(
-                                    text = context.getString(R.string.Group_Journal),
+                                    text = context.getString(R.string.My_groups),
                                     fontSize = 17.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = Color(0xFF1A1A1A),
@@ -309,27 +332,28 @@ fun HomePage(
 
 
             if (userData.status == UserStatusEnum.STUDENT) {
-                Spacer (modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
                 Card(
                     modifier = Modifier
-                        .size(width = 350.dp, height = 140.dp)
-                        .scale(cardScale.value)
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 8.dp)
+                        .scale(cardScale.value),
                     shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
                     Row(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 20.dp),
+                            .fillMaxWidth()
+                            .padding(all = 20.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-
+                        // ЛЕВАЯ ЧАСТЬ (Иконка + Текст)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             Box(
                                 modifier = Modifier
                                     .size(54.dp)
@@ -357,13 +381,16 @@ fun HomePage(
                                     fontSize = 17.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = Color(0xFF1A1A1A),
-                                    letterSpacing = 0.5.sp
+                                    letterSpacing = 0.5.sp,
+                                    maxLines = 1
                                 )
 
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
 
-
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.wrapContentWidth()
+                                ) {
                                     Surface(
                                         color = Color(0xFFE8F5E9),
                                         shape = RoundedCornerShape(8.dp)
@@ -373,52 +400,53 @@ fun HomePage(
                                             fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = Color(0xFF2E7D32),
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         text = "$skipsCount " + context.getString(R.string.skips),
                                         fontSize = 12.sp,
-                                        color = Color(0xFF757575)
+                                        color = Color(0xFF757575),
+                                        maxLines = 1
                                     )
                                 }
                             }
                         }
-                        Spacer (modifier = Modifier.width(6.dp))
 
-
-                        Box(contentAlignment = Alignment.Center) {
-
+                        // ПРАВАЯ ЧАСТЬ (Круговой прогресс)
+                        Box(
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .size(68.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
                             CircularProgressIndicator(
                                 progress = 1f,
-                                modifier = Modifier.size(68.dp),
+                                modifier = Modifier.fillMaxSize(),
                                 color = Color(0xFFF0F0F0),
-                                strokeWidth = 8.dp
+                                strokeWidth = 7.dp
                             )
-
 
                             CircularProgressIndicator(
                                 progress = animatedprogress,
-                                modifier = Modifier.size(68.dp),
+                                modifier = Modifier.fillMaxSize(),
                                 color = dynamicProgressColor,
-                                strokeWidth = 8.dp,
+                                strokeWidth = 7.dp,
                                 strokeCap = StrokeCap.Round
                             )
 
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = "${(animatedprogress * 100).toInt()}%",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Black,
-                                    color = dynamicProgressColor
-                                )
-                            }
+                            Text(
+                                text = "${(animatedprogress * 100).toInt()}%",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Black,
+                                color = dynamicProgressColor
+                            )
                         }
                     }
                 }
-
             }
+
             Spacer (modifier = Modifier.height(50.dp))
 
             //  КОНТЕНТ
@@ -472,6 +500,7 @@ fun HomePage(
                             Intent(context, ProfileActivity::class.java)
                         )
                     }
+
 
                 }
 
