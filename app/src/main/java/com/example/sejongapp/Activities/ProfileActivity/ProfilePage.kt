@@ -191,15 +191,7 @@ fun ProfilePage() {
                         contentScale = ContentScale.Crop
 
                     )
-//                    Image(
-//                        painter = rememberImagePainter(userData.avatar),
-//                        contentDescription = "userAvatar",
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .size(avatarSize * 0.9f)
-//                            .clip(CircleShape),
-//                        contentScale = ContentScale.Crop
-//                    )
+
                 } else {
                     Icon(
                         imageVector = Icons.Default.Person,
@@ -371,23 +363,7 @@ fun ProfilePage() {
         }
 
         // Edit Avatar dialog
-//        if (showUserAvatarDialog) {
-//            EditAvatarUser(
-//                userData = userData,
-//                onDismiss = {
-//                    showUserAvatarDialog = false
-//                    avatarChanged = false
-//                            },
-//                onSave = {bitmap ->
-//                    val bitmap = fixRotation(context,bitmap)
-//                    var token = LocalData.getSavedToken(context)
-//                    userViewModel.changeUserAvatar(context, token, bitmap)
-//                    showUserAvatarDialog = false
-//                    showLoadingDialog = true
-//                    avatarChanged = true
-//                }
-//            )
-//        }
+//
 
     if (showUserAvatarDialog) {
         EditAvatarUser(
@@ -555,17 +531,13 @@ fun ProfilePage() {
             }
         }
     if (showSuccessAnomation) {
-        BoxWithConstraints(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0x66000000)),
+                .background(Color.Black.copy(alpha = 0.7f)),
             contentAlignment = Alignment.Center
         ) {
-            val screenWidth = maxWidth
-
-            SuccessAnimation(
-                modifier = Modifier.size(screenWidth * 0.5f)
-            )
+            SuccessAnimation()
 
             LaunchedEffect(Unit) {
                 delay(3000)
@@ -613,12 +585,9 @@ fun ProfileItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: St
 
 @Composable
 fun SuccessAnimation(modifier: Modifier = Modifier) {
-
-
     val composition by rememberLottieComposition(
         LottieCompositionSpec.Asset("Sucesso.lottie")
     )
-
 
     val progress by animateLottieCompositionAsState(
         composition = composition,
@@ -626,11 +595,19 @@ fun SuccessAnimation(modifier: Modifier = Modifier) {
         speed = 1f
     )
 
-    LottieAnimation(
-        composition = composition,
-        progress = { progress },
-        modifier = modifier.size(200.dp)
-    )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier.fillMaxSize()
+    ) {
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = Modifier.size(250.dp)
+        )
+
+
+    }
 }
 
 

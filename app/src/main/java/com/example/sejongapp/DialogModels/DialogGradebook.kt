@@ -143,7 +143,17 @@ fun StatMiniCard(label: String, value: String, color: Color, modifier: Modifier)
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = value, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = color)
-        Text(text = label, fontSize = 11.sp, color = Color.Gray)
+        Text(
+            text = value,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = color
+        )
+
+        Text(
+            text = label,
+            fontSize = 11.sp,
+            color = Color.Gray
+        )
     }
 }

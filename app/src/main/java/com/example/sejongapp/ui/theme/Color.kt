@@ -20,8 +20,6 @@ val cardGreyBackground  = Color(0xB1D9D9D9)
 //              тут мои добавленые цвета
 val WarmBeige  = Color(0xffE1DFD8)
 val brightBackgroundColor = Color(0xFFFFFDF5)
-
-
 val totalWhite = Color(0xffF2F0E5)
 
 
