@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,6 +41,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.backgroundColor
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.R
@@ -70,6 +75,10 @@ fun AppUpdateDesign() {
 
         }
         NetworkResponse.Loading -> {
+
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.Asset("Loading.lottie")
+            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -77,9 +86,10 @@ fun AppUpdateDesign() {
                 contentAlignment = Alignment.Center
 
             ) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.secondary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                LottieAnimation(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier.size(100.dp)
                 )
             }
         }
