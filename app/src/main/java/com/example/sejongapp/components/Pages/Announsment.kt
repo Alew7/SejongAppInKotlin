@@ -37,6 +37,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.Activities.AnnousmentActivity.AnnousmentActivity
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.components.showError
@@ -214,6 +218,10 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
         NetworkResponse.Idle -> {}
         NetworkResponse.Loading -> {
             Log.d(TAG, "AnnouncementPage: Loading the data")
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.Asset("Loading.lottie")
+            )
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -221,9 +229,11 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                 contentAlignment = Alignment.Center
 
             ) {
-                CircularProgressIndicator(
-                    color = primaryColor,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                LottieAnimation(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier
+                        .size(100.dp)
                 )
             }
         }

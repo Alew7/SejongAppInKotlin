@@ -58,6 +58,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieClipSpec
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.R
 import com.example.sejongapp.components.showError
@@ -359,6 +364,10 @@ fun getAndShowData(
         NetworkResponse.Loading -> {
             Log.d(TAG, "the book result is Loading")
 
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.Asset("Loading.lottie")
+            )
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -366,9 +375,10 @@ fun getAndShowData(
                 contentAlignment = Alignment.Center
 
             ) {
-                CircularProgressIndicator(
-                    color = primaryColor,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                LottieAnimation(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier.size(100.dp)
                 )
             }
         }
