@@ -66,6 +66,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.Activities.SpleshLoginPages.SplashLoginActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.ScheduleData
@@ -258,13 +262,22 @@ fun ScheduleScreen(viewModel: ScheduleViewModel, selectedPage: Int) {
             }
             is NetworkResponse.Loading -> {
                 Log.d(TAG, "the schedule result is Loading")
+
+                val composition by rememberLottieComposition(
+                    LottieCompositionSpec.Asset("Loading.lottie")
+                )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = primaryColor)
+                    LottieAnimation(
+                        composition = composition,
+                        iterations = LottieConstants.IterateForever,
+                        modifier = Modifier.size(100.dp)
+
+                    )
                 }
             }
             else -> {}
