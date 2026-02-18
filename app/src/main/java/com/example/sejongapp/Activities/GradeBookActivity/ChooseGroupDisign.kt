@@ -28,6 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.StudentGroups.Group
 import com.example.sejongapp.models.ViewModels.GradeBookViewModels.GroupsViewModel
@@ -53,6 +57,8 @@ fun ChooseGroupDesign(
 
     var startAnimation by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+
 
 
     LaunchedEffect (Unit) {
@@ -84,8 +90,19 @@ fun ChooseGroupDesign(
 
 
         if (isLoading && groups.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = primaryColor)
+
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.Asset("Loading.lottie")
+            )
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                Column (horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(top = 20.dp)) {
+                    LottieAnimation(
+                        composition = composition,
+                        iterations = LottieConstants.IterateForever,
+                        modifier = Modifier
+                            .size(100.dp)
+                    )
+                }
             }
         } else {
             LazyVerticalGrid(
