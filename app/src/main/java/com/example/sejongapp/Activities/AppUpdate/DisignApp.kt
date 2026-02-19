@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,6 +59,7 @@ import com.example.sejongapp.retrofitAPI.NetworkResponse
 fun AppUpdateDesign() {
 
     val context = LocalContext.current
+    LocalConfiguration.current
     val viewModel: ProgramUpdateViewModel = viewModel()
     val result = viewModel.programUpdate.observeAsState(NetworkResponse.Idle)
 
@@ -231,6 +233,7 @@ fun AppUpdateDesign() {
 @Composable
 fun AppIsUpdatedScreen(proData: ProgramUpdate ) {
     val context = LocalContext.current
+    LocalConfiguration.current
 
     Column (
         modifier = Modifier
@@ -280,7 +283,7 @@ fun AppIsUpdatedScreen(proData: ProgramUpdate ) {
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text (
-                        text = "Приложение актуально",
+                        text = context.getString(R.string.app_up_to_date),
                         fontSize = 22.sp,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
@@ -289,7 +292,7 @@ fun AppIsUpdatedScreen(proData: ProgramUpdate ) {
                     Spacer (modifier = Modifier.height(5.dp))
 
                     Text (
-                        text = "У вас установлена \n последняя версия",
+                        text = context.getString(R.string.latest_version_installed),
                         fontSize = 16.sp,
                         color = Color.Gray,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -298,26 +301,13 @@ fun AppIsUpdatedScreen(proData: ProgramUpdate ) {
                     Spacer (modifier = Modifier.height(5.dp))
 
                     Text (
-                        text = "Версия: " + proData.version,
+                        text = context.getString(R.string.version_label) + proData.version,
                         fontSize = 16.sp,
                         color = Color.Black,
 
                     )
-
                 }
             }
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
