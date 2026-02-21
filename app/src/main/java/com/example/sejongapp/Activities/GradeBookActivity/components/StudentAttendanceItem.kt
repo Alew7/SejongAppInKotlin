@@ -21,11 +21,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.primaryColor
 import com.example.sejongapp.models.DataClasses.StudentGroups.Student
+import com.example.sejongapp.R
 
 @Composable
 fun StudentAttendanceItem(
@@ -38,10 +40,14 @@ fun StudentAttendanceItem(
     onStatusChange: (String) -> Unit
 ) {
 
+
+
+    val context = LocalContext.current
+
     val statusTranslation = mapOf(
-        "present" to "출석",
-        "late" to "지각",
-        "absent" to "결석"
+        "present" to context.getString(R.string.present),
+        "late" to context.getString(R.string.late),
+        "absent" to context.getString(R.string.absent)
     )
     var showMenu by remember { mutableStateOf(false) }
     val isChecked = currentStatus != "absent"
@@ -165,7 +171,7 @@ fun StudentAttendanceItem(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                "출석",
+                                context.getString(R.string.present),
                                 fontSize = 14.sp
                             )
                         },
@@ -186,7 +192,7 @@ fun StudentAttendanceItem(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                "지각",
+                                context.getString(R.string.late),
                                 fontSize = 14.sp
                             )
                         },
@@ -206,7 +212,7 @@ fun StudentAttendanceItem(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                "결석",
+                                context.getString(R.string.absent),
                                 fontSize = 14.sp
                             )
                         },

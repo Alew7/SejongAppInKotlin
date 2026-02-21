@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -101,8 +102,11 @@ fun ElectronicLibraryPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
             showOneBook.value = false
         }
         else{
+
             onChangeScreen(NavigationScreenEnum.HOMEPAGE)
+
         }
+
     }
 
 
@@ -275,7 +279,7 @@ fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Bool
                 Image(
                     painter = rememberImagePainter(data = book.cover),
                     contentDescription = null,
-                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                    contentScale = Crop,
                     modifier = Modifier.fillMaxSize()
                 )
             }

@@ -129,7 +129,7 @@ fun GroupDetailPage(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "출석부",
+                                text = context.getString(R.string.attendance_gradebook),
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -214,7 +214,7 @@ fun GroupDetailPage(
                                 shape = MaterialTheme.shapes.medium
                             ) {
                                 Text(
-                                    text = "보고서 저장",
+                                    text = context.getString(R.string.Save_Report),
                                     color = Color.White,
                                     fontSize = 16.sp
                                 )

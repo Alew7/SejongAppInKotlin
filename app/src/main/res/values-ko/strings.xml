@@ -108,6 +108,13 @@
     <string name="attendance_gradebook">출석부</string>
     <string name="Save_Report">리포트 저장</string>
 
+    <string name="present">출석</string>
+    <string name="late">지각</string>
+    <string name="absent">결석</string>
+
+    <string name="Journal_Login">출석부 입장</string>
+    <string name="Access_Password">접근 비밀번호</string>
+    <string name="Confirm">확인</string>
 
 
 </resources>

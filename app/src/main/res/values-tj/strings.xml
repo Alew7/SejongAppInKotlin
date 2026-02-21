@@ -118,6 +118,14 @@
     <string name="Save_Report">Захира кардани ҳисобот</string>
 
 
+    <string name="present">Аст</string>
+    <string name="late">Дер омадан</string>
+    <string name="absent">Ғоиб</string>
+
+    <string name="Journal_Login">Ворид шудан ба журнал</string>
+    <string name="Access_Password">Рамзи дастрасӣ</string>
+    <string name="Confirm">Тасдиқ кардан</string>
+
 
 </resources>
 

@@ -110,6 +110,14 @@
     <string name="Group_Gradebook">Классный журнал</string>
     <string name="attendance_gradebook">Журнал посещаемости</string>
 
+    <string name="present">Присутствие</string>
+    <string name="late">Опоздание</string>
+    <string name="absent">Отсутствие</string>
+
+    <string name="Journal_Login">Вход в журнал</string>
+    <string name="Access_Password">Пароль доступа</string>
+    <string name="Confirm">Подтвердить</string>
+
 
 
 

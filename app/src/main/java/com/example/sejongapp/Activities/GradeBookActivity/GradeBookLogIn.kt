@@ -126,7 +126,7 @@ fun LoginCheck(callback: (correctPassword: Boolean) -> Unit) {
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "Вход в журнал",
+                text = context.getString(R.string.Journal_Login),
                 style = androidx.compose.ui.text.TextStyle(
                     fontSize = 26.sp,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Black,
@@ -152,7 +152,7 @@ fun LoginCheck(callback: (correctPassword: Boolean) -> Unit) {
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Пароль доступа") },
+                        label = { Text(context.getString(R.string.Access_Password)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         shape = RoundedCornerShape(16.dp),
@@ -193,7 +193,7 @@ fun LoginCheck(callback: (correctPassword: Boolean) -> Unit) {
                         if (isLoading) {
                             CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                         } else {
-                            Text("Подтвердить", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                            Text(context.getString(R.string.Confirm), fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                         }
                     }
                 }
