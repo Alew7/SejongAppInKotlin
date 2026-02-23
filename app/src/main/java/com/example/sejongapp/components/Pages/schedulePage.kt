@@ -361,7 +361,7 @@ fun table(scheduleData: ScheduleData) {
                     letterSpacing = (-1).sp
                 )
                 Text(
-                    text = "Преподаватель: ${scheduleData.teacher}",
+                    text = context.getString(R.string.teacher)  + ": " +  scheduleData.teacher,
                     fontSize = 13.sp,
                     color = Color.Gray,
                     fontWeight = FontWeight.Medium
@@ -369,7 +369,7 @@ fun table(scheduleData: ScheduleData) {
             }
 
             Text(
-                text = "КНИГА ${scheduleData.book}",
+                text = context.getString(R.string.BOOK) + " " + scheduleData.book,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = primaryColor,
@@ -429,7 +429,7 @@ fun table(scheduleData: ScheduleData) {
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        text = "класс. ${time.classroom}",
+                        text = context.getString(R.string.CLASS) + "." + time.classroom,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF555555)

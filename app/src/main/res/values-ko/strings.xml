@@ -46,6 +46,8 @@
     <string name = "DAY">날</string>
     <string name="TIME">시간</string>
     <string name="CLASS">교실</string>
+    <string name="teacher">선생님</string>
+    <string name="BOOK">책</string>
     <string-array name="week_days">
         <item>월</item>
         <item>화</item>
@@ -115,6 +117,9 @@
     <string name="Journal_Login">출석부 입장</string>
     <string name="Access_Password">접근 비밀번호</string>
     <string name="Confirm">확인</string>
+
+    <string name="Live_Statistics">실시간 통계</string>
+    <string name="Academic_Performance">학업 성취도</string>
 
 
 </resources>

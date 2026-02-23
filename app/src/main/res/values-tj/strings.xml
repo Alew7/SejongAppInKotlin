@@ -56,7 +56,9 @@
     <string name="All">Ҳама</string>
     <string name="TIME">Вақт</string>
     <string name="DAY">Рӯз</string>
-    <string name="CLASS">Синф</string>
+    <string name="CLASS">синф</string>
+    <string name="teacher">Омӯзгор</string>
+    <string name="BOOK">КИТОБ</string>
     <string-array name="week_days">
         <item>Дш</item>
         <item>Сш</item>
@@ -125,6 +127,9 @@
     <string name="Journal_Login">Ворид шудан ба журнал</string>
     <string name="Access_Password">Рамзи дастрасӣ</string>
     <string name="Confirm">Тасдиқ кардан</string>
+
+
+    <string name="Academic_Performance">Сатҳи пешрафти таҳсил</string>
 
 
 </resources>

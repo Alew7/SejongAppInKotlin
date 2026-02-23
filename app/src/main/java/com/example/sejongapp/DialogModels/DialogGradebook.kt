@@ -1,5 +1,6 @@
 package com.example.sejongapp.DialogModels
 
+
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -27,11 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sejongapp.models.DataClasses.StudentGroups.Student
 import com.example.sejongapp.ui.theme.primaryColor
+import com.example.sejongapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +46,7 @@ fun StudentInfoBottomSheet(
     onDismiss: () -> Unit
 ) {
     var animationPlayed by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     // Плавная анимация от 0 до 1
     val curScale by animateFloatAsState(
@@ -65,7 +69,7 @@ fun StudentInfoBottomSheet(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = student.student_name_en, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-            Text(text = "Live Статистика", fontSize = 14.sp, color = Color.Gray)
+            Text(text = context.getString(R.string.Live_Statistics), fontSize = 14.sp, color = Color.Gray)
 
             Spacer(modifier = Modifier.height(30.dp))
 
@@ -114,7 +118,7 @@ fun StudentInfoBottomSheet(
                         color = primaryColor
                     )
                     Text(
-                        "Успеваемость",
+                        context.getString(R.string.Academic_Performance),
                         fontSize = 12.sp,
                         color = Color.Gray
                     )
@@ -125,11 +129,11 @@ fun StudentInfoBottomSheet(
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 StatMiniCard(
-                    "Был", presents.toString(), Color(0xFF4CAF50), Modifier.weight(1f))
+                    context.getString(R.string.present), presents.toString(), Color(0xFF4CAF50), Modifier.weight(1f))
                 StatMiniCard(
-                    "НБ", allSkips.toString(), Color(0xFFFF5252), Modifier.weight(1f))
+                    context.getString(R.string.absent), allSkips.toString(), Color(0xFFFF5252), Modifier.weight(1f))
                 StatMiniCard(
-                    "Опозд.", lates.toString(), Color(0xFFFFB74D), Modifier.weight(1f))
+                    context.getString(R.string.late), lates.toString(), Color(0xFFFFB74D), Modifier.weight(1f))
             }
         }
     }

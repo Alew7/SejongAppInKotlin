@@ -38,6 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.backgroundColor
 import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.primaryColor
 import com.example.sejongapp.Activities.GradeBookActivity.components.InfoSelectionCard
@@ -109,17 +113,29 @@ fun GroupDetailPage(
         }
     }
 
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.Asset("Loading.lottie")
+    )
+
     Box(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
         when (attendanceRequest) {
             is NetworkResponse.Error -> {}
             NetworkResponse.Idle -> {
                 when (TheRecievedData) {
                     is NetworkResponse.Loading -> {
-                        CircularProgressIndicator(
+                        Box (
                             modifier = Modifier
-                                .align(Alignment.Center),
-                            color = primaryColor
-                        )
+                                .fillMaxWidth()
+                                .padding(top = 100.dp),
+                            contentAlignment = Alignment.Center
+
+                        ) {
+                            LottieAnimation(
+                                composition = composition,
+                                iterations = LottieConstants.IterateForever,
+                                modifier = Modifier.size(100.dp)
+                            )
+                        }
                     }
                     is NetworkResponse.Success -> {
                         Column(
@@ -225,11 +241,21 @@ fun GroupDetailPage(
                 }
             }
             NetworkResponse.Loading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center),
-                    color = primaryColor
+                val composition by rememberLottieComposition(
+                    LottieCompositionSpec.Asset("Loading.lottie")
                 )
+                Box (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 100.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LottieAnimation(
+                        composition = composition,
+                        iterations = LottieConstants.IterateForever,
+                        modifier = Modifier.size(100.dp)
+                    )
+                }
             }
             is NetworkResponse.Success<*> -> {
                 Toast.makeText(context, "Attendance saved", Toast.LENGTH_LONG).show()

@@ -49,7 +49,10 @@
     <string name="All">All</string>
     <string name="TIME">TIME</string>
     <string name="DAY">DAY</string>
-    <string name="CLASS">CLASS</string>
+    <string name="CLASS">class</string>
+    <string name="teacher">teacher</string>
+    <string name="BOOK">BOOK</string>
+
 
     <string-array name="week_days">
         <item>MON</item>
@@ -124,6 +127,9 @@
     <string name="Journal_Login">Journal Login</string> 
     <string name="Access_Password">Access Password</string>
     <string name="Confirm">Confirm</string>
+    
+    <string name="Live_Statistics">Live Statistics</string>
+    <string name="Academic_Performance">Academic Performance</string>
 
 
 

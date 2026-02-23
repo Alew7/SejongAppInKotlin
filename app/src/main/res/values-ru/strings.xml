@@ -53,6 +53,8 @@
     <string name="TIME">Время</string>
     <string name="DAY">День</string>
     <string name="CLASS">Класс</string>
+    <string name="teacher">Преподаватель</string>
+    <string name="BOOK">Книга</string>
     <string-array name="week_days">
         <item>Пн</item>
         <item>Вт</item>
@@ -117,6 +119,10 @@
     <string name="Journal_Login">Вход в журнал</string>
     <string name="Access_Password">Пароль доступа</string>
     <string name="Confirm">Подтвердить</string>
+
+
+    <string name="Live_Statistics">Live Статистика</string>
+    <string name="Academic_Performance">Успеваемость</string>
 
 
 

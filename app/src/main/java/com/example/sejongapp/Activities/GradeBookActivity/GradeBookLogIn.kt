@@ -50,6 +50,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.Activities.SpleshLoginPages.TAG
 import com.example.sejongapp.Activities.SpleshLoginPages.getAndSaveUserData
 import com.example.sejongapp.R
@@ -199,6 +203,10 @@ fun LoginCheck(callback: (correctPassword: Boolean) -> Unit) {
                 }
             }
 
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.Asset("Loading.lottie"))
+
+
 
             when(teacherTokenResult.value){
                 is NetworkResponse.Error -> {
@@ -209,7 +217,21 @@ fun LoginCheck(callback: (correctPassword: Boolean) -> Unit) {
                     callback(false)
                 }
                 NetworkResponse.Idle -> {}
-                NetworkResponse.Loading -> isLoading = true
+                NetworkResponse.Loading -> {
+                    Box (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 100.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        LottieAnimation(
+                            composition = composition,
+                            iterations = LottieConstants.IterateForever,
+                            modifier = Modifier.size(100.dp)
+
+                        )
+                    }
+                }
                 is NetworkResponse.Success -> {
                     isLoading = false
                     Log.i(TAG, "token was ${(teacherTokenResult.value as NetworkResponse.Success<tokenData>).data}")
