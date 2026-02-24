@@ -70,6 +70,7 @@ fun ChooseGroupDesign(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
+            .navigationBarsPadding()
             .padding(horizontal = 20.dp)
     ) {
         Spacer(modifier = Modifier.height(40.dp))

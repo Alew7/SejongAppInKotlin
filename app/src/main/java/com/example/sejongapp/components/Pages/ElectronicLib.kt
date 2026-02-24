@@ -76,6 +76,7 @@ import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 
 
+
 lateinit var chosenBook: ElectronicBookData
 
 
@@ -253,28 +254,30 @@ fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Bool
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 6.dp) // Чуть меньше вертикальный отступ для плотности
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
+                indication = null // Оставляем без анимации клика по твоему желанию
             ) {
                 chosenBook = book
                 showOneBook.value = true
             },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Box(
+            // ОБЛОЖКА КНИГИ
+            Surface(
                 modifier = Modifier
-                    .size(width = 75.dp, height = 100.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFFF5F5F5))
+                    .size(width = 70.dp, height = 100.dp), // Чуть сузили для изящности
+                shape = RoundedCornerShape(10.dp),
+                color = Color(0xFFF5F5F5)
             ) {
                 Image(
                     painter = rememberImagePainter(data = book.cover),
@@ -286,10 +289,10 @@ fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Bool
 
             Spacer(modifier = Modifier.width(16.dp))
 
+            // ИНФОРМАЦИЯ
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                // ЗАГОЛОВОК
                 Text(
                     text = book.title.getLocalized(context),
                     fontFamily = FontFamily(Font(R.font.montserrat_medium)),
@@ -300,33 +303,32 @@ fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Bool
                     overflow = TextOverflow.Ellipsis
                 )
 
-                // ОПИСАНИЕ
                 Text(
                     text = book.description.getLocalized(context),
                     fontSize = 12.sp,
                     color = Color.Gray,
                     maxLines = 2,
                     lineHeight = 16.sp,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = 4.dp),
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-
-                Button(
-                    onClick = {
-                        chosenBook = book
-                        showOneBook.value = true
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2B47C)),
-                    shape = RoundedCornerShape(8.dp),
+                // КНОПКА "ЧИТАТЬ" (Сделана через Surface для лучшего контроля дизайна)
+                Surface(
                     modifier = Modifier
                         .align(Alignment.End)
-                        .height(34.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 0.dp)
+                        .clickable {
+                            chosenBook = book
+                            showOneBook.value = true
+                        },
+                    color = Color(0xFFD2B47C),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         text = context.getString(R.string.read).uppercase(),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color.White

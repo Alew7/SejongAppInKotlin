@@ -20,12 +20,16 @@ object RetrofitInstance {
     private const val digitalGradwbookUrl = "https://digital-gradebook-container-847502443673.us-central1.run.app"
 
 
+//    val api: UserApi by lazy {
+//        Retrofit.Builder()
+//            .baseUrl(baseUrl)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//            .create(UserApi::class.java)
+//    }
+
     val api: UserApi by lazy {
-        Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(UserApi::class.java)
+        getInstance().create(UserApi::class.java)
     }
 
 

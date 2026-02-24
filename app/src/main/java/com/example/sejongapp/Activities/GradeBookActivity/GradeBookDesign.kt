@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -208,6 +209,11 @@ fun GroupDetailPage(
                                     )
                                 }
                             }
+                            Spacer (modifier = Modifier.height(16.dp))
+
+
+
+                            Spacer(modifier = Modifier.height(16.dp))
 
                             Button(
                                 onClick = {
@@ -225,16 +231,49 @@ fun GroupDetailPage(
                                         viewModel.saveGroupAttendance(context, finalAttendanceList)
                                     }
                                 },
-                                modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 16.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .navigationBarsPadding() // Только системный отступ снизу
+                                    .padding(horizontal = 16.dp) // Только боковые отступы, чтобы не касалась краев
+                                    .height(56.dp), // Фиксированная высота
                                 colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-                                shape = MaterialTheme.shapes.medium
+                                shape = RoundedCornerShape(16.dp),
+                                // --- ВОТ ЭТО УБИРАЕТ ВНУТРЕННИЙ PADDING ---
+                                contentPadding = PaddingValues(0.dp)
                             ) {
                                 Text(
                                     text = context.getString(R.string.Save_Report),
                                     color = Color.White,
-                                    fontSize = 16.sp
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
+//                            Button(
+//                                onClick = {
+//                                    val allStudents = (TheRecievedData as? NetworkResponse.Success<GroupDetailResponse>)?.data?.data?.group_students ?: emptyList()
+//                                    val finalAttendanceList = allStudents.map { student ->
+//                                        studentAttendanceHashMap[student.student_id] ?: StudentAttendanceRequest(
+//                                            student_id = student.student_id,
+//                                            group_id = groupId,
+//                                            date = convertDateToBackendFormat(selectedDate),
+//                                            status = studentsData[student.student_id] ?: "present",
+//                                            group_name = groupName
+//                                        )
+//                                    }
+//                                    if (finalAttendanceList.isNotEmpty()) {
+//                                        viewModel.saveGroupAttendance(context, finalAttendanceList)
+//                                    }
+//                                },
+//                                modifier = Modifier.fillMaxWidth().height(56.dp).padding(bottom = 20.dp),
+//                                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+//                                shape = MaterialTheme.shapes.medium
+//                            ) {
+//                                Text(
+//                                    text = context.getString(R.string.Save_Report),
+//                                    color = Color.White,
+//                                    fontSize = 16.sp
+//                                )
+//                            }
                         }
                     }
                     else -> {}
