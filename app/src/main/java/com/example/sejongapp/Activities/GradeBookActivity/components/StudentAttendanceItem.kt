@@ -54,11 +54,10 @@ fun StudentAttendanceItem(
 
     // Математика здоровья
 
-//    val healthFactor = (100f - (displaySkips * 14.2f).coerceIn(0f, 100f)) / 100f
 
     val healthFactor = remember(selectedData, currentStatus, allSkips) {
         val displaySkips = if (currentStatus == "absent" && !isSaved) allSkips + 1 else allSkips
-        ((100f - (displaySkips * 14.2f).coerceIn(0f, 100f)) / 100f)
+        ((100f - (displaySkips * 7.7f).coerceIn(0f, 100f)) / 100f)
     }
     val animatedHealth by animateFloatAsState(targetValue = healthFactor, animationSpec = tween(800))
 
