@@ -130,6 +130,11 @@
     
     <string name="Live_Statistics">Live Statistics</string>
     <string name="Academic_Performance">Academic Performance</string>
+    <string name="Teacher">Teacher</string>
+
+    <string name="Confirm_selection">Confirm selection</string>
+
+    <string name="UnavailableFuture">Unavailable (Future)</string>
 
 
 

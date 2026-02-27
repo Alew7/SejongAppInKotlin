@@ -17,14 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.primaryColor
-import com.example.sejongapp.Activities.GradeBookActivity.convertDateToBackendFormat
 import com.example.sejongapp.Activities.GradeBookActivity.getDaysInMonth
 import com.example.sejongapp.Activities.GradeBookActivity.getFirstDayOffset
 import com.example.sejongapp.Activities.GradeBookActivity.isDateInFuture
+import com.example.sejongapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -207,6 +208,7 @@ fun LessonDateBottomSheet(
             // Кнопка подтверждения
             val isSelectedFuture = isDateInFuture(tempSelectedDate)
             val canConfirm = availableDates.contains(tempSelectedDate) && !isSelectedFuture
+            val context = LocalContext.current
 
             Button(
                 onClick = {
@@ -220,7 +222,7 @@ fun LessonDateBottomSheet(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
-                    text = if (isSelectedFuture) "Недоступно (Будущее)" else "Подтвердить выбор",
+                    text = if (isSelectedFuture) context.getString(R.string.UnavailableFuture) else context.getString(R.string.Confirm_selection),
                     color = if (canConfirm) Color.White else Color.Gray
                 )
             }

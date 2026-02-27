@@ -121,5 +121,9 @@
     <string name="Live_Statistics">실시간 통계</string>
     <string name="Academic_Performance">학업 성취도</string>
 
+    <string name="Teacher">선생님</string>
+    <string name="Confirm_selection">선택 확인</string>
+    <string name="UnavailableFuture">사용 불가 (미래)</string>
+
 
 </resources>

@@ -123,6 +123,12 @@
 
     <string name="Live_Statistics">Live Статистика</string>
     <string name="Academic_Performance">Успеваемость</string>
+    <string name="Teacher">Преподователь</string>
+
+    <string name="Confirm_selection">Подтвердить выбор</string>
+
+    <string name="UnavailableFuture">Недоступно (Будущее)</string>
+
 
 
 

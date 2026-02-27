@@ -50,6 +50,7 @@ import com.example.sejongapp.Activities.GradeBookActivity.components.LessonDateB
 import com.example.sejongapp.Activities.GradeBookActivity.components.StudentAttendanceItem
 import com.example.sejongapp.DialogModels.StudentInfoBottomSheet
 import com.example.sejongapp.R
+import com.example.sejongapp.components.showSuccess
 import com.example.sejongapp.models.DataClasses.StudentGroups.GroupDetailResponse
 import com.example.sejongapp.models.DataClasses.StudentGroups.Student
 import com.example.sejongapp.models.DataClasses.StudentGroups.groupAttendanceData
@@ -233,8 +234,8 @@ fun GroupDetailPage(
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .navigationBarsPadding() // Только системный отступ снизу
-                                    .padding(horizontal = 16.dp) // Только боковые отступы, чтобы не касалась краев
+                                    .navigationBarsPadding()
+                                    .padding(horizontal = 16.dp)
                                     .height(56.dp), // Фиксированная высота
                                 colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                                 shape = RoundedCornerShape(16.dp),
@@ -297,8 +298,12 @@ fun GroupDetailPage(
                 }
             }
             is NetworkResponse.Success<*> -> {
-                Toast.makeText(context, "Attendance saved", Toast.LENGTH_LONG).show()
-                viewModel.resetGroupAttendance()
+//                Toast.makeText(context, "Attendance saved", Toast.LENGTH_LONG).show()
+                showSuccess{
+                    viewModel.resetGroupAttendance()
+
+                }
+
             }
         }
 
