@@ -15,7 +15,7 @@
     <string name="Group_Journal">Журнал группы</string>
 
 
-
+    <string name="nothing_found">Ничего не найдено</string>
 
 
 
@@ -128,6 +128,9 @@
     <string name="Confirm_selection">Подтвердить выбор</string>
 
     <string name="UnavailableFuture">Недоступно (Будущее)</string>
+
+    <string name="Success">Успешно!</string>
+    <string name="Attendance_data_saved_successfully">Данные сохранены в журнале.</string>
 
 
 

@@ -413,7 +413,7 @@ fun getAndShowData(
 
                 ) {
                     Text(
-                        text = "Нечего не найдено",
+                        text = context.getString(R.string.nothing_found),
                         color = Color.Gray,
                         fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.montserrat_medium))

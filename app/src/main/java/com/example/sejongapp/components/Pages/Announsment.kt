@@ -122,20 +122,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
                     )
 
-//                Icon(
-//                    imageVector = Icons.Default.ArrowBack,
-//                    contentDescription = "ic_ArrowBack",
-//                    modifier = Modifier
-//                        .size(64.dp)
-//                        .padding(start = 25.dp)
-//                        .clickable (
-//                            interactionSource = remember {MutableInteractionSource()},
-//                            indication = null
-//
-//                        ) {
-//                            onChangeScreen(NavigationScreenEnum.HOMEPAGE)
-//                        }
-//                )
+
 
                 Image (
                     painter = painterResource(R.drawable.ic_search),
@@ -273,7 +260,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
                 ) {
                     Text (
-                        text = "Не чего не найден",
+                        text = context.getString(R.string.nothing_found),
                         color = Color.Gray,
                         fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.montserrat_medium))

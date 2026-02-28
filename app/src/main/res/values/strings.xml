@@ -16,6 +16,7 @@
 
 
 
+    <string name="nothing_found">Nothing found</string>
 
     <string name="Attendance">Attendance</string>
     <string name="Lesson">lesson</string>
@@ -66,6 +67,7 @@
 
     <!--Electronic Library-->
     <string name="read">Read</string>
+
 
 
     <!--  Profile Activity -->
@@ -135,6 +137,9 @@
     <string name="Confirm_selection">Confirm selection</string>
 
     <string name="UnavailableFuture">Unavailable (Future)</string>
+    <string name="Success">Success!</string>
+    <string name="Attendance_data_saved_successfully">Attendance data saved successfully.</string>
+    
 
 
 

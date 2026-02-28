@@ -14,6 +14,7 @@
     <string name="Group_Journal"> 그룹 일지</string>
 
 
+    <string name="nothing_found">검색 결과가 없습니다</string>
 
     <string name="Attendance">출석률</string>
     <string name="Lesson">수업</string>
@@ -124,6 +125,9 @@
     <string name="Teacher">선생님</string>
     <string name="Confirm_selection">선택 확인</string>
     <string name="UnavailableFuture">사용 불가 (미래)</string>
+
+    <string name="Success">성공!</string>
+    <string name="Attendance_data_saved_successfully">출석부가 저장되었습니다.</string>
 
 
 </resources>

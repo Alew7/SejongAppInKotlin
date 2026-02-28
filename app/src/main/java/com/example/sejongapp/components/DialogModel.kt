@@ -23,10 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -163,19 +166,19 @@ fun LoadingDialog(
         }
     )
 }
-
 @Composable
 fun showSuccess(onFinished: () -> Unit) {
+
+
+    val context = LocalContext.current
     val composition by rememberLottieComposition(
         LottieCompositionSpec.Asset("SuccessForGradebook.lottie")
     )
 
-    // progress будет меняться от 0.0 до 1.0
     val progress by animateLottieCompositionAsState(
         composition = composition,
         iterations = 1
     )
-
 
     LaunchedEffect(progress) {
         if (progress == 1f) {
@@ -184,28 +187,47 @@ fun showSuccess(onFinished: () -> Unit) {
     }
 
     AlertDialog(
-        onDismissRequest = {  },
+        onDismissRequest = { },
         confirmButton = {},
         containerColor = Color.White,
-        shape = RoundedCornerShape(25.dp),
-        modifier = Modifier.width(280.dp),
+        shape = RoundedCornerShape(28.dp),
+        modifier = Modifier.width(300.dp),
+        properties = DialogProperties(usePlatformDefaultWidth = false),
         text = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 10.dp),
+                    .padding(vertical = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                // Анимация Lottie
                 LottieAnimation(
                     composition = composition,
                     progress = { progress },
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier.size(140.dp)
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+
+                Spacer(modifier = Modifier.height(24.dp))
+
 
                 Text(
-                    text = "Успешно сохроненно"
+                    text = context.getString(R.string.Success),
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontSize = 22.sp,
+                    color = Color(0xFF1A1A1A),
+                    fontWeight = FontWeight.ExtraBold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                Text(
+                    text = context.getString(R.string.Attendance_data_saved_successfully),
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
                 )
             }
         }

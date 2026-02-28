@@ -29,6 +29,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
@@ -298,11 +299,20 @@ fun GroupDetailPage(
                 }
             }
             is NetworkResponse.Success<*> -> {
-//                Toast.makeText(context, "Attendance saved", Toast.LENGTH_LONG).show()
-                showSuccess{
-                    viewModel.resetGroupAttendance()
+                Box (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
 
+
+
+                ) {
+                    showSuccess{
+                        viewModel.resetGroupAttendance()
+                    }
                 }
+
 
             }
         }
