@@ -33,6 +33,7 @@ import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -334,7 +335,7 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
                     painter = rememberImagePainter(firstImage),
                     contentDescription = "announcement_img",
                     // ВОТ ЭТО ДЕЛАЕТ ФОТО В ТОЧНЫЙ РАЗМЕР КВАДРАТА
-                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                    contentScale = Crop,
                     modifier = Modifier.fillMaxSize()
                 )
             }
