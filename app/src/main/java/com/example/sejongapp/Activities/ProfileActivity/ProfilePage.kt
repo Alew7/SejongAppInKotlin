@@ -421,7 +421,9 @@ fun ProfilePage() {
                                 fullname = theUserData.fullname,
                                 email = theUserData.email,
                                 status = theUserData.status,
-                                groups = theUserData.groups
+                                groups = theUserData.groups,
+                                gradebook_id = theUserData.gradebook_id
+
 
                                 )
                             )
@@ -485,13 +487,16 @@ fun ProfilePage() {
                                 fullname = theUserData.fullname,
                                 email = fetchedData.email,
                                 status = theUserData.status,
-                                groups = theUserData.groups
+                                groups = theUserData.groups,
+                                gradebook_id = theUserData.gradebook_id
+
+
                             )
                             )
                         }
 
                     }
-                    else ->{}
+                    else -> {}
 
 
                 }

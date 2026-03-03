@@ -18,7 +18,7 @@ object RetrofitInstance {
     private const val baseUrl = "https://sejong-app-container-847502443673.us-central1.run.app/api/"
 
     private const val digitalGradwbookUrl = "https://digital-gradebook-container-847502443673.us-central1.run.app"
-
+//      private const val digitalGradwbookUrl = "http://192.168.0.116:3000/"
 
 //    val api: UserApi by lazy {
 //        Retrofit.Builder()

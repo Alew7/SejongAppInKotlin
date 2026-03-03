@@ -126,6 +126,7 @@ class UserViewModel: ViewModel() {
             fullname = this.fullname,
             email = this.email,
             groups = this.groups,
+            gradebook_id = this.gradebook_id,
             status = when (this.status.uppercase()) { // .uppercase() для надежности
                 "STUDENT" -> UserStatusEnum.STUDENT
                 "TEACHER" -> UserStatusEnum.TEACHER

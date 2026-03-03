@@ -18,9 +18,15 @@ import kotlinx.coroutines.launch
 const val TAG = "GroupsViewModel_TAG"
 class GroupsViewModel : ViewModel() {
     private val getGroupsApi = RetrofitInstance.groupsApi
+    private val getAttendanceApi = RetrofitInstance.groupsApi
+
 
     private val _getGroups = MutableLiveData<NetworkResponse<List<Group>>>()
     val getGroup: MutableLiveData<NetworkResponse<List<Group>>> = _getGroups
+
+    private val _getAttendance = MutableLiveData<NetworkResponse<List<Group>>>()
+    val getAttendance: MutableLiveData<NetworkResponse<List<Group>>> = _getAttendance
+
 
     private val _groups = MutableStateFlow<List<Group>>(emptyList())
     val groups: StateFlow<List<Group>> = _groups
@@ -51,6 +57,10 @@ class GroupsViewModel : ViewModel() {
                 Log.d(TAG, "Auth Header: $token")
 
                 val response = getGroupsApi.getGroups(token)
+                val asd = getAttendanceApi.getGroups(token)
+
+
+
 
                 if (response.isSuccessful) {
                     val body = response.body()
