@@ -95,10 +95,6 @@ fun Schedule(onChangeScreen: (NavigationScreenEnum) -> Unit = {}){
 
 
 
-
-
-
-
     if (LocalData.getSavedToken(context) == "null"){
         Log.i(TAG, "The token is ${LocalData.getSavedToken(context)}")
         val intent = Intent (context, SplashLoginActivity:: class.java)

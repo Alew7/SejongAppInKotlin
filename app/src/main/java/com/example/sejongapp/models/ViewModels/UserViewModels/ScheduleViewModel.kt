@@ -18,14 +18,7 @@ class ScheduleViewModel: ViewModel() {
         private const val TAG = "ScheduleViewModel_TAG"
     }
 
-
-
-
-
     private val scheduleApi =  RetrofitInstance.scheduleApi
-
-
-
 
 
     private val _scheduleResult = MutableLiveData<NetworkResponse<ArrayList<ScheduleData>>>()

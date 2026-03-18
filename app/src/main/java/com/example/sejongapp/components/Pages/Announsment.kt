@@ -48,7 +48,6 @@ import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.AnnouncementDateItem
 import com.example.sejongapp.models.ViewModels.UserViewModels.AnnouncmentsViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
-import com.example.sejongapp.ui.theme.brightBackgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.utils.NavigationScreenEnum
 

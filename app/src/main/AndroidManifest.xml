@@ -2,13 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-permission android:name="android.permission.INTERNET"/>
-
-    <uses-permission
-        android:name="android.permission.POST_NOTIFICATIONS" />
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -22,11 +18,16 @@
         android:theme="@style/Theme.SejongApp"
         tools:targetApi="31">
         <activity
+            android:name="com.example.sejongapp.Activities.AiActivity.AiActivity"
+            android:exported="false"
+            android:label="Sejong AI"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.SejongApp" />
+        <activity
             android:name=".Activities.GradeBookActivity.GradeBookActivity"
             android:exported="false"
             android:label="@string/title_activity_magazine"
             android:theme="@style/Theme.SejongApp" />
-
         <activity
             android:name=".Activities.AppUpdate.appupdateactivity"
             android:exported="false"
@@ -42,6 +43,7 @@
             android:exported="false"
             android:label="@string/title_activity_profile"
             android:theme="@style/Theme.SejongApp" /> <!-- SplashLoginActivity — теперь стартовая -->
+
         <activity
             android:name=".Activities.SpleshLoginPages.SplashLoginActivity"
             android:exported="true"
@@ -58,7 +60,6 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.SejongApp" />
-
 
         <provider
             android:name="androidx.core.content.FileProvider"

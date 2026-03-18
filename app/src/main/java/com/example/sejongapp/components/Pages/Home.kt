@@ -16,6 +16,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MenuBook
@@ -28,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
@@ -35,6 +37,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,6 +48,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.sejongapp.Activities.AiActivity.AiActivity
 import com.example.sejongapp.Activities.AppUpdate.appupdateactivity
 import com.example.sejongapp.Activities.ProfileActivity.ProfileActivity
 import com.example.sejongapp.MainActivity
@@ -123,6 +133,17 @@ fun HomePage(
 
     var progressTarget by remember { mutableStateOf(0f) }
 
+
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.Asset("Chatbot.lottie")
+    )
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
+
+
+
     LaunchedEffect(calculatedProgress) {
         progressTarget = calculatedProgress
     }
@@ -190,6 +211,16 @@ fun HomePage(
             .fillMaxSize()
             .background(backgroundColor)
     ) {
+
+//        Image (
+//            painter = painterResource(R.drawable.wtit_logo),
+//            contentDescription = null,
+//            modifier = Modifier
+//            .size(250.dp)
+//                .align(Alignment.Center)
+//                .alpha(0.70f),
+//            contentScale = ContentScale.Fit
+//        )
 
         //  HEADER
         Box(
@@ -414,7 +445,7 @@ fun HomePage(
                             }
                         }
 
-                        // ПРАВАЯ ЧАСТЬ (Круговой прогресс)
+
                         Box(
                             modifier = Modifier
                                 .padding(start = 8.dp)
@@ -475,7 +506,7 @@ fun HomePage(
                     ) { onChangeScreen(NavigationScreenEnum.LIBRARY) }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(40.dp),
@@ -500,24 +531,40 @@ fun HomePage(
                             Intent(context, ProfileActivity::class.java)
                         )
                     }
-
-
                 }
 
-//                if (userData.status == UserStatusEnum.TEACHER || userData.status == UserStatusEnum.ADMIN) {
-//                    Spacer(modifier = Modifier.height(24.dp))
-//                    HomeMenuItem(
-//                        icon = R.drawable.ic_magazine2,
-//                        text = R.string.Magazine,
-//                        scale = scale.value,
-//                        iconSize = 100.dp
-//                    ) { onChangeScreen(NavigationScreenEnum.MAGAZINES) }
-//                }
 
+                Spacer (modifier = Modifier.height(20.dp))
 
             }
 
             Spacer(modifier = Modifier.weight(1f)) //  низ
+
+
+
+        }
+        Box (
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 130.dp, end = 20.dp)
+                .size(100.dp)
+
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    context.startActivity(
+                        Intent(context, AiActivity::class.java)
+                    )
+                },
+            contentAlignment = Alignment.Center
+
+        ) {
+            LottieAnimation(
+                composition = composition,
+                progress = { progress },
+                modifier = Modifier.size(150.dp)
+            )
         }
 
 

@@ -34,12 +34,7 @@ interface GroupsApi {
     ): Response<messageResponse>
 
 
-//    @GET("mobile/get-student-attendance")
-//    suspend fun getStudentAttendance(
-//        @Header("gradebook_id") gradebook_id: String,
-//        @Header("token") token: String,
-//        @Path("id") groupId: Int
-//    )
+
 
 
 

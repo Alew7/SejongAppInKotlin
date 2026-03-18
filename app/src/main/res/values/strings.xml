@@ -15,7 +15,6 @@
     <string name="Group_Journal"> Group Journal </string>
 
 
-
     <string name="nothing_found">Nothing found</string>
 
     <string name="Attendance">Attendance</string>
@@ -44,8 +43,6 @@
     <string name="Review">Review</string>
 
 
-
-
     <!--Schedule-->
     <string name="All">All</string>
     <string name="TIME">TIME</string>
@@ -67,7 +64,6 @@
 
     <!--Electronic Library-->
     <string name="read">Read</string>
-
 
 
     <!--  Profile Activity -->
@@ -113,9 +109,6 @@
     <string name="version_label">Version:</string>
 
 
-
-
-
     <!--  for GradeBook and Login GradeBook -->
     <string name="Select_a_group_for_logging">Select a group for logging</string>
     <string name="My_groups">My groups</string>
@@ -125,11 +118,11 @@
     <string name="present">present</string>
     <string name="late">late</string>
     <string name="absent">absent</string>
-    
-    <string name="Journal_Login">Journal Login</string> 
+
+    <string name="Journal_Login">Journal Login</string>
     <string name="Access_Password">Access Password</string>
     <string name="Confirm">Confirm</string>
-    
+
     <string name="Live_Statistics">Live Statistics</string>
     <string name="Academic_Performance">Academic Performance</string>
     <string name="Teacher">Teacher</string>
@@ -139,8 +132,7 @@
     <string name="UnavailableFuture">Unavailable (Future)</string>
     <string name="Success">Success!</string>
     <string name="Attendance_data_saved_successfully">Attendance data saved successfully.</string>
-    
-
+    <string name="title_activity_ai">AiActivity</string>
 
 
 </resources>
