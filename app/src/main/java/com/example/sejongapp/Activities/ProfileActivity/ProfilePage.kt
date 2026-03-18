@@ -2,10 +2,8 @@ package com.example.sejongapp.Activities.ProfileActivity
 
 import LocalData
 import LocalData.getUserData
-import android.R.attr.bitmap
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.graphics.Bitmap
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -46,7 +44,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -54,7 +51,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.DialogModels.EditAvatarUser
 import com.example.sejongapp.DialogModels.EditUserDialog
 import com.example.sejongapp.DialogModels.EditUserPasswordDialog
-import com.example.sejongapp.DialogModels.fixRotation
 import com.example.sejongapp.R
 import com.example.sejongapp.components.LoadingDialog
 import com.example.sejongapp.components.showError

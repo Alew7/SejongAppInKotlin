@@ -10,6 +10,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -26,12 +27,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.ModifierLocalConsumer
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.Activities.AiActivity.AiViewModel.AIChatViewModel
 import com.example.sejongapp.Activities.AiActivity.DataClass.Message
 import com.example.sejongapp.Activities.ProfileActivity.ui.theme.AiBubble
@@ -46,8 +52,17 @@ import com.example.sejongapp.ui.theme.primaryColor
 
 
 
-
-
+val lottieEmojiMap = mapOf(
+    "👋" to "hand_wave.lottie",
+    "🕒" to "Alarm_clock.lottie",
+    "⏰" to "Alarm_clock.lottie",
+    "🚪" to "door_open.lottie",
+    "📍" to "door_open.lottie",
+    "📅" to "Calendar_animation.lottie",
+    "🗓️" to "Calendar_animation.lottie",
+    "😊" to "blushing_emoji.lottie",
+    "✨" to "Calendar_animation.lottie"
+)
 class AiActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -219,68 +234,89 @@ fun AnimatedMessageItem(message: Message) {
 
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChatBubble(message: Message) {
     val isAI = message.isFromAI
     val align = if (isAI) Alignment.CenterStart else Alignment.CenterEnd
-
     val bubbleColor = if (isAI) Color.White else UserBubble
     val textColor = if (isAI) Color(0xFF2D2D2D) else Color.White
 
-
-    Box (
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 4.dp),
         contentAlignment = align
-
     ) {
-        Card (
+        Card(
             shape = RoundedCornerShape(
                 topStart = 20.dp,
                 topEnd = 20.dp,
-                bottomStart = if (isAI) 4.dp else 20.dp
+                bottomStart = if (isAI) 4.dp else 20.dp,
+                bottomEnd = if (isAI) 20.dp else 4.dp
             ),
-            modifier = Modifier.widthIn(max = 310.dp),
+            modifier = Modifier.widthIn(max = 320.dp),
             colors = CardDefaults.cardColors(containerColor = bubbleColor),
             elevation = CardDefaults.cardElevation(3.dp)
-
         ) {
-            Column (
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-
-            ) {
-                   if (isAI) {
-                       Text (
-                           text = "Ali AI ✨",
-                           color = primaryColor,
-                           fontSize = 12.sp,
-                           fontWeight = FontWeight.Bold,
-                           modifier = Modifier
-                               .padding(bottom = 4.dp)
-
-                       )
-                   }
-                Text (
-                    text = message.text,
-                    color = textColor,
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp,
-                    style = LocalTextStyle.current.copy(
-                        letterSpacing = 0.3.sp
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                if (isAI) {
+                    Text(
+                        text = "Ali AI ✨",
+                        color = primaryColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 6.dp)
                     )
-                )
+                }
 
-                Spacer (modifier = Modifier.height(8.dp))
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalArrangement = Arrangement.Center
+                ) {
 
-                Text (
+                    val words = message.text.replace("\n", " \n ").split(" ")
+
+
+                    words.forEach { word ->
+                        if (word == "\n") {
+                            Spacer(modifier = Modifier.fillMaxWidth().height(4.dp))
+                        } else {
+
+                            var currentWord = word.replace("*", "")
+                            var lottieToDraw: String? = null
+
+                            lottieEmojiMap.forEach { (emoji, asset) ->
+                                if (currentWord.contains(emoji)) {
+                                    lottieToDraw = asset
+                                    currentWord = currentWord.replace(emoji, "")
+                                }
+                            }
+
+                            if (lottieToDraw != null) {
+                                LottieEmoji(assetName = lottieToDraw!!, size = 70.dp)
+                            }
+
+                            if (currentWord.trim().isNotEmpty()) {
+                                Text(
+                                    text = "$currentWord ",
+                                    color = textColor,
+                                    fontSize = 16.sp,
+                                    lineHeight = 24.sp,
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
                     text = message.time ?: "",
                     color = textColor.copy(alpha = 0.4f),
                     fontSize = 10.sp,
                     modifier = Modifier.align(Alignment.End)
-
-
                 )
             }
         }
@@ -348,6 +384,39 @@ fun LoadingDot(delay: Int) {
             .size(6.dp)
             .clip(CircleShape)
             .background(primaryColor.copy(alpha = alpha))
+    )
+}
+
+@Composable
+fun LottieEmoji (assetName: String, size: Dp = 70.dp) {
+
+    val composition by rememberLottieComposition(LottieCompositionSpec.Asset(assetName))
+
+    val isCalendar = assetName == "Calendar_animation.lottie"
+
+    val scaleX = if (isCalendar) 1.4051f else 1f
+    val scaleY = if (isCalendar) 1.4556f else 1f
+
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = 1,
+        restartOnPlay = false
+    )
+
+    LottieAnimation(
+        composition = composition,
+        progress = { progress },
+        modifier = Modifier
+            .size(size)
+            .padding(horizontal = 4.dp)
+            .graphicsLayer {
+                this.scaleX = scaleX
+                this.scaleY = scaleY
+
+                transformOrigin = androidx.compose.ui.graphics.TransformOrigin.Center
+
+
+            }
     )
 }
 
