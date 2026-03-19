@@ -153,8 +153,11 @@ fun AIChatScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 24.dp),
-                        verticalArrangement = Arrangement.Center
+                        verticalArrangement = Arrangement.Top,
                     ) {
+
+                        Spacer (modifier = Modifier.weight(0.2f))
+
                         Text (
                             text = "Здравствуйте, $userName!",
                             color = SejongText,
@@ -172,7 +175,7 @@ fun AIChatScreen(
                         Spacer(modifier = Modifier.height(32.dp))
 
                         val chips = listOf(
-                            "📅" to "Какое расписание на сегодня?",
+                            "📅" to "У меня сегодня есть урок?",
                             "🎓" to "Какие у меня сегодня пары?",
                         )
 
@@ -203,29 +206,34 @@ fun AIChatScreen(
                                 }
                             }
                         }
-                    }
-                }
-            }
-            // 2. Список
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(top = 10.dp, bottom = 20.dp)
-            ) {
-                itemsIndexed(viewModel.messages) { _, msg ->
-                    AnimatedMessageItem(msg)
-                }
+                        Spacer(modifier = Modifier.weight(1f))
 
-                if (viewModel.isLoading) {
-                    item {
-                        TypingIndicator()
                     }
                 }
+                else {
+                    // 2. Список
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(top = 10.dp, bottom = 20.dp)
+                    ) {
+                        itemsIndexed(viewModel.messages) { _, msg ->
+                            AnimatedMessageItem(msg)
+                        }
+
+                        if (viewModel.isLoading) {
+                            item {
+                                TypingIndicator()
+                            }
+                        }
+                    }
+
+                }
             }
+
 
 
             Column(modifier = Modifier

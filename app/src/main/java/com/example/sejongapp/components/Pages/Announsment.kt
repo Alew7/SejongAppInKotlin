@@ -108,7 +108,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                 if (!isSeraching) {
                     Image (
                         painter = painterResource(R.drawable.ic_back),
-                        contentDescription = "ic_bakc",
+                        contentDescription = "ic_back",
                         modifier = Modifier
                             .size(64.dp)
                             .padding(start = 25.dp)
