@@ -1,6 +1,7 @@
 package com.example.sejongapp.Activities.AiActivity
 
 import LocalData.getUserData
+import android.R.attr.text
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -87,6 +88,9 @@ fun AIChatScreen(
     val context = LocalContext.current
     val userData = remember { getUserData(context ) }
 
+    val userName = userData?.fullname ?: ""
+
+
 
 
 
@@ -141,7 +145,68 @@ fun AIChatScreen(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
             )
 
-            // 2. Список (Сверху вниз)
+            Box (
+                modifier = Modifier.weight(1f)
+            ) {
+                if (viewModel.messages.isEmpty()) {
+                    Column (
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 24.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text (
+                            text = "Здравствуйте, $userName!",
+                            color = SejongText,
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Text(
+                            text = "С чего начнём?",
+                            fontSize = 32.sp,
+                            color = SejongText,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        val chips = listOf(
+                            "📅" to "Какое расписание на сегодня?",
+                            "🎓" to "Какие у меня сегодня пары?",
+                        )
+
+                        chips.forEach { (emoji, description) ->
+                            Card (
+                                onClick = {
+                                    viewModel.sendMessage(description)
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp),
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(containerColor = SejongCard),
+                            ) {
+                                Row (
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Показываем и эмодзи, и текст
+                                    Text(text = emoji, fontSize = 20.sp)
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Text (
+                                        text = description,
+                                        color = SejongText,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // 2. Список
             LazyColumn(
                 state = listState,
                 modifier = Modifier

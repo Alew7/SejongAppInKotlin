@@ -254,7 +254,7 @@ fun ElectronicBooksCard(book: ElectronicBookData, showOneBook: MutableState<Bool
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp) // Чуть меньше вертикальный отступ для плотности
+            .padding(horizontal = 16.dp, vertical = 6.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null // Оставляем без анимации клика по твоему желанию

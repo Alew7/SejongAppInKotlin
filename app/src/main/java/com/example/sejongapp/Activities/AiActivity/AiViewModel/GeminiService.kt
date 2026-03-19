@@ -5,7 +5,7 @@ import com.google.ai.client.generativeai.type.content
 
 object GeminiService {
 
-    private const val API_KEY = "AIzaSyAtzooLxKJ9CGCyi4ixfSfsDD3kqewlFVM"
+    private const val API_KEY = ""
 
     var currenSystemInstruction: String = "Ты — помощник студента."
 
