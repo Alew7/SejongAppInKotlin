@@ -368,7 +368,7 @@ fun ChatBubble(message: Message) {
                             }
 
                             if (lottieToDraw != null) {
-                                LottieEmoji(assetName = lottieToDraw!!, size = 70.dp)
+                                LottieEmoji(assetName = lottieToDraw!!, size = 50.dp)
                             }
 
                             if (currentWord.trim().isNotEmpty()) {
@@ -461,7 +461,7 @@ fun LoadingDot(delay: Int) {
 }
 
 @Composable
-fun LottieEmoji (assetName: String, size: Dp = 70.dp) {
+fun LottieEmoji (assetName: String, size: Dp = 50.dp) {
 
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset(assetName))
 

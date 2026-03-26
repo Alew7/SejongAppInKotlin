@@ -25,12 +25,15 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -55,6 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,6 +68,7 @@ import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
+import com.example.sejongapp.ui.theme.WarmBeige
 import com.example.sejongapp.ui.theme.primaryColor
 
 
@@ -204,6 +209,10 @@ fun EditUserPasswordDialog(
     var oldPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
 
+    var passwordVisibilityForOldPassword by remember { mutableStateOf(false) }
+    var passwordVisibilityForNewPassword by remember { mutableStateOf(false) }
+
+
     val isFormValid = oldPassword.isNotBlank() && newPassword.isNotBlank()
     val context = LocalContext.current
 
@@ -242,15 +251,34 @@ fun EditUserPasswordDialog(
                     onValueChange = { oldPassword = it },
                     label = { Text(context.getString(R.string.old_password)) },
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = primaryColor) },
+                    trailingIcon = {
+                        val icon = if (passwordVisibilityForOldPassword) {
+                            Icons.Filled.Visibility
+                        }
+                        else {
+                            Icons.Filled.VisibilityOff
+
+                        }
+                        IconButton( onClick = {passwordVisibilityForOldPassword = !passwordVisibilityForOldPassword} ) {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null,
+                                tint = WarmBeige
+
+                            )
+                        }
+                    },
                     shape = RoundedCornerShape(16.dp),
                     singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisibilityForOldPassword) VisualTransformation.None else PasswordVisualTransformation() ,
                     modifier = Modifier.fillMaxWidth(),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = primaryColor,
                         unfocusedBorderColor = Color(0xFFEEEEEE),
                         cursorColor = primaryColor,
-                        focusedLabelColor = primaryColor
+                        focusedLabelColor = primaryColor,
+                        containerColor = Color.White
+
                     )
                 )
 
@@ -262,15 +290,33 @@ fun EditUserPasswordDialog(
                     onValueChange = { newPassword = it },
                     label = { Text(context.getString(R.string.new_password)) },
                     leadingIcon = { Icon(Icons.Default.VpnKey, contentDescription = null, tint = primaryColor) },
+                    trailingIcon = {
+                        val icon = if (passwordVisibilityForNewPassword) {
+                            Icons.Filled.Visibility
+                        }
+                        else {
+                            Icons.Filled.VisibilityOff
+                        }
+                        IconButton( onClick = {passwordVisibilityForNewPassword = !passwordVisibilityForNewPassword} ) {
+                            Icon (
+                                imageVector = icon,
+                                contentDescription = null,
+                                tint = WarmBeige
+
+                            )
+                        }
+                    },
                     shape = RoundedCornerShape(16.dp),
                     singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisibilityForNewPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = primaryColor,
                         unfocusedBorderColor = Color(0xFFEEEEEE),
                         cursorColor = primaryColor,
-                        focusedLabelColor = primaryColor
+                        focusedLabelColor = primaryColor,
+                        containerColor = Color.White
+
                     )
                 )
             }
