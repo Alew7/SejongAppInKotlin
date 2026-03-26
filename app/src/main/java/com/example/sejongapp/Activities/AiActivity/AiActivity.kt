@@ -3,6 +3,7 @@ package com.example.sejongapp.Activities.AiActivity
 import LocalData.getUserData
 import android.R.attr.text
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
@@ -45,6 +46,8 @@ import com.example.sejongapp.Activities.ProfileActivity.ui.theme.AiBubble
 import com.example.sejongapp.Activities.ProfileActivity.ui.theme.SejongCard
 import com.example.sejongapp.Activities.ProfileActivity.ui.theme.SejongText
 import com.example.sejongapp.Activities.ProfileActivity.ui.theme.UserBubble
+import com.example.sejongapp.models.DataClasses.ScheduleData
+import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.models.ViewModels.UserViewModels.ScheduleViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.ui.theme.backgroundColor
@@ -69,6 +72,7 @@ class AiActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
             AIChatScreen()
         }
     }
@@ -77,11 +81,13 @@ class AiActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AIChatScreen(
+
     viewModel: AIChatViewModel = viewModel(),
     scheduleViewModel: ScheduleViewModel = viewModel()
 
-
 ) {
+
+
     var inputText by remember { mutableStateOf("") }
     val activity = LocalActivity.current
     val listState = rememberLazyListState()
@@ -95,6 +101,9 @@ fun AIChatScreen(
 
 
     val scheduleState by scheduleViewModel.scheduleResult.observeAsState(NetworkResponse.Idle)
+    val isContextReady = scheduleState is NetworkResponse.Success
+
+
 
     LaunchedEffect(Unit) {
         scheduleViewModel.getAllSchedules(context)
@@ -104,7 +113,7 @@ fun AIChatScreen(
     LaunchedEffect(scheduleState) {
         if (scheduleState is NetworkResponse.Success) {
             val data = (scheduleState as NetworkResponse.Success).data
-            viewModel.prepareAiContext(userData, data)
+            viewModel.prepareAiContext(userData!!, data)
 
         }
     }
@@ -182,7 +191,12 @@ fun AIChatScreen(
                         chips.forEach { (emoji, description) ->
                             Card (
                                 onClick = {
-                                    viewModel.sendMessage(description)
+                                    if (isContextReady) {
+                                        viewModel.sendMessage(description)
+                                    } else {
+                                        Toast.makeText(context,"Али ИИ ещё загружает расписание...",Toast.LENGTH_SHORT).show()
+                                    }
+
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -233,8 +247,6 @@ fun AIChatScreen(
 
                 }
             }
-
-
 
             Column(modifier = Modifier
                 .fillMaxWidth()

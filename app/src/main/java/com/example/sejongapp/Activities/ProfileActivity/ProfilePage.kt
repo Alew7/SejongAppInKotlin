@@ -226,7 +226,12 @@ fun ProfilePage() {
             Spacer(modifier = Modifier.weight(1f))
 
             // --- Buttons ---
-            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 30.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(bottom = 30.dp)
+            ) {
                 Button(
                     onClick = { showEditDialog = true },
                     modifier = Modifier.fillMaxWidth().height(58.dp),
@@ -239,6 +244,7 @@ fun ProfilePage() {
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Button(
+
                     onClick = { showPasswordDialog = true },
                     modifier = Modifier.fillMaxWidth().height(58.dp),
                     shape = RoundedCornerShape(18.dp),
@@ -359,6 +365,7 @@ fun ProfileItemModern(icon: ImageVector, title: String, value: String, accentCol
         }
 
         Spacer(Modifier.width(16.dp))
+
         Column {
 
             Text(

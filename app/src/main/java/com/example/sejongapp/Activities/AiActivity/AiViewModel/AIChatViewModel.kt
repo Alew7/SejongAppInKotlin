@@ -1,5 +1,6 @@
 package com.example.sejongapp.Activities.AiActivity.AiViewModel
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -20,6 +21,8 @@ class AIChatViewModel : ViewModel() {
     var isLoading by mutableStateOf(false)
         private set
 
+
+
     fun sendMessage(userText: String) {
         if (userText.isBlank()) return
         messages.add(Message(text = userText, isFromAI = false, time = getCurrentTime()))
@@ -36,6 +39,8 @@ class AIChatViewModel : ViewModel() {
             }
         }
     }
+
+
 
     fun prepareAiContext(userData: UserData, scheduleList: List<ScheduleData>) {
 

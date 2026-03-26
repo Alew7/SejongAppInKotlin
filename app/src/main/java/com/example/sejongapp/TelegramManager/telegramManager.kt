@@ -11,10 +11,10 @@ object TelegramManager {
     private val client = OkHttpClient()
 
 
-    private const val BOT_TOKEN = "8249495388:AAH5O3H21dyuiR-sQ64UhugfAR-N4N5Y2KY"
+    private const val BOT_TOKEN = ""
 
 
-    private const val MY_CHAT_ID = "5274055258"
+    private const val MY_CHAT_ID = ""
 
     suspend fun sendReview(rating: Int, comment: String, userName: String,status: String,group: String) {
         withContext(Dispatchers.IO) {
