@@ -4,7 +4,9 @@ import LocalData
 import LocalData.getUserData
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,8 +26,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -34,7 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -46,6 +50,7 @@ import com.example.sejongapp.R
 import com.example.sejongapp.components.LoadingDialog
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserAvatarInfo
+import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
 import com.example.sejongapp.models.ViewModels.UserViewModels.UserViewModel
@@ -62,7 +67,9 @@ fun ProfilePage() {
     val userViewModel: UserViewModel = viewModel()
     val context = LocalContext.current
 
-    // Состояния диалогов и процессов
+    // ВАЖНО: используем state для данных, чтобы UI реагировал на изменения внутри этой функции
+    var userDataState by remember { mutableStateOf(getUserData(context)) }
+
     var showEditDialog by remember { mutableStateOf(false) }
     var showLoadingDialog by remember { mutableStateOf(false) }
     var fetchingNewUserData by remember { mutableStateOf(false) }
@@ -72,11 +79,6 @@ fun ProfilePage() {
     var showSuccessAnomation by remember { mutableStateOf(false) }
     var isChangingPassword by remember { mutableStateOf(false) }
 
-
-    val userData by remember(fetchingNewUserData) {
-        mutableStateOf(getUserData(context))
-    }
-
     val roomviewModel: RoomUserViewModel = viewModel()
     val token = LocalData.getSavedToken(context)
 
@@ -84,11 +86,14 @@ fun ProfilePage() {
         roomviewModel.loadUser(token)
     }
 
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
     ) {
+        val screenWidth = maxWidth
+        val screenHeight = maxHeight
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -108,19 +113,17 @@ fun ProfilePage() {
                     contentDescription = null,
                     modifier = Modifier
                         .size(30.dp)
-                        .clickable (
+                        .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
-
-                        )
-                        { (context as? Activity)?.finish() },
+                        ) { (context as? Activity)?.finish() },
                     tint = Color(0xFF1A1A1A)
                 )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // --- Avatar ---
+            // --- Avatar Section ---
             Box(contentAlignment = Alignment.BottomEnd) {
                 Surface(
                     modifier = Modifier
@@ -130,19 +133,18 @@ fun ProfilePage() {
                     shape = CircleShape,
                     color = Color.White
                 ) {
-                    if (userData.avatar.isNotEmpty()) {
-                        AsyncImage(
-                            model = userData.avatar,
+                    if (userDataState.avatar.isNotEmpty()) {
+                        Image(
+                            painter = rememberImagePainter(userDataState.avatar),
                             contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().clip(CircleShape),
                             contentScale = ContentScale.Crop
                         )
                     } else {
                         Icon(
                             Icons.Default.Person,
                             contentDescription = null,
-                            modifier = Modifier
-                                .padding(35.dp),
+                            modifier = Modifier.padding(35.dp),
                             tint = Color(0xFFE0E0E0)
                         )
                     }
@@ -157,11 +159,10 @@ fun ProfilePage() {
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            imageVector =Icons.Default.Edit,
+                            imageVector = Icons.Default.Edit,
                             contentDescription = null,
                             tint = Color.White,
-                            modifier = Modifier
-                                .size(16.dp)
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                 }
@@ -170,14 +171,14 @@ fun ProfilePage() {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = userData.username ?: "username",
+                text = userDataState.username ?: "username",
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF1A1A1A)
             )
 
             Text(
-                text = userData.fullname ?: "Fullname not set",
+                text = userDataState.fullname ?: "Fullname not set",
                 fontSize = 14.sp,
                 color = Color.Gray,
                 fontWeight = FontWeight.Medium
@@ -185,7 +186,7 @@ fun ProfilePage() {
 
             Spacer(modifier = Modifier.height(35.dp))
 
-            // --- Info Card ---
+            // --- Info Card (Modern Style) ---
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(28.dp),
@@ -196,25 +197,27 @@ fun ProfilePage() {
                     ProfileItemModern(
                         icon = Icons.Default.VerifiedUser,
                         title = context.getString(R.string.status),
-                        value = when(userData.status){
+                        value = when(userDataState.status){
                             UserStatusEnum.STUDENT -> context.getString(R.string.Student)
-                            UserStatusEnum.TEACHER -> context.getString(R.string.Teacher)
+                            UserStatusEnum.TEACHER -> "Teacher"
                             else -> "Admin"
                         },
                         accentColor = Color(0xFF4CAF50)
                     )
-                    Divider(modifier = Modifier.padding(vertical = 16.dp).alpha(0.4f))
+                    Divider(modifier = Modifier.padding(vertical = 16.dp).alpha(0.3f))
+
+                    val groupsValue = userDataState.groups?.toString()?.replace("[", "")?.replace("]", "") ?: "-"
                     ProfileItemModern(
                         icon = Icons.Default.Group,
                         title = context.getString(R.string.Groups),
-                        value = userData.groups?.toString()?.replace("[", "")?.replace("]", "") ?: "-",
+                        value = groupsValue,
                         accentColor = Color(0xFF2196F3)
                     )
-                    Divider(modifier = Modifier.padding(vertical = 16.dp).alpha(0.4f))
+                    Divider(modifier = Modifier.padding(vertical = 16.dp).alpha(0.3f))
                     ProfileItemModern(
                         icon = Icons.Default.Email,
                         title = context.getString(R.string.Email),
-                        value = userData.email ?: "-",
+                        value = userDataState.email ?: "-",
                         accentColor = Color(0xFFFF9800)
                     )
                 }
@@ -247,74 +250,62 @@ fun ProfilePage() {
         }
     }
 
-    // --- Dialogs ---
-    if (showEditDialog) {
-        EditUserDialog(
-            userData = userData,
-            onDismiss = { showEditDialog = false },
-            onSave = { newUserData ->
-                userViewModel.changeUserName(LocalData.getSavedToken(context), newUserData)
-                showEditDialog = false
-                showLoadingDialog = true
-            }
-        )
+
+        if (showEditDialog) {
+        EditUserDialog(userDataState, { showEditDialog = false }, { new ->
+            userViewModel.changeUserName(token, new)
+            showEditDialog = false; showLoadingDialog = true; isChangingPassword = false
+        })
+    }
+        if (showPasswordDialog) {
+        EditUserPasswordDialog({ showPasswordDialog = false }, { pass ->
+            userViewModel.changeUserPassword(token, pass)
+            showPasswordDialog = false; showLoadingDialog = true; isChangingPassword = true
+        })
+    }
+        if (showUserAvatarDialog) {
+        EditAvatarUser(userDataState, { showUserAvatarDialog = false; avatarChanged = false }, { uri ->
+            userViewModel.changeUserAvatar(context, token, uri)
+            showUserAvatarDialog = false; showLoadingDialog = true; avatarChanged = true
+        })
     }
 
-    if (showPasswordDialog) {
-        EditUserPasswordDialog(
-            onDismiss = { showPasswordDialog = false },
-            onSave = { newPassword ->
-                userViewModel.changeUserPassword(LocalData.getSavedToken(context), newPassword)
-                showPasswordDialog = false
-                showLoadingDialog = true
-                isChangingPassword = true
-            }
-        )
-    }
 
-    if (showUserAvatarDialog) {
-        EditAvatarUser(
-            userData = userData,
-            onDismiss = { showUserAvatarDialog = false; avatarChanged = false },
-            onSave = { bitmap ->
-                userViewModel.changeUserAvatar(context, LocalData.getSavedToken(context), bitmap)
-                showUserAvatarDialog = false
-                showLoadingDialog = true
-                avatarChanged = true
-            }
-        )
-    }
-
-    // --- Network & Data Sync ---
     if (showLoadingDialog) {
         if (avatarChanged) {
             val result by userViewModel.userAvatarResult.observeAsState(NetworkResponse.Idle)
             when (result) {
-                is NetworkResponse.Error -> { showError((result as NetworkResponse.Error).message) { showLoadingDialog = false } }
+                is NetworkResponse.Error -> showError((result as NetworkResponse.Error).message) { showLoadingDialog = false }
                 NetworkResponse.Loading -> LoadingDialog(context.getString(R.string.applying_changes))
                 is NetworkResponse.Success -> {
-                    val avatarUrl = (result as NetworkResponse.Success<ChangeUserAvatarInfo>).data.avatar
-                    LocalData.setUserData(context, userData.copy(avatar = avatarUrl))
+                    val fetched = (result as NetworkResponse.Success<ChangeUserAvatarInfo>).data
+                    val updated = userDataState.copy(avatar = fetched.avatar)
+                    LocalData.setUserData(context, updated)
+                    userDataState = updated
                     showSuccessAnomation = true
                     showLoadingDialog = false
                     avatarChanged = false
-                    fetchingNewUserData = !fetchingNewUserData // Триггер для обновления UI
+                    fetchingNewUserData = true
                 }
                 else -> {}
             }
         } else {
             val result by userViewModel.userChangeResult.observeAsState(NetworkResponse.Idle)
             when (result) {
-                is NetworkResponse.Error -> { showError((result as NetworkResponse.Error).message) { showLoadingDialog = false } }
+                is NetworkResponse.Error -> showError((result as NetworkResponse.Error).message) { showLoadingDialog = false }
                 NetworkResponse.Loading -> LoadingDialog(context.getString(R.string.applying_changes))
                 is NetworkResponse.Success -> {
                     if (isChangingPassword) {
-                        val newToken = (result as NetworkResponse.Success<tokenData>).data.auth_token
-                        LocalData.setToken(context, newToken)
+                        val tData = (result as NetworkResponse.Success<tokenData>).data
+                        LocalData.setToken(context, tData.auth_token)
+                    } else {
+                        val fetched = (result as NetworkResponse.Success<ChangeUserInfo>).data
+                        val updated = userDataState.copy(username = fetched.username, email = fetched.email)
+                        LocalData.setUserData(context, updated)
+                        userDataState = updated
                     }
                     showSuccessAnomation = true
                     showLoadingDialog = false
-                    userViewModel.getUserData(LocalData.getSavedToken(context)) // Запрос актуальных данных
                     fetchingNewUserData = true
                 }
                 else -> {}
@@ -322,47 +313,80 @@ fun ProfilePage() {
         }
     }
 
-    // Синхронизация данных профиля после правок
     if (fetchingNewUserData) {
         val result by userViewModel.userDataResult.observeAsState(NetworkResponse.Idle)
         if (result is NetworkResponse.Success) {
-            LocalData.setUserData(context, (result as NetworkResponse.Success<UserData>).data)
+            val fresh = (result as NetworkResponse.Success<UserData>).data
+            LocalData.setUserData(context, fresh)
+            userDataState = fresh
             fetchingNewUserData = false
         }
     }
 
     if (showSuccessAnomation) {
-        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxSize().background(Color.Black.copy(0.7f)), Alignment.Center) {
             SuccessAnimation()
             LaunchedEffect(Unit) {
-                delay(2000)
+                delay(2500)
                 showSuccessAnomation = false
-                // (context as? Activity)?.recreate() // Можно оставить, если нужно обновить весь стек
+                (context as? Activity)?.recreate()
             }
         }
     }
 }
 
 @Composable
-fun ProfileItemModern(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, value: String, accentColor: Color) {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+fun ProfileItemModern(icon: ImageVector, title: String, value: String, accentColor: Color) {
+    Row(
+        modifier = Modifier
+        .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Box(
-            modifier = Modifier.size(44.dp).background(accentColor.copy(alpha = 0.1f), RoundedCornerShape(14.dp)),
-            contentAlignment = Alignment.Center
+            modifier = Modifier
+                .size(46.dp)
+                .background(accentColor.copy(0.12f),
+                    shape = RoundedCornerShape(14.dp)),
+                    contentAlignment = Alignment.Center
         ) {
-            Icon(imageVector = icon, contentDescription = null, tint = accentColor, modifier = Modifier.size(22.dp))
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = accentColor,
+                modifier = Modifier
+                    .size(22.dp)
+            )
         }
-        Spacer(modifier = Modifier.width(16.dp))
+
+        Spacer(Modifier.width(16.dp))
         Column {
-            Text(text = title, fontSize = 11.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
-            Text(text = value, fontSize = 16.sp, color = Color(0xFF2D2D2D), fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+
+            Text(
+                text = title,
+                fontSize = 11.sp,
+                color = Color.Gray,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = value,
+                fontSize = 16.sp,
+                color = Color(0xFF2D2D2D),
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
 
+
 @Composable
 fun SuccessAnimation(modifier: Modifier = Modifier) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Sucesso.lottie"))
-    val progress by animateLottieCompositionAsState(composition = composition, iterations = 1)
-    LottieAnimation(composition = composition, progress = { progress }, modifier = modifier.size(250.dp))
+    val comp by rememberLottieComposition(
+        LottieCompositionSpec.Asset("Sucesso.lottie")
+    )
+
+    val prog by animateLottieCompositionAsState(comp, iterations = 1)
+    LottieAnimation(comp, { prog }, modifier = modifier.size(250.dp))
 }
