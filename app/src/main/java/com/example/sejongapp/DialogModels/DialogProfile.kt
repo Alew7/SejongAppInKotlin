@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -35,6 +36,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
@@ -62,7 +64,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
@@ -70,7 +74,9 @@ import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPasswo
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.ui.theme.WarmBeige
 import com.example.sejongapp.ui.theme.primaryColor
-
+import com.yalantis.ucrop.UCrop
+import com.yalantis.ucrop.UCropActivity.SCALE
+import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -368,6 +374,7 @@ fun EditUserPasswordDialog(
 
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditAvatarUser(
     userData: UserData,
@@ -376,32 +383,65 @@ fun EditAvatarUser(
 ) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
+
+    // Храним Uri выбранного изображения
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
-    var tempAvatar by remember { mutableStateOf(userData.avatar) }
+
+    // Модель для AsyncImage: если выбрали новое — показываем его, если нет — старый аватар
+    val avatarModel = remember(selectedUri) {
+        selectedUri ?: userData.avatar
+    }
+
+    val cropLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val resultUri = UCrop.getOutput(result.data!!)
+            selectedUri = resultUri // Обновляем Uri, и remember(selectedUri) сработает
+        }
+    }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        if (uri != null) {
-            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            selectedUri = uri
-            tempAvatar = uri.toString()
+        uri?.let { sourceUri ->
+            val destinationUri = Uri.fromFile(File(context.cacheDir, "cropped_image_${System.currentTimeMillis()}.jpg"))
+
+            val options = UCrop.Options().apply {
+                setCircleDimmedLayer(true)
+                setShowCropGrid(false)
+                setShowCropFrame(false)
+                setToolbarColor(android.graphics.Color.WHITE)
+                setToolbarWidgetColor(android.graphics.Color.BLACK)
+                setActiveControlsWidgetColor(0xFFBFA353.toInt()) // Твой золотистый
+            }
+
+            val uCrop = UCrop.of(sourceUri, destinationUri)
+                .withOptions(options)
+                .withAspectRatio(1f, 1f)
+                .withMaxResultSize(1000, 1000)
+
+            cropLauncher.launch(uCrop.getIntent(context))
         }
     }
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        containerColor = Color.White,
-        shape = RoundedCornerShape(32.dp),
         modifier = Modifier.fillMaxWidth(0.95f),
-        confirmButton = {},
-        dismissButton = {},
-        text = {
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(
+            shape = RoundedCornerShape(32.dp),
+            color = Color.White, // Чистый белый фон как в новом дизайне
+            tonalElevation = 8.dp
+        ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
             ) {
-
+                // Декоративная полоска сверху
                 Box(
                     modifier = Modifier
                         .size(40.dp, 4.dp)
@@ -413,135 +453,101 @@ fun EditAvatarUser(
 
                 Text(
                     text = context.getString(R.string.Change_Avatar),
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color(0xFF1A1A1A),
-                    textAlign = TextAlign.Center
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF333333) // Мягкий черный
                 )
 
                 Spacer(modifier = Modifier.height(30.dp))
 
-
+                // Круглый аватар с золотой обводкой
                 Box(
                     modifier = Modifier
-                        .size(170.dp)
+                        .size(180.dp)
+                        .padding(8.dp)
                         .drawBehind {
                             drawCircle(
                                 brush = Brush.linearGradient(
-                                    colors = listOf(Color(0xFFBFA353), Color(0xFFE5D192), Color(0xFFBFA353))
+                                    colors = listOf(Color(0xFFBFA353), Color(0xFFE5D192))
                                 ),
-                                style = Stroke(width = 6.dp.toPx(), cap = StrokeCap.Round)
+                                style = Stroke(width = 4.dp.toPx())
                             )
                         }
-                        .padding(10.dp)
-                        .shadow(15.dp, CircleShape)
+                        .shadow(10.dp, CircleShape)
                         .clip(CircleShape)
                         .background(Color.White)
                         .clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             imagePickerLauncher.launch("image/*")
                         },
                     contentAlignment = Alignment.Center
                 ) {
                     AsyncImage(
                         model = ImageRequest.Builder(context)
-                            .data(tempAvatar)
+                            .data(avatarModel)
                             .crossfade(true)
-                            .transformations(coil.transform.CircleCropTransformation())
+                            .memoryCachePolicy(CachePolicy.DISABLED) // Отключаем кэш для мгновенного обновления
                             .build(),
-                        contentDescription = "Avatar Preview",
+                        contentDescription = "Avatar",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
 
+                    // Показываем иконку редактирования только если фото еще не выбрано
                     if (selectedUri == null) {
                         Box(
-                            modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.2f)),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.2f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = null,
                                 tint = Color.White,
-                                modifier = Modifier.size(35.dp)
+                                modifier = Modifier.size(30.dp)
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(35.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 // Кнопка Сохранить
                 Button(
                     onClick = {
                         selectedUri?.let { uri ->
-                            val fixedBitmap = fixRotation(context, uri)
-                            onSave(fixedBitmap)
+                            try {
+                                val inputStream = context.contentResolver.openInputStream(uri)
+                                val bitmap = BitmapFactory.decodeStream(inputStream)
+                                inputStream?.close()
+                                if (bitmap != null) onSave(bitmap)
+                            } catch (e: Exception) {
+                                Log.e("AVATAR", "Error: ${e.message}")
+                            }
                         }
                     },
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    modifier = Modifier.fillMaxWidth().height(54.dp),
                     shape = RoundedCornerShape(16.dp),
-                    enabled = selectedUri != null,
+                    enabled = selectedUri != null, // Активна только если есть изменения
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFBFA353),
-                        disabledContainerColor = Color(0xFFF0F0F0)
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-                ) {
-                    Text(
-                        text = context.getString(R.string.Save),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (selectedUri != null) Color.White else Color.Gray
+                        disabledContainerColor = Color(0xFFF5F5F5),
+                        disabledContentColor = Color.LightGray
                     )
+                ) {
+                    Text(text = context.getString(R.string.Save), fontWeight = FontWeight.Bold)
                 }
 
-                // Кнопка Отмена
                 TextButton(
                     onClick = { onDismiss() },
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                 ) {
-                    Text(
-                        text = context.getString(R.string.Cancel),
-                        color = Color.Gray,
-                        fontSize = 14.sp
-                    )
+                    Text(text = context.getString(R.string.Cancel), color = Color.Gray)
                 }
             }
         }
-    )
-}
-
-
-fun fixRotation(context: Context, uri: Uri): Bitmap {
-
-    val input = context.contentResolver.openInputStream(uri)
-    val bitmap = BitmapFactory.decodeStream(input)
-    input?.close()
-
-    val exifInput = context.contentResolver.openInputStream(uri)
-    val exif = ExifInterface(exifInput!!)
-    val orientation = exif.getAttributeInt(
-        ExifInterface.TAG_ORIENTATION,
-        ExifInterface.ORIENTATION_NORMAL
-    )
-    exifInput.close()
-
-    val matrix = Matrix()
-
-    when (orientation) {
-        ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
-        ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
-        ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
     }
-
-    return Bitmap.createBitmap(
-        bitmap,
-        0,
-        0,
-        bitmap.width,
-        bitmap.height,
-        matrix,
-        true
-    )
 }
+
+

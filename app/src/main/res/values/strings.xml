@@ -135,4 +135,17 @@
     <string name="title_activity_ai">AiActivity</string>
 
 
+
+<!--     for AiScreen-->
+
+        <string name="ali_history">Ali AI history</string>
+        <string name="start_new_chat">Start new chat</string>
+        <string name="hello">Hello</string>
+        <string name="where_start">Where shall we start?</string>
+        <string name="lesson_today">Do I have a lesson today?</string>
+        <string name="loading_schedule">Ali AI is still loading the schedule...</string>
+        <string name="ask_ali">Ask Ali AI...</string>
+        <string name="ali_typing">Ali AI is typing...</string>
+
+
 </resources>

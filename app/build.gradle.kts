@@ -138,6 +138,8 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
 
+    implementation("com.github.yalantis:ucrop:2.2.8")
+
 
 
     

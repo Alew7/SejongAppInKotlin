@@ -57,10 +57,12 @@ fun ReviewDialog(
     onDismiss: () -> Unit,
     onSend: (rating: Int, text: String) -> Unit
 ) {
+
     var rating by remember { mutableStateOf(5) }
     var text by remember { mutableStateOf("") }
     val context = LocalContext.current
 
+    var showSuccessDialog by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -68,6 +70,7 @@ fun ReviewDialog(
             colors = CardDefaults.cardColors(containerColor = Color.White),
             modifier = Modifier.fillMaxWidth()
         ) {
+
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 // Шапка
                 Box(
@@ -173,6 +176,8 @@ fun ReviewDialog(
                         Button(
                             onClick = { onSend(rating, text)
                                 Toast.makeText(context, context.getString(R.string.Review_sent_Thank_you), Toast.LENGTH_SHORT).show()
+                                showSuccessDialog = true
+
                             },
                             modifier = Modifier
                                 .weight(1f),

@@ -3,5 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">sejong-app-container-847502443673.us-central1.run.app</domain>
         <domain includeSubdomains="true">https://digital-gradebook-container-847502443673.us-central1.run.app</domain>
+<!--        <domain includeSubdomains="true">192.168.0.119</domain>-->
     </domain-config>
 </network-security-config>

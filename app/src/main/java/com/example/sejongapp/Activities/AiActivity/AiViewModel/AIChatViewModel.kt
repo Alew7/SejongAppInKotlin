@@ -11,129 +11,173 @@ import androidx.lifecycle.viewModelScope
 import com.example.sejongapp.Activities.AiActivity.DataClass.Message
 import com.example.sejongapp.models.DataClasses.ScheduleData
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AIChatViewModel : ViewModel() {
+class AIChatViewModel(private val repository: AiRepository) : ViewModel() {
 
     val messages = mutableStateListOf<Message>()
+    val historyMessages = mutableStateListOf<Message>()
     var isLoading by mutableStateOf(false)
+    var currentChatId by mutableStateOf("")
         private set
 
+    private val gson = Gson()
 
+    companion object {
+        private var isFirstAppLaunch = true
+    }
 
-    fun sendMessage(userText: String) {
-        if (userText.isBlank()) return
-        messages.add(Message(text = userText, isFromAI = false, time = getCurrentTime()))
-        isLoading = true
+    private fun getUserCacheKey(context: Context): String {
+        val token = LocalData.getSavedToken(context) ?: "guest"
+        val uniqueId = if (token.length > 10) token.takeLast(10) else token.hashCode().toString()
+        return "cached_history_$uniqueId"
+    }
+
+    fun startNewChat() {
+        messages.clear()
+        currentChatId = UUID.randomUUID().toString()
+    }
+
+    fun loadHistory(context: Context) {
+        val token = LocalData.getSavedToken(context) ?: return
+        val cacheKey = getUserCacheKey(context)
+        val prefs = context.getSharedPreferences("ai_prefs", Context.MODE_PRIVATE)
+
+        historyMessages.clear()
+        messages.clear()
+
+        val cached = prefs.getString(cacheKey, null)
+        if (cached != null) {
+            try {
+                val type = object : TypeToken<List<Message>>() {}.type
+                val saved: List<Message> = gson.fromJson(cached, type)
+                historyMessages.addAll(saved)
+
+                if (isFirstAppLaunch && saved.isNotEmpty()) {
+                    val lastId = saved.firstOrNull()?.chatID
+                    if (lastId != null) {
+                        currentChatId = lastId
+                        messages.addAll(saved.filter { it.chatID == lastId }.reversed())
+                    }
+                    isFirstAppLaunch = false
+                }
+            } catch (e: Exception) {
+                Log.e("AI_DEBUG", "Ошибка кэша: ${e.message}")
+            }
+        }
 
         viewModelScope.launch {
             try {
-                val aiResponse = GeminiService.getResponse(userText)
-                isLoading = false
-                messages.add(Message(text = aiResponse, isFromAI = true, time = getCurrentTime()))
+                val history = repository.fetchHistory(token)
+                if (history.isNotEmpty()) {
+                    val fetched = mutableListOf<Message>()
+                    history.forEach { chat ->
+                        val id = chat.chatId ?: UUID.randomUUID().toString()
+                        val chatTitle = if (!chat.title.isNullOrBlank()) chat.title else "Новый диалог"
+                        val rawTime = chat.time ?: ""
+                        val shortTime = if (rawTime.length >= 16) rawTime.substring(11, 16) else rawTime
+
+                        chat.messages?.forEach { msg ->
+                            fetched.add(Message(msg.question, false, shortTime, id, chatTitle))
+                            fetched.add(Message(msg.answer, true, shortTime, id, chatTitle))
+                        }
+                    }
+                    historyMessages.clear()
+                    historyMessages.addAll(fetched)
+                    prefs.edit().putString(cacheKey, gson.toJson(fetched)).apply()
+                }
             } catch (e: Exception) {
-                isLoading = false
-                messages.add(Message(text = "Ошибка: ${e.localizedMessage}", isFromAI = true, time = getCurrentTime()))
+                Log.e("AI_DEBUG", "Ошибка сети: ${e.localizedMessage}")
             }
         }
     }
 
+    fun saveCurrentMessagesCach(context: Context) {
+        val cacheKey = getUserCacheKey(context)
+        val prefs = context.getSharedPreferences("ai_prefs", Context.MODE_PRIVATE)
+        val json = gson.toJson(historyMessages.toList())
+        prefs.edit().putString(cacheKey, json).apply()
+    }
 
+    fun sendMessage(userText: String, context: Context) {
+        if (userText.isBlank()) return
+        if (currentChatId.isEmpty()) currentChatId = UUID.randomUUID().toString()
+
+        val token = LocalData.getSavedToken(context) ?: ""
+        val newChatTitle = if (userText.length > 25) userText.take(25) + "..." else userText
+
+        val userMsg = Message(userText, false, getCurrentTime(), currentChatId, newChatTitle)
+        messages.add(userMsg)
+        historyMessages.add(0, userMsg)
+        saveCurrentMessagesCach(context)
+
+        isLoading = true
+
+        viewModelScope.launch {
+            try {
+                // ТЕПЕРЬ ИСПОЛЬЗУЕМ DEEPSEEK ВМЕСТО GEMINI
+                val aiResponse = GeminiService.getResponse(userText)
+                isLoading = false
+
+                val aiMsg = Message(aiResponse, true, getCurrentTime(), currentChatId, newChatTitle)
+                messages.add(aiMsg)
+                historyMessages.add(0, aiMsg)
+                saveCurrentMessagesCach(context)
+
+                repository.saveToCloud(token, currentChatId, newChatTitle, userText, aiResponse)
+            } catch (e: Exception) {
+                isLoading = false
+                messages.add(Message("Ошибка: ${e.localizedMessage}", true, getCurrentTime(), currentChatId, newChatTitle))
+            }
+        }
+    }
 
     fun prepareAiContext(userData: UserData, scheduleList: List<ScheduleData>) {
-
         val calendar = Calendar.getInstance()
         val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-
-
         val currentDayInt = (dayOfWeek + 5) % 7
-        Log.d("AI_DEBUG", "Current day: $currentDayInt")
         val currentDayName = SimpleDateFormat("EEEE", Locale("ru")).format(Date())
 
         val userGroupName = userData.groups.firstOrNull()
-            ?.replace("[", "")
-            ?.replace("]","")
-            ?.trim()
-            ?.uppercase() ?: ""
+            ?.replace("[", "")?.replace("]", "")?.trim()?.uppercase() ?: ""
 
-
-        Log.d("AI_DEBUG", "=== START PREPARE CONTEXT ===")
-        Log.d("AI_DEBUG", "User Group: '$userGroupName'")
-        Log.d("AI_DEBUG", "Today is: $currentDayName (Index: $currentDayInt)")
-
-
-        val studentSchedule = scheduleList.find {
-            it.group.trim().uppercase() == userGroupName
-        }
-
-        if (studentSchedule == null) {
-            Log.e("AI_DEBUG", "ERROR: Группа '$userGroupName' не найдена в списке расписаний!")
-            Log.d("AI_DEBUG", "Available groups: ${scheduleList.map { it.group }}")
-        }
-
-        studentSchedule?.time?.forEach {
-            Log.d("AI_DEBUG", "В базе есть урок: День=${it.day}, время${it.start_time}")
-        }
+        val studentSchedule = scheduleList.find { it.group.trim().uppercase() == userGroupName }
         val todayLessons = studentSchedule?.time?.filter { it.day == currentDayInt }
-        Log.d("AI_DEBUG", "Lessons found today: ${todayLessons?.size ?: 0}")
-
 
         val scheduleContext = if (todayLessons.isNullOrEmpty()) {
-            "На сегодня ($currentDayName) уроков по расписанию нет."
+            "На сегодня ($currentDayName) уроков нет."
         } else {
             "Расписание на сегодня ($currentDayName) для группы ${studentSchedule?.group}:\n" +
                     todayLessons.joinToString("\n") { "• ${it.start_time} - ${it.end_time}, кабинет ${it.classroom}" }
         }
 
         val systemPrompt = """
-Ты — Али ИИ, стильный и дружелюбный помощник центра Седжон 😎  
-Отвечай кратко, понятно и вежливо.
+            Ты — Али ИИ, помощник центра Седжон 😎  
+            Отвечай кратко и вежливо. Имя студента: ${userData.fullname}.
+            Расписание: $scheduleContext
+        """.trimIndent()
 
-━━━━━━━━━━━━━━━━━━
-👤 ИНФОРМАЦИЯ О СТУДЕНТЕ
-Имя: ${userData.fullname}
-Группа: ${studentSchedule?.group ?: userGroupName}
-
-📅 Расписание на сегодня ($currentDayName):
-$scheduleContext
-━━━━━━━━━━━━━━━━━━
-
-📌 ПРАВИЛА ОТВЕТА:
-
-1. Если пользователь спрашивает про расписание:
-   → используй данные выше  
-   → оформляй красиво:
-     ⏰ время  
-     📍 кабинет  
-
-2. Если вопрос НЕ связан с расписанием:
-   → отвечай чётко и по делу  
-   → НЕ упоминай расписание без причины  
-
-3. Используй смайлики 😊:
-   → умеренно (не в каждом слове)
-   → для улучшения читаемости
-   → примеры:
-     ✅ ответ — 😊👍📚  
-     ❌ слишком много — 😂😂😂😂  
-
-4. Стиль ответа:
-   → коротко и понятно  
-   → дружелюбно и современно  
-
-5. Запрещено:
-   → не используй "*" или "**"  
-   → не перегружай текст  
-
-━━━━━━━━━━━━━━━━━━
-""".trimIndent()
-
+        // ОБНОВЛЯЕМ ИНСТРУКЦИЮ В DEEPSEEK
         GeminiService.currenSystemInstruction = systemPrompt
-
-        Log.d("AI_DEBUG", "System Prompt updated successfully!")
     }
 
     private fun getCurrentTime(): String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+
+    fun openHistoryChat(selectedChatId: String?) {
+        if (selectedChatId.isNullOrBlank()) return
+        messages.clear()
+        currentChatId = selectedChatId
+        val chatContent = historyMessages.filter { it.chatID == selectedChatId }.reversed()
+        messages.addAll(chatContent)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        messages.clear()
+        historyMessages.clear()
+    }
 }

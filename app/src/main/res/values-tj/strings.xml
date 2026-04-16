@@ -142,6 +142,19 @@
     <string name="Success">Муваффақият!</string>
     <string name="Attendance_data_saved_successfully">Маълумот дар журнал сабт шуд.</string>
 
+
+
+<!--    for AiScreen -->
+
+        <string name="ali_history">Таърихи Ali AI</string>
+        <string name="start_new_chat">Оғози чати нав</string>
+        <string name="hello">Салом</string>
+        <string name="where_start">Аз чӣ оғоз мекунем?</string>
+        <string name="lesson_today">Имрӯз ман дарс дорам?</string>
+        <string name="loading_schedule">Ali AI ҳоло ҷадвалро бор мекунад...</string>
+        <string name="ask_ali">Аз Ali AI пурсед...</string>
+        <string name="ali_typing">Ali AI менависад...</string>
+
 </resources>
 
 

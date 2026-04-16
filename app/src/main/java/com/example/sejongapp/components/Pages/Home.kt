@@ -16,7 +16,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MenuBook
@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
@@ -37,8 +36,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -60,7 +57,6 @@ import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
 import com.example.sejongapp.models.ViewModels.GradeBookViewModels.GroupDetailsViewModel
-import com.example.sejongapp.models.ViewModels.UserViewModels.UserViewModel
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
@@ -113,9 +109,7 @@ fun HomePage(
         studentPresents[myIdKey] ?: 0
     }
 
-
     val iconSize = 80.dp
-
     val cardScale = remember { Animatable(0.8f) }
     val scale = remember { Animatable(0.2f) }
 
@@ -123,16 +117,8 @@ fun HomePage(
 
 
     var isClickedOnce by remember { mutableStateOf(false) }
-
-
-
     val calculatedProgress = (1.0f - (skipsCount * 0.03f)).coerceIn(0f, 1.0f)
-
-
-
-
     var progressTarget by remember { mutableStateOf(0f) }
-
 
     val composition by rememberLottieComposition(
         LottieCompositionSpec.Asset("Chatbot.lottie")
@@ -141,7 +127,6 @@ fun HomePage(
         composition = composition,
         iterations = LottieConstants.IterateForever
     )
-
 
 
     LaunchedEffect(calculatedProgress) {
@@ -363,122 +348,125 @@ fun HomePage(
 
 
             if (userData.status == UserStatusEnum.STUDENT) {
-                Spacer(modifier = Modifier.height(24.dp))
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 8.dp)
-                        .scale(cardScale.value),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(all = 20.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        // ЛЕВАЯ ЧАСТЬ (Иконка + Текст)
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(54.dp)
-                                    .background(
-                                        brush = Brush.linearGradient(
-                                            colors = listOf(Color(0xFFBFA353), Color(0xFFE5D192))
-                                        ),
-                                        shape = RoundedCornerShape(18.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.MenuBook,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(26.dp)
-                                )
-                            }
+//                Spacer(modifier = Modifier.height(24.dp))
+//                Card(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//
+//                        .padding(horizontal = 20.dp, vertical = 8.dp)
+//                        .scale(cardScale.value),
+//                    shape = RoundedCornerShape(20.dp),
+//                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+//                    colors = CardDefaults.cardColors(containerColor = Color.White)
+//                ) {
+//                    Row(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(all = 20.dp),
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//                        // ЛЕВАЯ ЧАСТЬ (Иконка + Текст)
+//                        Row(
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            modifier = Modifier.weight(1f)
+//                        ) {
+//                            Box(
+//                                modifier = Modifier
+//                                    .size(54.dp)
+//                                    .background(
+//                                        brush = Brush.linearGradient(
+//                                            colors = listOf(Color(0xFFBFA353), Color(0xFFE5D192))
+//                                        ),
+//                                        shape = RoundedCornerShape(18.dp)
+//                                    ),
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                Icon(
+//                                    imageVector = Icons.Default.MenuBook,
+//                                    contentDescription = null,
+//                                    tint = Color.White,
+//                                    modifier = Modifier.size(26.dp)
+//                                )
+//                            }
+//
+//                            Spacer(modifier = Modifier.width(16.dp))
+//
+//                            Column {
+//                                Text(
+//                                    text = context.getString(R.string.Attendance),
+//                                    fontSize = 17.sp,
+//                                    fontWeight = FontWeight.ExtraBold,
+//                                    color = Color(0xFF1A1A1A),
+//                                    letterSpacing = 0.5.sp,
+//                                    maxLines = 1
+//                                )
+//
+//                                Spacer(modifier = Modifier.height(6.dp))
+//
+//                                Row(
+//                                    verticalAlignment = Alignment.CenterVertically,
+//                                    modifier = Modifier.wrapContentWidth()
+//                                ) {
+//                                    Surface(
+//                                        color = Color(0xFFE8F5E9),
+//                                        shape = RoundedCornerShape(8.dp)
+//                                    ) {
+//                                        Text(
+//                                            text = "12 " + context.getString(R.string.Lesson),
+//                                            fontSize = 11.sp,
+//                                            fontWeight = FontWeight.Bold,
+//                                            color = Color(0xFF2E7D32),
+//                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+//                                        )
+//                                    }
+//                                    Spacer(modifier = Modifier.width(8.dp))
+//                                    Text(
+//                                        text = "0" + context.getString(R.string.skips),
+//                                        fontSize = 12.sp,
+//                                        color = Color(0xFF757575),
+//                                        maxLines = 1
+//                                    )
+//                                }
+//                            }
+//                        }
+//
+//
+//                        Box(
+//                            modifier = Modifier
+//                                .padding(start = 8.dp)
+//                                .size(68.dp),
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            CircularProgressIndicator(
+//                                progress = 1f,
+//                                modifier = Modifier.fillMaxSize(),
+//                                color = Color(0xFFF0F0F0),
+//                                strokeWidth = 7.dp
+//                            )
+//
+//                            CircularProgressIndicator(
+//                                progress = animatedprogress,
+//                                modifier = Modifier.fillMaxSize(),
+//                                color = dynamicProgressColor,
+//                                strokeWidth = 7.dp,
+//                                strokeCap = StrokeCap.Round
+//                            )
+//
+//                            Text(
+//                                text = "${(animatedprogress * 100).toInt()}%",
+//                                fontSize = 15.sp,
+//                                fontWeight = FontWeight.Black,
+//                                color = dynamicProgressColor
+//                            )
+//                        }
+//                    }
+//                }
 
-                            Spacer(modifier = Modifier.width(16.dp))
 
-                            Column {
-                                Text(
-                                    text = context.getString(R.string.Attendance),
-                                    fontSize = 17.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = Color(0xFF1A1A1A),
-                                    letterSpacing = 0.5.sp,
-                                    maxLines = 1
-                                )
-
-                                Spacer(modifier = Modifier.height(6.dp))
-
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.wrapContentWidth()
-                                ) {
-                                    Surface(
-                                        color = Color(0xFFE8F5E9),
-                                        shape = RoundedCornerShape(8.dp)
-                                    ) {
-                                        Text(
-                                            text = "$presentsCount " + context.getString(R.string.Lesson),
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF2E7D32),
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "$skipsCount " + context.getString(R.string.skips),
-                                        fontSize = 12.sp,
-                                        color = Color(0xFF757575),
-                                        maxLines = 1
-                                    )
-                                }
-                            }
-                        }
-
-
-                        Box(
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .size(68.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                progress = 1f,
-                                modifier = Modifier.fillMaxSize(),
-                                color = Color(0xFFF0F0F0),
-                                strokeWidth = 7.dp
-                            )
-
-                            CircularProgressIndicator(
-                                progress = animatedprogress,
-                                modifier = Modifier.fillMaxSize(),
-                                color = dynamicProgressColor,
-                                strokeWidth = 7.dp,
-                                strokeCap = StrokeCap.Round
-                            )
-
-                            Text(
-                                text = "${(animatedprogress * 100).toInt()}%",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Black,
-                                color = dynamicProgressColor
-                            )
-                        }
-                    }
-                }
             }
 
-            Spacer (modifier = Modifier.height(50.dp))
+            Spacer (modifier = Modifier.height(150.dp))
 
             //  КОНТЕНТ
             Column(
@@ -605,3 +593,13 @@ fun HomeMenuItem(
         )
     }
 }
+
+//@Composable
+//fun AttendanceStatItem(label: String, value: String, color: Color) {
+//    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//        Text(text = value, fontSize = 28.sp, fontWeight = FontWeight.Black, color = color)
+//        Text(text = label, fontSize = 12.sp, color = Color.Gray)
+//    }
+//}
+
+

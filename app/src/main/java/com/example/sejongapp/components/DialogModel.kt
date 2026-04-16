@@ -166,6 +166,7 @@ fun LoadingDialog(
         }
     )
 }
+
 @Composable
 fun showSuccess(onFinished: () -> Unit) {
 
@@ -224,6 +225,75 @@ fun showSuccess(onFinished: () -> Unit) {
 
                 Text(
                     text = context.getString(R.string.Attendance_data_saved_successfully),
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    )
+}
+
+
+@Composable
+fun showSuccesForReview(onFinished: () -> Unit) {
+
+
+    val context = LocalContext.current
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.Asset("SuccessForGradebook.lottie")
+    )
+
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = 1
+    )
+
+    LaunchedEffect(progress) {
+        if (progress == 1f) {
+            onFinished()
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = { },
+        confirmButton = {},
+        containerColor = Color.White,
+        shape = RoundedCornerShape(28.dp),
+        modifier = Modifier.width(300.dp),
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                // Анимация Lottie
+                LottieAnimation(
+                    composition = composition,
+                    progress = { progress },
+                    modifier = Modifier.size(140.dp)
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+
+                Text(
+                    text = context.getString(R.string.Success),
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontSize = 22.sp,
+                    color = Color(0xFF1A1A1A),
+                    fontWeight = FontWeight.ExtraBold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                Text(
+                    text = context.getString(R.string.Review_sent_Thank_you),
                     fontFamily = FontFamily(Font(R.font.montserrat_medium)),
                     fontSize = 14.sp,
                     color = Color.Gray,

@@ -240,7 +240,6 @@ fun GroupDetailPage(
                                     .height(56.dp), // Фиксированная высота
                                 colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                                 shape = RoundedCornerShape(16.dp),
-                                // --- ВОТ ЭТО УБИРАЕТ ВНУТРЕННИЙ PADDING ---
                                 contentPadding = PaddingValues(0.dp)
                             ) {
                                 Text(
@@ -346,7 +345,7 @@ fun GroupDetailPage(
             val savedStatusInDb = getStatusDate(student.student_id, selectedDate,
                 (TheRecievedData as? NetworkResponse.Success)?.data?.data?.group_attendance ?: emptyList())
 
-            // Логика корректировки: если статус изменился в UI, корректируем цифры для визуализации
+
             var finalSkips = baseSkips
             var finalPresents = basePresents
             var finalLates = baseLates

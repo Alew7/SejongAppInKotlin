@@ -83,7 +83,7 @@ const val TAG = "TAG_NavBar"
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun NavBar(modifier: Modifier = Modifier) {
-    val iconSize = 40.dp
+
     val navItemList = listOf(
         NavItem(R.drawable.ic_burger),  // index 0;
         NavItem(R.drawable.annousment), // index 1;
@@ -195,7 +195,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                                     .fillMaxWidth()
                                     .clickable  (
                                         indication = null,
-                                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                        interactionSource = remember { MutableInteractionSource() }
                                     ){
                                         isLanguageListExpanded = !isLanguageListExpanded
 

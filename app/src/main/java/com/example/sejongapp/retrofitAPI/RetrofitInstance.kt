@@ -1,5 +1,6 @@
 package com.example.sejongapp.retrofitAPI
 
+import com.example.sejongapp.Activities.AiActivity.api.Aiapi
 import com.example.sejongapp.retrofitAPI.api.ELibAPI
 import com.example.sejongapp.retrofitAPI.api.ScheduleApi
 import com.example.sejongapp.retrofitAPI.api.UserApi
@@ -18,7 +19,7 @@ object RetrofitInstance {
     private const val baseUrl = "https://sejong-app-container-847502443673.us-central1.run.app/api/"
 
     private const val digitalGradwbookUrl = "https://digital-gradebook-container-847502443673.us-central1.run.app"
-//      private const val digitalGradwbookUrl = "http://192.168.0.116:3000/"
+
 
 
 
@@ -55,12 +56,21 @@ object RetrofitInstance {
             .build()
     }
 
+    private fun getGeminiInstance(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
     // for 1st API
     val userApi: UserApi = getInstance().create(UserApi::class.java)
     val scheduleApi: ScheduleApi = getInstance().create(ScheduleApi::class.java)
     val eLibApi: ELibAPI = getInstance().create(ELibAPI::class.java)
     val AnnouncementsApi: announcementsApi = getInstance().create(announcementsApi::class.java)
     val ProgramupdateApi: programupdateApi = getInstance().create(programupdateApi::class.java)
+    val aiApi: Aiapi = getGeminiInstance().create(Aiapi::class.java)
 
 
     // 2 for 2st API
