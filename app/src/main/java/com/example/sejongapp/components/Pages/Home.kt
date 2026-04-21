@@ -348,125 +348,125 @@ fun HomePage(
 
 
             if (userData.status == UserStatusEnum.STUDENT) {
-//                Spacer(modifier = Modifier.height(24.dp))
-//                Card(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//
-//                        .padding(horizontal = 20.dp, vertical = 8.dp)
-//                        .scale(cardScale.value),
-//                    shape = RoundedCornerShape(20.dp),
-//                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-//                    colors = CardDefaults.cardColors(containerColor = Color.White)
-//                ) {
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(all = 20.dp),
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.SpaceBetween
-//                    ) {
-//                        // ЛЕВАЯ ЧАСТЬ (Иконка + Текст)
-//                        Row(
-//                            verticalAlignment = Alignment.CenterVertically,
-//                            modifier = Modifier.weight(1f)
-//                        ) {
-//                            Box(
-//                                modifier = Modifier
-//                                    .size(54.dp)
-//                                    .background(
-//                                        brush = Brush.linearGradient(
-//                                            colors = listOf(Color(0xFFBFA353), Color(0xFFE5D192))
-//                                        ),
-//                                        shape = RoundedCornerShape(18.dp)
-//                                    ),
-//                                contentAlignment = Alignment.Center
-//                            ) {
-//                                Icon(
-//                                    imageVector = Icons.Default.MenuBook,
-//                                    contentDescription = null,
-//                                    tint = Color.White,
-//                                    modifier = Modifier.size(26.dp)
-//                                )
-//                            }
-//
-//                            Spacer(modifier = Modifier.width(16.dp))
-//
-//                            Column {
-//                                Text(
-//                                    text = context.getString(R.string.Attendance),
-//                                    fontSize = 17.sp,
-//                                    fontWeight = FontWeight.ExtraBold,
-//                                    color = Color(0xFF1A1A1A),
-//                                    letterSpacing = 0.5.sp,
-//                                    maxLines = 1
-//                                )
-//
-//                                Spacer(modifier = Modifier.height(6.dp))
-//
-//                                Row(
-//                                    verticalAlignment = Alignment.CenterVertically,
-//                                    modifier = Modifier.wrapContentWidth()
-//                                ) {
-//                                    Surface(
-//                                        color = Color(0xFFE8F5E9),
-//                                        shape = RoundedCornerShape(8.dp)
-//                                    ) {
-//                                        Text(
-//                                            text = "12 " + context.getString(R.string.Lesson),
-//                                            fontSize = 11.sp,
-//                                            fontWeight = FontWeight.Bold,
-//                                            color = Color(0xFF2E7D32),
-//                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-//                                        )
-//                                    }
-//                                    Spacer(modifier = Modifier.width(8.dp))
-//                                    Text(
-//                                        text = "0" + context.getString(R.string.skips),
-//                                        fontSize = 12.sp,
-//                                        color = Color(0xFF757575),
-//                                        maxLines = 1
-//                                    )
-//                                }
-//                            }
-//                        }
-//
-//
-//                        Box(
-//                            modifier = Modifier
-//                                .padding(start = 8.dp)
-//                                .size(68.dp),
-//                            contentAlignment = Alignment.Center
-//                        ) {
-//                            CircularProgressIndicator(
-//                                progress = 1f,
-//                                modifier = Modifier.fillMaxSize(),
-//                                color = Color(0xFFF0F0F0),
-//                                strokeWidth = 7.dp
-//                            )
-//
-//                            CircularProgressIndicator(
-//                                progress = animatedprogress,
-//                                modifier = Modifier.fillMaxSize(),
-//                                color = dynamicProgressColor,
-//                                strokeWidth = 7.dp,
-//                                strokeCap = StrokeCap.Round
-//                            )
-//
-//                            Text(
-//                                text = "${(animatedprogress * 100).toInt()}%",
-//                                fontSize = 15.sp,
-//                                fontWeight = FontWeight.Black,
-//                                color = dynamicProgressColor
-//                            )
-//                        }
-//                    }
-//                }
+                Spacer(modifier = Modifier.height(24.dp))
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+
+                        .padding(horizontal = 20.dp, vertical = 8.dp)
+                        .scale(cardScale.value),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(all = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // ЛЕВАЯ ЧАСТЬ (Иконка + Текст)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(54.dp)
+                                    .background(
+                                        brush = Brush.linearGradient(
+                                            colors = listOf(Color(0xFFBFA353), Color(0xFFE5D192))
+                                        ),
+                                        shape = RoundedCornerShape(18.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.MenuBook,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(26.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            Column {
+                                Text(
+                                    text = context.getString(R.string.Attendance),
+                                    fontSize = 17.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color(0xFF1A1A1A),
+                                    letterSpacing = 0.5.sp,
+                                    maxLines = 1
+                                )
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.wrapContentWidth()
+                                ) {
+                                    Surface(
+                                        color = Color(0xFFE8F5E9),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text(
+                                            text = "12 " + context.getString(R.string.Lesson),
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF2E7D32),
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "0" + context.getString(R.string.skips),
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF757575),
+                                        maxLines = 1
+                                    )
+                                }
+                            }
+                        }
+
+
+                        Box(
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .size(68.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                progress = 1f,
+                                modifier = Modifier.fillMaxSize(),
+                                color = Color(0xFFF0F0F0),
+                                strokeWidth = 7.dp
+                            )
+
+                            CircularProgressIndicator(
+                                progress = animatedprogress,
+                                modifier = Modifier.fillMaxSize(),
+                                color = dynamicProgressColor,
+                                strokeWidth = 7.dp,
+                                strokeCap = StrokeCap.Round
+                            )
+
+                            Text(
+                                text = "${(animatedprogress * 100).toInt()}%",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Black,
+                                color = dynamicProgressColor
+                            )
+                        }
+                    }
+                }
 
 
             }
 
-            Spacer (modifier = Modifier.height(150.dp))
+            Spacer (modifier = Modifier.height(50.dp))
 
             //  КОНТЕНТ
             Column(

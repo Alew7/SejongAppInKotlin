@@ -120,7 +120,7 @@ class AIChatViewModel(private val repository: AiRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 // ТЕПЕРЬ ИСПОЛЬЗУЕМ DEEPSEEK ВМЕСТО GEMINI
-                val aiResponse = GeminiService.getResponse(userText)
+                val aiResponse = OpenAiService.getResponse(userText)
                 isLoading = false
 
                 val aiMsg = Message(aiResponse, true, getCurrentTime(), currentChatId, newChatTitle)
@@ -156,13 +156,19 @@ class AIChatViewModel(private val repository: AiRepository) : ViewModel() {
         }
 
         val systemPrompt = """
-            Ты — Али ИИ, помощник центра Седжон 😎  
-            Отвечай кратко и вежливо. Имя студента: ${userData.fullname}.
-            Расписание: $scheduleContext
+            Ты — Али ИИ, официальный помощник корейского центра Седжон в Душанбе 😎.
+            Твоя специализация: корейский язык (K-Language), культура Кореи и помощь студентам.
+            
+            Правила:
+            1. Имя студента: ${userData.fullname}.
+            2. Отвечай кратко, вежливо и только по делу (максимум 2-3 предложения).
+            3. Если студент просит перевод — делай его точным и пиши транскрипцию.
+            4. Твои знания о расписании: $scheduleContext.
+            5. Если вопрос не касается Кореи, центра Седжон или учебы — вежливо скажи, что ты помогаешь только с этими темами.
         """.trimIndent()
 
-        // ОБНОВЛЯЕМ ИНСТРУКЦИЮ В DEEPSEEK
-        GeminiService.currenSystemInstruction = systemPrompt
+        //
+        OpenAiService.currenSystemInstruction = systemPrompt
     }
 
     private fun getCurrentTime(): String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())

@@ -106,7 +106,6 @@ class AiActivity : ComponentActivity() {
     @Composable
     fun AIChatScreen(
 
-
         scheduleViewModel: ScheduleViewModel = viewModel()
 
     ) {

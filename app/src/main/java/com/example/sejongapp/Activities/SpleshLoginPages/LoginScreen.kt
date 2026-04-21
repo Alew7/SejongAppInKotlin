@@ -60,7 +60,6 @@ import com.example.sejongapp.ui.theme.primaryColor
 const val TAG = "Login_TAG"
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen () {

@@ -29,21 +29,23 @@ data class ForDatabase(
     val answer: String
 )
 
-data class DeepSeekRequest(
-    val model: String = "deepseek-chat",
-    val messages: List<DeepSeekMessage>,
-    val stream: Boolean = false
+
+data class OpenAiRequest(
+    val model: String = "gpt-5.4-nano",
+    val messages: List<OpenAiMessage>,
+    val stream: Boolean = false,
+
 )
 
-data class DeepSeekMessage(
+data class OpenAiMessage(
     val role: String,
     val content: String
 )
 
-data class DeepSeekResponse(
-    val choices: List<DeepSeekChoice>
+data class OpenAiResponse(
+    val choices: List<OpenAiChoice>
 )
 
-data class DeepSeekChoice(
-    val message: DeepSeekMessage
+data class OpenAiChoice(
+    val message: OpenAiMessage
 )
