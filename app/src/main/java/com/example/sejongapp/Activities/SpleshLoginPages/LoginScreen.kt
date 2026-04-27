@@ -60,7 +60,6 @@ import com.example.sejongapp.ui.theme.primaryColor
 const val TAG = "Login_TAG"
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen () {
@@ -135,12 +134,10 @@ fun LoginScreen () {
                       Icons.Filled.Visibility
                     else Icons.Filled.VisibilityOff
 
-                    val description = if (passwordVisible) "Hide password" else "Show password"
-
                     IconButton(onClick = {passwordVisible = !passwordVisible}){
                         Icon (
                             imageVector = image,
-                            contentDescription = description,
+                            contentDescription = null,
                             tint = WarmBeige
                         )
                     }

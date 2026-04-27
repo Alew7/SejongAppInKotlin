@@ -1,925 +1,305 @@
 package com.example.sejongapp.components
 
-import android.net.Uri
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.rememberTransformableState
-import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.*
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import coil.compose.rememberImagePainter
-import com.example.sejongapp.R
-import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
-import com.example.sejongapp.ui.theme.backgroundColor
-import com.example.sejongapp.ui.theme.darkGray
-import com.example.sejongapp.ui.theme.deepBlack
-import com.example.sejongapp.ui.theme.primaryColor
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.IntSize
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserInfo
-import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserPassword
-import com.example.sejongapp.models.ViewModels.UserViewModels.UserViewModel
-import com.example.sejongapp.retrofitAPI.NetworkResponse
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
+import com.example.sejongapp.R
 
 
 @Composable
 fun showError(errorMessage: String, onDismiss: () -> Unit) {
-    var theMessage: String
-    if (errorMessage.contains("Failed to connect")){
-        theMessage = LocalContext.current.getString(R.string.Server_issue)
-    }
-    else{
-        theMessage = LocalContext.current.getString(R.string.Error_fetching_data)
-    }
-    
-
-    AlertDialog(
-        onDismissRequest = { },
-        containerColor = backgroundColor, // soft background
-        shape = RoundedCornerShape(20.dp), // elegant rounded shape
-        tonalElevation = 8.dp, // subtle shadow
-        title = {
-            Text(
-                text = stringResource(R.string.error),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = deepBlack
-            )
-        },
-        text = {
-            Text(
-                text = theMessage,
-                fontSize = 16.sp,
-                color = darkGray,
-                lineHeight = 20.sp
-            )
-        },
-        confirmButton = {
-            Button(
-                onClick = { onDismiss() },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primaryColor,
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .height(45.dp)
-            ) {
-                Text(
-                    text = "OK",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        }
-    )
-}
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EditUserDialog(
-    userData: UserData,
-    onDismiss: () -> Unit,
-    onSave: (ChangeUserInfo) -> Unit
-) {
-    var UsernameState by remember { mutableStateOf(userData.username) } /// userData.username
-    var emailState by remember { mutableStateOf(userData.email)}  /// userData.email
-    var isUserInfoExpanded by remember { mutableStateOf(false)}
-
     val context = LocalContext.current
-    val isFormValid = UsernameState.isNotBlank() && emailState.isNotBlank()
 
+    val theMessage = if (errorMessage.contains("Failed to connect")) {
+        context.getString(R.string.Server_issue)
+    } else {
+        context.getString(R.string.Error_fetching_data)
+    }
 
-
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.Asset("Error.lottie")
+    )
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        containerColor = backgroundColor,
-        shape = RoundedCornerShape(20.dp),
-        tonalElevation = 8.dp,
-        title = {
-            Text(
-                text = context.getString(R.string.Edit_profile),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = deepBlack
-            )
-        },
+        containerColor = Color.White,
+        shape = RoundedCornerShape(32.dp),
+        modifier = Modifier.fillMaxWidth(0.85f),
+        confirmButton = {},
+        title = null,
         text = {
             Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                Card (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding (vertical = 8.dp),
-                    shape = RoundedCornerShape(15.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(
-//                        modifier = Modifier.animateContentSize( animationSpec = tween(durationMillis = 300, easing = LinearOutSlowInEasing))
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
-                                ) {
-                                    isUserInfoExpanded = !isUserInfoExpanded
-                                }
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Profile",
-                                modifier = Modifier.size(28.dp)
-                            )
-
-                            Text(
-                                text = context.getString(R.string.Edit_profile),
-                                modifier = Modifier.padding(start = 12.dp)
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            Icon(
-                                imageVector = if (isUserInfoExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = "Toggle Edit User",
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-
-
-                        if (isUserInfoExpanded) {
-
-                            OutlinedTextField(
-                                value = UsernameState,
-                                onValueChange = { UsernameState = it },
-                                label = { Text("Username") },
-                                shape = RoundedCornerShape(12.dp),
-                                singleLine = true,
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedTextColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedBorderColor = primaryColor,
-                                    focusedLabelColor = Color.Black,
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 6.dp)
-                            )
-
-                            OutlinedTextField(
-                                value = emailState,
-                                onValueChange = { emailState = it },
-                                label = { Text("Email") },
-                                shape = RoundedCornerShape(12.dp),
-                                singleLine = true,
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedTextColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedBorderColor = primaryColor,
-                                    focusedLabelColor = Color.Black,
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 6.dp)
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    val newUserData = ChangeUserInfo(
-                        username = UsernameState,
-                        email = emailState,
-                    )
-                    onSave(newUserData)
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isFormValid) primaryColor else Color.Red,
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.height(45.dp),
-                enabled = isFormValid
-            ) {
-                Text(context.getString(R.string.Save), fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            }
-        },
-        dismissButton = {
-            OutlinedButton(
-                onClick = { onDismiss() },
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.height(45.dp),
-
-                ) {
-                Text(context.getString(R.string.Cancel), fontSize = 16.sp, color = Color.Black)
-            }
-        }
-    )
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EditUserPasswordDialog(
-    onDismiss: () -> Unit,
-    onSave: (ChangeUserPassword) -> Unit
-) {
-    var oldPassword by remember { mutableStateOf("") }
-    var newPassword by remember { mutableStateOf("") }
-    var isPasswordInfoExpanded by remember { mutableStateOf(false)}
-
-    val isFormValid = oldPassword.isNotBlank() && newPassword.isNotBlank()
-
-    val context = LocalContext.current
-
-    val userViewModel : UserViewModel = viewModel ()
-    val userAvatarResult = userViewModel.userAvatarResult.observeAsState()
-
-    var isLoading = userAvatarResult.value is NetworkResponse.Loading
-
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        containerColor = backgroundColor,
-        shape = RoundedCornerShape(20.dp),
-        tonalElevation = 8.dp,
-        title = {
-            Text(
-                text = "Изменить пароль",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = deepBlack
-            )
-        },
-        text = {
-            Column {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(15.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) {
-                                    isPasswordInfoExpanded = !isPasswordInfoExpanded
-                                }
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = "Password",
-                                modifier = Modifier.size(28.dp)
-                            )
-
-                            Text(
-                                text = context.getString(R.string.Change_password),
-                                modifier = Modifier.padding(start = 12.dp)
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            Icon(
-                                imageVector = if (isPasswordInfoExpanded)
-                                    Icons.Default.KeyboardArrowUp
-                                else
-                                    Icons.Default.KeyboardArrowDown,
-                                contentDescription = "Toggle Password Edit",
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-
-                        if (isPasswordInfoExpanded) {
-
-                            OutlinedTextField(
-                                value = oldPassword,
-                                onValueChange = { oldPassword = it },
-                                label = { Text(context.getString(R.string.old_password))},
-                                shape = RoundedCornerShape(12.dp),
-                                singleLine = true,
-                                visualTransformation = PasswordVisualTransformation(),
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedTextColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedBorderColor = primaryColor,
-                                    focusedLabelColor = Color.Black,
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 6.dp)
-                            )
-
-                            OutlinedTextField(
-                                value = newPassword,
-                                onValueChange = { newPassword = it },
-                                label = { Text(context.getString(R.string.new_password)) },
-                                shape = RoundedCornerShape(12.dp),
-                                singleLine = true,
-                                visualTransformation = PasswordVisualTransformation(),
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedTextColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedBorderColor = primaryColor,
-                                    focusedLabelColor = Color.Black,
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 6.dp)
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-
-                        var TheChangedPassword =  ChangeUserPassword(
-                            check_password = oldPassword,
-                            password = newPassword
-                        )
-                        onSave(TheChangedPassword)
-                          },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primaryColor,
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.height(45.dp),
-                enabled = isFormValid
-            ) {
-                Text(context.getString(R.string.Save), fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            }
-        },
-        dismissButton = {
-            OutlinedButton(
-                onClick = { onDismiss() },
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.height(45.dp)
-            ) {
-                Text(context.getString(R.string.Cancel), fontSize = 16.sp, color = Color.Black)
-            }
-        }
-    )
-}
-
-/*
- CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.secondary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                // 1. Анимация
+                LottieAnimation(
+                    composition = composition,
+                    iterations = 1,
+                    modifier = Modifier.size(130.dp)
                 )
- */
 
+                // 2. Заголовок
+                Text(
+                    text = stringResource(R.string.error).uppercase(),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFFD32F2F),
+                    letterSpacing = 1.sp
+                )
 
-@Composable
-fun EditAvatarUser(
-    userData: UserData,
-    onDismiss: () -> Unit,
-    onSave: (Uri) -> Unit
-) {
-    val context = LocalContext.current
-    var selectedUri by remember { mutableStateOf<Uri?>(null) }
-    var tempAvatar by remember { mutableStateOf(userData.avatar) }
+                Spacer(modifier = Modifier.height(12.dp))
 
+                // 3. Сообщение
+                Text(
+                    text = theMessage,
+                    fontSize = 15.sp,
+                    color = Color.DarkGray,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    lineHeight = 20.sp
+                )
 
+                Spacer(modifier = Modifier.height(32.dp))
 
-
-
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        if (uri != null) {
-            selectedUri = uri
-            tempAvatar = uri.toString()
-        }
-    }
-
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        containerColor = backgroundColor,
-        shape = RoundedCornerShape(20.dp),
-        tonalElevation = 8.dp,
-        title = { Text(text = context.getString(R.string.Change_Avatar))},
-        text = {
-            Column {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-
-                    Image(
-                        painter = rememberImagePainter(tempAvatar),
-                        contentDescription = "userAvatar",
-                        modifier = Modifier.size(100.dp).clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
 
                 Button(
-                    onClick = { imagePickerLauncher.launch("image/*") },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    onClick = { onDismiss() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFD32F2F),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(18.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                 ) {
-                    Text(text = context.getString(R.string.Choose_new_avatar))
+                    Text(
+                        text = "OK",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
                 }
             }
-        },
-        confirmButton = {
-            Button(
-
-                onClick = {
-                    selectedUri?.let { uri ->
-                        onSave(uri)
-                    } ?: Toast.makeText(context, "Please select an image", Toast.LENGTH_SHORT).show()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text (text = context.getString(R.string.Save))
-            }
-
-
-        },
-        dismissButton = {
-            OutlinedButton(onClick = { onDismiss() }, shape = RoundedCornerShape(12.dp)) {
-                Text(context.getString(R.string.Cancel), color = Color.Black)
-            }
-
         }
     )
 }
-
-
-
-
-
 
 
 @Composable
 fun LoadingDialog(
     message: String = "Loading..."
 ) {
-    AlertDialog(
-        onDismissRequest = { /* Block dismiss while loading */ },
-        confirmButton = {}, // no buttons
-        title = null,
-        text = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                CircularProgressIndicator(
-                    color = primaryColor,
-                    strokeWidth = 3.dp,
-                    modifier = Modifier
-                        .padding(top = 5.dp)
-
-                )
-                Text(
-                    text = message,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = darkGray,
-                    modifier = Modifier.padding(start = 15.dp,top = 5.dp)
-                )
-            }
-        },
-        containerColor = backgroundColor,
-        shape = RoundedCornerShape(16.dp),
-        tonalElevation = 8.dp
-    )
-}
-
-
-@Composable
-fun ImageGalleryDialog(
-    images: List<String>,
-    startIndex: Int = 0,
-    onDismiss: () -> Unit
-) {
-    var selectedImageIndex by remember { mutableStateOf(startIndex) }
-    val pagerState = rememberPagerState(initialPage = selectedImageIndex)
-
-    Dialog(
-        onDismissRequest = { onDismiss() },
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.95f))
-        ) {
-
-            // Основное изображение с зумом
-            HorizontalPager(
-                count = images.size,
-                state = pagerState,
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                ZoomableImage(
-                    url = images[page],
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.85f)
-                        .clip(RoundedCornerShape(16.dp))
-                )
-            }
-
-            // Текст с номером страницы
-            Text(
-                text = "${pagerState.currentPage + 1} / ${images.size}",
-                color = Color.White,
-                fontSize = 18.sp,
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 28.dp)
-            )
-
-            // Кнопка закрытия
-            IconButton(
-                onClick = { onDismiss() },
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Close",
-                    tint = Color.White
-                )
-            }
-
-
-            LazyRow(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
-            ) {
-                itemsIndexed(images) { index, url ->
-                    Card(
-                        shape = RoundedCornerShape(8.dp), // квадратная форма
-                        border = if (pagerState.currentPage == index)
-                            BorderStroke(2.dp, Color.White)
-                        else null,
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clickable {
-                                selectedImageIndex = index
-                            }
-                    ) {
-                        Image(
-                            painter = rememberImagePainter(url),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                }
-            }
-
-
-            LaunchedEffect(selectedImageIndex) {
-                pagerState.scrollToPage(selectedImageIndex)
-            }
-        }
-    }
-}
-
-
-@Composable
-fun ZoomableImage(
-    url: String,
-    modifier: Modifier = Modifier
-) {
-    var scale by remember { mutableStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
-
-    var containerSize by remember { mutableStateOf(IntSize.Zero) }
-
-    val painter = rememberImagePainter(url)
-
-    val state = rememberTransformableState { zoomChange, panChange, _ ->
-        scale = (scale * zoomChange).coerceIn(1f, 5f)
-
-
-        val newOffset = offset + panChange
-
-
-        offset = limitOffset(
-            newOffset = newOffset,
-            scale = scale,
-            containerSize = containerSize
-        )
-    }
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color.Black)
-            .onGloballyPositioned {
-                containerSize = it.size
-            }
-            .transformable(state)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onDoubleTap = {
-                        if (scale > 1f) {
-                            scale = 1f
-                            offset = Offset.Zero
-                        } else {
-                            scale = 2f
-                        }
-                    }
-                )
-            }
-            .graphicsLayer(
-                scaleX = scale,
-                scaleY = scale,
-                translationX = offset.x,
-                translationY = offset.y
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painter,
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-}
-
-
-
-
-fun limitOffset(
-    newOffset: Offset,
-    scale: Float,
-    containerSize: IntSize
-): Offset {
-    if (scale <= 1f) return Offset.Zero
-
-    val maxX = (containerSize.width * (scale - 1)) / 2f
-    val maxY = (containerSize.height * (scale - 1)) / 2f
-
-    val limitedX = newOffset.x.coerceIn(-maxX, maxX)
-    val limitedY = newOffset.y.coerceIn(-maxY, maxY)
-
-    return Offset(limitedX, limitedY)
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-
-@Composable
-fun ReviewDialog(
-    onDismiss: () -> Unit,
-    onSend: (rating: Int, text: String) -> Unit
-) {
-    var rating by remember { mutableStateOf(5) }
-    var text by remember { mutableStateOf("") }
     val context = LocalContext.current
 
 
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                // Шапка
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(primaryColor)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Text(
-                        text = "SejongApp",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                    IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.align(Alignment.CenterEnd).size(24.dp)
-                    ) {
-                        Icon(Icons.Default.Close, contentDescription = null, tint = Color.White)
-                    }
-                }
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.Asset("Loading.lottie")
+    )
 
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = context.getString(R.string.Leave_a_review), fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = context.getString(R.string.How_do_you_rate_our_service), fontSize = 14.sp, color = Color.Gray)
+    AlertDialog(
+        onDismissRequest = {  },
+        confirmButton = {},
+        containerColor = Color.White,
+        shape = RoundedCornerShape(28.dp),
+        modifier = Modifier.width(280.dp),
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                //  Lottie анимация
+                LottieAnimation(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever, // Крутится бесконечно
+                    modifier = Modifier.size(120.dp)
+                )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        repeat(5) { index ->
-                            LottieStar(
-                                isSelected = index < rating,
-                                onClick = { rating = index + 1 }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    OutlinedTextField(
-                        value = text,
-                        onValueChange = { text = it },
-                        placeholder = { Text(context.getString(R.string.Write_your_review_here), fontSize = 14.sp) },
-                        modifier = Modifier.fillMaxWidth().height(120.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            containerColor = Color(0xFFFCFCFC),
-                            unfocusedBorderColor = Color(0xFFE0E0E0),
-                            focusedBorderColor = Color.Gray,
-                            cursorColor = Color.Black
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = onDismiss,
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Gray)
-                        ) {
-                            Text(context.getString(R.string.Cancel))
-                        }
-
-                        Button(
-                            onClick = { onSend(rating, text)
-                                        Toast.makeText(context, context.getString(R.string.Review_sent_Thank_you), Toast.LENGTH_SHORT).show()
-                            },
-                            modifier = Modifier
-                                .weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text(context.getString(R.string.Send), color = Color.White)
-
-                        }
-                    }
-                }
+                // Текст сообщения
+                Text(
+                    text = message,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFBFA353),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
+    )
+}
+
+@Composable
+fun showSuccess(onFinished: () -> Unit) {
+
+
+    val context = LocalContext.current
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.Asset("SuccessForGradebook.lottie")
+    )
+
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = 1
+    )
+
+    LaunchedEffect(progress) {
+        if (progress == 1f) {
+            onFinished()
+        }
     }
+
+    AlertDialog(
+        onDismissRequest = { },
+        confirmButton = {},
+        containerColor = Color.White,
+        shape = RoundedCornerShape(28.dp),
+        modifier = Modifier.width(300.dp),
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                // Анимация Lottie
+                LottieAnimation(
+                    composition = composition,
+                    progress = { progress },
+                    modifier = Modifier.size(140.dp)
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+
+                Text(
+                    text = context.getString(R.string.Success),
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontSize = 22.sp,
+                    color = Color(0xFF1A1A1A),
+                    fontWeight = FontWeight.ExtraBold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                Text(
+                    text = context.getString(R.string.Attendance_data_saved_successfully),
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    )
 }
 
 
 @Composable
-fun LottieStar(
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
+fun showSuccesForReview(onFinished: () -> Unit) {
+
+
+    val context = LocalContext.current
     val composition by rememberLottieComposition(
-        LottieCompositionSpec.Asset("star.lottie")
+        LottieCompositionSpec.Asset("SuccessForGradebook.lottie")
     )
 
-    Box(
-        modifier = Modifier
-            .size(42.dp)
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = 1
+    )
 
-        Crossfade(
-            targetState = isSelected,
-            animationSpec = tween(durationMillis = 200),
-            label = "StarCrossfade"
-        ) { targetSelected ->
-            if (targetSelected) {
+    LaunchedEffect(progress) {
+        if (progress == 1f) {
+            onFinished()
+        }
+    }
 
+    AlertDialog(
+        onDismissRequest = { },
+        confirmButton = {},
+        containerColor = Color.White,
+        shape = RoundedCornerShape(28.dp),
+        modifier = Modifier.width(300.dp),
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                // Анимация Lottie
                 LottieAnimation(
                     composition = composition,
-                    iterations = 1,
-                    modifier = Modifier.fillMaxSize()
+                    progress = { progress },
+                    modifier = Modifier.size(140.dp)
                 )
-            } else {
 
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    tint = Color(0xFFE0E0E0),
-                    modifier = Modifier.fillMaxSize().padding(4.dp)
+                Spacer(modifier = Modifier.height(24.dp))
+
+
+                Text(
+                    text = context.getString(R.string.Success),
+                    fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
+                    fontSize = 22.sp,
+                    color = Color(0xFF1A1A1A),
+                    fontWeight = FontWeight.ExtraBold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                Text(
+                    text = context.getString(R.string.Review_sent_Thank_you),
+                    fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
                 )
             }
         }
-    }
+    )
 }
-
-

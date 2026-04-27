@@ -1,8 +1,6 @@
 package com.example.sejongapp.Activities.AppUpdate
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -23,23 +22,27 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.backgroundColor
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.R
@@ -48,266 +51,282 @@ import com.example.sejongapp.models.DataClasses.ProgramUpdateData
 import com.example.sejongapp.models.ViewModels.UserViewModels.ProgramUpdateViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
 
-@Preview(showBackground = true, showSystemUi = true)
+
 @Composable
 fun AppUpdateDesign() {
-
     val context = LocalContext.current
     val viewModel: ProgramUpdateViewModel = viewModel()
     val result = viewModel.programUpdate.observeAsState(NetworkResponse.Idle)
 
-
-    LaunchedEffect (Unit){
+    LaunchedEffect(Unit) {
         viewModel.getProgramUpdate(context)
     }
 
+    when (result.value) {
+        is NetworkResponse.Loading -> {
+            val composition by rememberLottieComposition(
 
-    when(result.value){
-        is NetworkResponse.Error -> {
-
-        }
-        NetworkResponse.Idle ->{
-
-        }
-        NetworkResponse.Loading -> {
+                LottieCompositionSpec.Asset(
+                    "Loading.lottie")
+            )
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 100.dp),
+                    .fillMaxSize(),
                 contentAlignment = Alignment.Center
-
             ) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.secondary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                LottieAnimation(
+                    composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier.size(120.dp)
                 )
             }
         }
         is NetworkResponse.Success -> {
             val proData = (result.value as NetworkResponse.Success<ProgramUpdateData>).data
-
             val localVersion = context.packageManager.getPackageInfo(context.packageName, 0).versionName
-
             val serverVersion = proData[0].version
 
-            if ( localVersion == serverVersion ) {
+            if (localVersion == serverVersion) {
                 AppIsUpdatedScreen(proData[0])
-                return
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(backgroundColor)
-                    .padding(20.dp)
-            ) {
-
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "ic_ArrowBack",
-                    tint = Color.Black,
-                    modifier = Modifier
-                        .size(60.dp)
-                        .padding(bottom = 16.dp,top = 10.dp)
-                        .clickable (
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-
-                        ) {
-                            (context as? appupdateactivity)?.finish()
-                        }
-                )
-
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                    shape = RoundedCornerShape(26.dp),
-                    colors = CardDefaults.cardColors(Color.White),
-                    elevation = CardDefaults.cardElevation(8.dp)
-                ) {
-                    Column(modifier = Modifier.padding(24.dp)) {
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.CloudDownload,
-                                contentDescription = "Download",
-                                tint = Color(0xFFBEA96A),
-                                modifier = Modifier.size(60.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(14.dp))
-
-                            Column {
-                                Text(
-                                    text = context.getString(R.string.Updates),
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.Black
-                                )
-
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                Text(
-                                    text =context.getString(R.string.Version) + proData[0].version,
-                                    fontSize = 17.sp,
-                                    color = Color.Black
-                                )
-
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                Text(
-                                    text = context.getString(R.string.New_update_available),
-                                    fontSize = 15.sp,
-                                    color = Color.Gray
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        // Что нового
-                        Text(
-                            text = context.getString(R.string.Whats_new),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = Color.Black
-                        )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        Text(
-                            text = proData[0].content.getLocalized(context),
-                            fontSize = 16.sp,
-                            color = Color.DarkGray,
-                            lineHeight = 22.sp
-                        )
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-
-                        Button(
-                            onClick = { },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(55.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFBEA96A),
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Text(text = context.getString(R.string.Update), fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                    }
-                }
+            } else {
+                NewUpdateAvailableScreen(proData[0])
             }
         }
+        else -> { /* Обработка ошибок */ }
     }
-
-
 }
 
-
-
-
-
-
 @Composable
-fun AppIsUpdatedScreen(proData: ProgramUpdate ) {
+fun NewUpdateAvailableScreen(update: ProgramUpdate) {
     val context = LocalContext.current
 
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
-            .padding(20.dp)
+            .padding(24.dp)
     ) {
-        Icon (
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "ic_ArrowBack",
-            tint = Color.Black,
-            modifier = Modifier
-                .size(60.dp)
-                .padding(bottom = 16.dp,top = 10.dp)
-                .clickable (
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    (context as? appupdateactivity)?.finish()
 
-                }
-        )
         Box (
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
+            Modifier.fillMaxWidth()
+                .padding(top = 8.dp)
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth()
-                    .wrapContentHeight(),
-                shape = RoundedCornerShape(28.dp),
-                colors = CardDefaults.cardColors(Color.White),
-                elevation = CardDefaults.cardElevation(8.dp)
-
+            Surface(
+                onClick = { (context as? appupdateactivity)?.finish() },
+                shape = CircleShape,
+                color = Color.White,
+                shadowElevation = 2.dp,
+                modifier = Modifier.size(45.dp)
             ) {
-                Column (
-                    modifier = Modifier.padding(24.dp).fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-
-                ) {
+                Box (
+                    contentAlignment = Alignment.Center
+                )  {
                     Icon (
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = "ic_Check",
-                        tint = Color(0xFFBEA96A),
-                        modifier = Modifier.size(60.dp)
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Icons.Default.ArrowBack,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(20.dp),
+                        tint = Color.Black
 
-                    Text (
-                        text = "Приложение актуально",
-                        fontSize = 22.sp,
-                        color = Color.Black,
+                    )
+                }
+            }
+
+        }
+
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(32.dp),
+            colors = CardDefaults.cardColors(Color.White),
+            elevation = CardDefaults.cardElevation(12.dp)
+        ) {
+            Column(modifier = Modifier.padding(28.dp)) {
+                // Иконка и Версия
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .background(Color(0xFFBEA96A).copy(0.1f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.CloudDownload,
+                            null,
+                            tint = Color(0xFFBEA96A),
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            stringResource(R.string.Updates),
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Black
+                        )
+                        Text(
+                            "${stringResource(R.string.Version)} ${update.version}",
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Разделитель
+                Box(
+                    Modifier.fillMaxWidth()
+                        .height(1.dp)
+                        .background(Color(0xFFEEEEEE)))
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Что нового
+                Text(
+                    stringResource(R.string.Whats_new),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = update.content.getLocalized(context),
+                    fontSize = 15.sp,
+                    color = Color.DarkGray,
+                    lineHeight = 22.sp
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Button(
+                    onClick = { /* Логика скачивания */ },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBEA96A))
+                ) {
+                    Text(
+                        stringResource(R.string.Update),
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
-
                     )
-                    Spacer (modifier = Modifier.height(5.dp))
-
-                    Text (
-                        text = "У вас установлена \n последняя версия",
-                        fontSize = 16.sp,
-                        color = Color.Gray,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-
-                    )
-                    Spacer (modifier = Modifier.height(5.dp))
-
-                    Text (
-                        text = "Версия: " + proData.version,
-                        fontSize = 16.sp,
-                        color = Color.Black,
-
-                    )
-
                 }
             }
         }
     }
 }
 
+@Composable
+fun AppIsUpdatedScreen(proData: ProgramUpdate) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Box(Modifier.fillMaxWidth().padding(top = 8.dp)) {
+            Surface(
+                onClick = { (context as? appupdateactivity)?.finish() },
+                shape = CircleShape,
+                color = Color.White,
+                shadowElevation = 2.dp,
+                modifier = Modifier.size(45.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = Color.Black
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.weight(0.4f))
 
 
+        Box(contentAlignment = Alignment.Center) {
+
+            Surface(
+                modifier = Modifier.size(160.dp),
+                shape = CircleShape,
+                color = Color(0xFF4CAF50).copy(alpha = 0.05f)
+            ) {}
+            Surface(
+                modifier = Modifier.size(120.dp),
+                shape = CircleShape,
+                color = Color(0xFF4CAF50).copy(alpha = 0.1f)
+            ) {}
 
 
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = null,
+                tint = Color(0xFF4CAF50),
+                modifier = Modifier.size(80.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // ТЕКСТОВЫЙ БЛОК
+        Text(
+            text = stringResource(R.string.app_up_to_date),
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Black,
+            color = Color(0xFF2D3436),
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = stringResource(R.string.latest_version_installed),
+            fontSize = 15.sp,
+            color = Color.Gray,
+            textAlign = TextAlign.Center,
+            lineHeight = 22.sp,
+            modifier = Modifier.padding(horizontal = 20.dp)
+        )
+
+        Spacer(modifier = Modifier.weight(0.6f))
 
 
+        Surface(
+            color = Color.White,
+            shape = RoundedCornerShape(20.dp),
+            shadowElevation = 4.dp,
+            modifier = Modifier.wrapContentSize()
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .background(Color(0xFF4CAF50), CircleShape)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
 
+                Text(
+                    text = "${stringResource(R.string.version_label)} ${proData.version}",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.DarkGray
+                )
+            }
+        }
 
-
-
-
+        Spacer(modifier = Modifier.height(40.dp))
+    }
+}

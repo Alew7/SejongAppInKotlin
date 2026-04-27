@@ -11,22 +11,31 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults.cardColors
+import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -40,8 +49,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.Activities.SpleshLoginPages.TAG
 import com.example.sejongapp.Activities.SpleshLoginPages.getAndSaveUserData
 import com.example.sejongapp.R
@@ -54,159 +70,138 @@ import com.example.sejongapp.ui.theme.WarmBeige
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginCheck(callback: (correctPassword: Boolean) -> Unit){
-
-
-
-
-    val userViewModel : UserViewModel = viewModel()
+fun LoginCheck(callback: (correctPassword: Boolean) -> Unit) {
+    val userViewModel: UserViewModel = viewModel()
     val teacherTokenResult = userViewModel.teacherTokenResult.observeAsState()
     val context = LocalContext.current
-    var passwordVisible by remember { mutableStateOf(false) }
 
-    var isLoading = teacherTokenResult.value is NetworkResponse.Loading
+    // Следим за состоянием загрузки
+    val isLoading = teacherTokenResult.value is NetworkResponse.Loading
 
     val token = LocalData.getSavedTeacherToken(context)
     val userData: UserData = LocalData.getUserData(context)
-    if (token != "null"){
+
+    // Если токен уже сохранен, сразу переходим к группам
+    if (token != "null") {
         callback(true)
-        return;
+        return
     }
 
+    // Тот самый пароль, который ты хочешь использовать по умолчанию
+    val hardcodedPassword = "1" // Вставь сюда пароль, который подходит
 
-
-    var password by remember {
-        mutableStateOf("")
-    }
-
-    Box (
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
-
     ) {
-        Column  (
+        // Декор
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Image (
-                painter = painterResource(R.drawable.ic_sejong),
-                contentDescription = "ic_sejong",
-                modifier = Modifier
-                    .size(200.dp),
-                contentScale = ContentScale.Fit
+                .size(250.dp)
+                .align(Alignment.TopEnd)
+                .offset(x = 80.dp, y = (-80).dp)
+                .background(primaryColor.copy(alpha = 0.15f), CircleShape)
+        )
 
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // Логотип
+            Surface(
+                shape = RoundedCornerShape(32.dp),
+                color = Color.White,
+                shadowElevation = 8.dp,
+                modifier = Modifier.size(110.dp)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_sejong),
+                    contentDescription = "Logo",
+                    modifier = Modifier.padding(16.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
 
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Text(
+                text = context.getString(R.string.Journal_Login),
+                fontSize = 26.sp,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Black,
+                color = Color(0xFF2D2D2D)
             )
-            Spacer(modifier = Modifier.height(35.dp))
+
+            Spacer(modifier = Modifier.height(10.dp))
 
 
 
-            Spacer(modifier = Modifier.height(35.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
-            OutlinedTextField(value = password, onValueChange = {
-                password = it
-
-            },label = {
-                Text(text = context.getString(R.string.password))
-
-            },
-                singleLine = true,
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    val image = if (passwordVisible)
-                        Icons.Filled.Visibility
-                    else Icons.Filled.VisibilityOff
-
-                    val description = if (passwordVisible) "Hide password" else "Show password"
-
-                    IconButton(onClick = {passwordVisible = !passwordVisible}){
-                        Icon (
-                            imageVector = image,
-                            contentDescription = description,
-                            tint = WarmBeige
-                        )
-                    }
-
-
-
-                },
-
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedTextColor = Color.Black,
-                    focusedBorderColor = primaryColor,
-                    focusedLabelColor = Color.Black,
-                    cursorColor = Color.Black
-
-                ))
-
-            Spacer(modifier = Modifier.height(35.dp))
-
-
-
-            Button (
-                shape = RoundedCornerShape(10.dp),
-
+            // Кнопка, которая отправляет запрос за токеном
+            Button(
                 onClick = {
                     if (!isLoading) {
-                        userViewModel.GradeBookLogin(userData.username ,password)
+                        // Отправляем логин пользователя и наш скрытый пароль
+                        userViewModel.GradeBookLogin(userData.username, hardcodedPassword)
                     }
-
                 },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primaryColor,
-                    contentColor = backgroundColor,
-                    disabledContainerColor = primaryColor,
-                    disabledContentColor = backgroundColor
-                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(65.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                elevation = ButtonDefaults.buttonElevation(4.dp),
                 enabled = !isLoading
             ) {
-
                 if (isLoading) {
                     CircularProgressIndicator(
                         color = Color.White,
-                        strokeWidth = 2.dp,
-                        modifier = Modifier
-                            .height(20.dp)
-                            .size(24.dp)
-                            .padding(bottom = 2.dp, start = 1.dp)
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 3.dp
                     )
-                }
-                else {
-                    Text (
-                        text = context.getString(R.string.Log_in)
+                } else {
+                    Text(
+                        text = context.getString(R.string.Confirm),
+                        fontSize = 18.sp,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                     )
                 }
             }
+        }
 
-            when(teacherTokenResult.value){
-                is NetworkResponse.Error -> {
-                    Log.e(TAG, "${(teacherTokenResult.value as NetworkResponse.Error).message}")
-                    isLoading = false
+        // Логика обработки ответа (NetworkResponse)
+        when (val result = teacherTokenResult.value) {
+            is NetworkResponse.Success -> {
+                LaunchedEffect(Unit) {
+                    Log.i("GradeBook", "Токен получен успешно")
+                    LocalData.setTeacherToken(context, result.data.auth_token)
                     userViewModel.resetTeacherResult()
-                    password = ""
-                    callback(false)
-                    }
-                NetworkResponse.Idle -> {}
-                NetworkResponse.Loading -> isLoading = true
-                is NetworkResponse.Success -> {
-                    isLoading = false
-                    Log.i(TAG, "token was ${(teacherTokenResult.value as NetworkResponse.Success<tokenData>).data}")
-
-                    LocalData.setTeacherToken(context,(teacherTokenResult.value as NetworkResponse.Success<tokenData>).data.auth_token)
-                    userViewModel.resetTeacherResult()
-                    callback(true)
+                    callback(true) // Показываем группы
                 }
-                null -> {}
-
             }
-
+            is NetworkResponse.Error -> {
+                LaunchedEffect(Unit) {
+                    Log.e("GradeBook", "Ошибка: ${result.message}")
+                    userViewModel.resetTeacherResult()
+                    // Если ошибка, можно вывести Toast или сообщение
+                }
+            }
+            else -> {}
         }
     }
-
 }
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun LoginCheckPreview(){
+    LoginCheck {  }
+}
+

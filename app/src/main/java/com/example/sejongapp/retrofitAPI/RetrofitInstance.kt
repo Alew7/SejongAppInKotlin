@@ -1,12 +1,12 @@
 package com.example.sejongapp.retrofitAPI
 
+import com.example.sejongapp.Activities.AiActivity.api.Aiapi
 import com.example.sejongapp.retrofitAPI.api.ELibAPI
 import com.example.sejongapp.retrofitAPI.api.ScheduleApi
 import com.example.sejongapp.retrofitAPI.api.UserApi
 import com.example.sejongapp.retrofitAPI.api.announcementsApi
 import com.example.sejongapp.retrofitAPI.api.programupdateApi
 import com.example.sejongapp.retrofitAPI.gradeBookapi.GroupsApi
-import com.example.sejongapp.retrofitAPI.gradeBookapi.SejongApiService
 import com.example.sejongapp.retrofitAPI.gradeBookapi.TeacherApi
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -16,17 +16,15 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
 
-    private const val baseUrl = "https://sejong-app-container-785993649958.us-central1.run.app/api/"
+    private const val baseUrl = "https://sejong-app-container-847502443673.us-central1.run.app/api/"
 
-    private const val digitalGradwbookUrl = "http://192.168.0.114:3000/"
+    private const val digitalGradwbookUrl = "https://digital-gradebook-container-847502443673.us-central1.run.app"
+
+
 
 
     val api: UserApi by lazy {
-        Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(UserApi::class.java)
+        getInstance().create(UserApi::class.java)
     }
 
 
@@ -48,9 +46,19 @@ object RetrofitInstance {
             .build()
 
     }
+
+
     private fun getGradeBookInstance(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(digitalGradwbookUrl)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    private fun getGeminiInstance(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -62,18 +70,11 @@ object RetrofitInstance {
     val eLibApi: ELibAPI = getInstance().create(ELibAPI::class.java)
     val AnnouncementsApi: announcementsApi = getInstance().create(announcementsApi::class.java)
     val ProgramupdateApi: programupdateApi = getInstance().create(programupdateApi::class.java)
+    val aiApi: Aiapi = getGeminiInstance().create(Aiapi::class.java)
 
 
     // 2 for 2st API
 
     val groupsApi: GroupsApi = getGradeBookInstance().create(GroupsApi::class.java)
     val teacherApi: TeacherApi = getGradeBookInstance().create(TeacherApi::class.java)
-    val sejongApiService: SejongApiService = getGradeBookInstance().create(SejongApiService::class.java)
 }
-
-
-
-
-
-
-

@@ -65,15 +65,25 @@ import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
 import kotlinx.coroutines.launch
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import com.example.sejongapp.Activities.GradeBookActivity.ChooseGroupDesign
 import com.example.sejongapp.Activities.GradeBookActivity.LoginCheck
-import com.example.sejongapp.Activities.GradeBookActivity.MagazineDesign
 import com.example.sejongapp.Activities.ProfileActivity.ProfileActivity
+import com.example.sejongapp.DialogModels.ReviewDialog
 import com.example.sejongapp.TelegramManager.TelegramManager
-import com.example.sejongapp.components.ReviewDialog
+import com.example.sejongapp.models.ViewModels.GradeBookViewModels.GroupDetailsViewModel
+import com.example.sejongapp.ui.theme.secondaryColor
 
 
 const val TAG = "TAG_NavBar"
@@ -83,7 +93,7 @@ const val TAG = "TAG_NavBar"
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun NavBar(modifier: Modifier = Modifier) {
-    val iconSize = 40.dp
+
     val navItemList = listOf(
         NavItem(R.drawable.ic_burger),  // index 0;
         NavItem(R.drawable.annousment), // index 1;
@@ -100,6 +110,9 @@ fun NavBar(modifier: Modifier = Modifier) {
     var showReviewDialog by remember { mutableStateOf(false) }
 
 
+
+
+    val groupDetailsViewModel: GroupDetailsViewModel = viewModel()
 
 
 
@@ -192,7 +205,7 @@ fun NavBar(modifier: Modifier = Modifier) {
                                     .fillMaxWidth()
                                     .clickable  (
                                         indication = null,
-                                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                        interactionSource = remember { MutableInteractionSource() }
                                     ){
                                         isLanguageListExpanded = !isLanguageListExpanded
 
@@ -419,53 +432,82 @@ fun NavBar(modifier: Modifier = Modifier) {
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-
-//            nav bar  btns  & Icons
+            containerColor = backgroundColor,
             bottomBar = {
-                NavigationBar(
-                    containerColor = backgroundColor,
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .drawBehind {
-                            val strokeWidth = 2.dp.toPx()
-                            drawLine(
-                                color = primaryColor,
-                                start = Offset(0f, 0f),
-                                end = Offset(size.width, 0f),
-                                strokeWidth = strokeWidth
-                            )
-                        }
+                        .padding(bottom = 20.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-//                    Each Icons
-                    navItemList.forEachIndexed { index, navItem ->
-                        NavigationBarItem(
-                            selected = selectedIndex == NavigationScreenEnum.entries[index],
-                            onClick = {
-                                if (index == 0) {
-                                    scope.launch { drawerState.open() }
-                                }
-                                else {
-                                    selectedIndex = NavigationScreenEnum.entries[index]
-                                }
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(70.dp),
+                        shape = RoundedCornerShape(30.dp),
+                        color = Color.White,
+                        shadowElevation = 10.dp
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            navItemList.forEachIndexed { index, navItem ->
 
-                            },
-                            icon = {
-                                Icon(
-                                    modifier = Modifier.size(24.dp), // 24
-                                    painter = painterResource(navItem.icon),
-                                    contentDescription = "Icon"
+                                val isSelected = selectedIndex == NavigationScreenEnum.entries[index]
 
-                                )
-                            },
-                            colors = NavigationBarItemDefaults.colors(
-                                indicatorColor = WarmBeige
-                            )
-                        )
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable(
+                                            interactionSource = remember { MutableInteractionSource() },
+                                            indication = null
+                                        ) {
+                                            if (index == 0) {
+                                                scope.launch { drawerState.open() }
+                                            } else {
+                                                selectedIndex = NavigationScreenEnum.entries[index]
+                                            }
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+
+
+                                    Box(
+                                        modifier = Modifier
+                                            .size(42.dp)
+                                            .background(
+                                                color = if (isSelected)
+                                                    secondaryColor.copy(alpha = 0.15f)
+                                                else
+                                                    Color.Transparent,
+                                                shape = CircleShape
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(navItem.icon),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(24.dp),
+                                            tint = if (isSelected)
+                                                secondaryColor
+                                            else
+                                                Color(0xFF9E9E9E)
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
         ) { innerPadding ->
-            ContentScreen(modifier = Modifier.padding(innerPadding), selectedIndex = selectedIndex,onChangeScreen = {index -> selectedIndex = index})
+            ContentScreen(
+                modifier = Modifier.padding(innerPadding),
+                selectedIndex = selectedIndex,
+                onChangeScreen = { index -> selectedIndex = index }
+            )
         }
     }
 }
@@ -477,17 +519,21 @@ fun NavBar(modifier: Modifier = Modifier) {
 fun ContentScreen (modifier: Modifier = Modifier,selectedIndex : NavigationScreenEnum,onChangeScreen : (NavigationScreenEnum) -> Unit) {
     when(selectedIndex) {
         NavigationScreenEnum.ANNOUNCEMENTS -> AnnousmentPage(onChangeScreen = onChangeScreen)
-        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen, viewModel = UserViewModel())
+        NavigationScreenEnum.HOMEPAGE -> HomePage(onChangeScreen = onChangeScreen,)
         NavigationScreenEnum.SCHEDULE -> Schedule(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.LIBRARY -> ElectronicLibraryPage(onChangeScreen = onChangeScreen)
         NavigationScreenEnum.SIDEBAR -> TODO() //it is for the sidebar only! no functions need to be applied
         NavigationScreenEnum.MAGAZINES -> {
 
-            var isLoggedIn by remember { mutableStateOf(false) }
+            val context = LocalContext.current
+            val teacherToken = remember { LocalData.getSavedTeacherToken(context) }
+            var hasAccess by remember { mutableStateOf(teacherToken != "null") }
 
-            if (!isLoggedIn) {
-                LoginCheck (){
-                    isLoggedIn = it
+
+
+            if (!hasAccess) {
+                LoginCheck { success ->
+                    if (success) hasAccess = true
                 }
             } else {
                 ChooseGroupDesign(onChangeScreen = onChangeScreen)
@@ -554,16 +600,6 @@ fun openTelegram(context: Context,username: String) {
         context.startActivity(webIntent)
     }
 }
-
-
-
-//@Preview (showBackground = true, showSystemUi = true)
-//@Composable
-//private  fun Preview () {
-//    NavBar()
-//}
-
-
 
 
 

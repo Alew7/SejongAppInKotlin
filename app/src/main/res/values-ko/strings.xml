@@ -9,7 +9,12 @@
     <string name="ElectLib">전자 도서관</string>
     <string name="schedule">시간표</string>
     <string name="Profile">프로필</string>
-    <string name="Magazine">잡지"</string>
+    <string name="GradeBook">잡지"</string>
+    <string name="My_group">저 그룹</string>
+    <string name="Group_Journal"> 그룹 일지</string>
+
+
+    <string name="nothing_found">검색 결과가 없습니다</string>
 
     <string name="Attendance">출석률</string>
     <string name="Lesson">수업</string>
@@ -42,6 +47,8 @@
     <string name = "DAY">날</string>
     <string name="TIME">시간</string>
     <string name="CLASS">교실</string>
+    <string name="teacher">선생님</string>
+    <string name="BOOK">책</string>
     <string-array name="week_days">
         <item>월</item>
         <item>화</item>
@@ -91,15 +98,47 @@
     <string name="New_update_available">새로운 업데이트가 있습니다</string>
     <string name="Version">버전</string>
 
+    <string name="app_up_to_date">앱이 최신 상태입니다</string>
+    <string name="latest_version_installed">최신 버전이\n설치되어 있습니다</string>
+    <string name="version_label">버전:</string>
+
 
 
     <!--  for Magazin -->
     <string name="Select_a_group_for_logging">기록할 그룹을 선택하세요</string>
     <string name="My_groups">내 그룹</string>
-    <string name="Group_Gradebook">그룹 성적부</string>
+    <string name="Group_Gradebook">학급 성적부</string>
     <string name="attendance_gradebook">출석부</string>
-    <string name="Save_Report">보고서 저장</string>
+    <string name="Save_Report">리포트 저장</string>
 
+    <string name="present">출석</string>
+    <string name="late">지각</string>
+    <string name="absent">결석</string>
+
+    <string name="Journal_Login">출석부 입장</string>
+    <string name="Access_Password">접근 비밀번호</string>
+    <string name="Confirm">확인</string>
+
+    <string name="Live_Statistics">실시간 통계</string>
+    <string name="Academic_Performance">학업 성취도</string>
+
+    <string name="Teacher">선생님</string>
+    <string name="Confirm_selection">선택 확인</string>
+    <string name="UnavailableFuture">사용 불가 (미래)</string>
+
+    <string name="Success">성공!</string>
+    <string name="Attendance_data_saved_successfully">출석부가 저장되었습니다.</string>
+
+<!--    for AiScreen -->
+
+        <string name="ali_history">Ali AI 기록</string>
+        <string name="start_new_chat">새 채팅 시작</string>
+        <string name="hello">안녕하세요</string>
+        <string name="where_start">무엇부터 시작할까요?</string>
+        <string name="lesson_today">오늘 수업이 있나요?</string>
+        <string name="loading_schedule">Ali AI가 아직 일정표를 불러오는 중입니다...</string>
+        <string name="ask_ali">Ali AI에게 물어보세요...</string>
+        <string name="ali_typing">Ali AI가 입력 중입니다...</string>
 
 
 </resources>

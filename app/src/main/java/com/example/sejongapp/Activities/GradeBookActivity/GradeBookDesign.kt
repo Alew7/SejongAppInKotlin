@@ -1,6 +1,7 @@
 package com.example.sejongapp.Activities.GradeBookActivity
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
@@ -23,10 +24,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
@@ -37,12 +40,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.backgroundColor
 import com.example.sejongapp.Activities.AnnousmentActivity.ui.theme.primaryColor
-
+import com.example.sejongapp.Activities.GradeBookActivity.components.InfoSelectionCard
+import com.example.sejongapp.Activities.GradeBookActivity.components.LessonDateBottomSheet
+import com.example.sejongapp.Activities.GradeBookActivity.components.StudentAttendanceItem
+import com.example.sejongapp.DialogModels.StudentInfoBottomSheet
 import com.example.sejongapp.R
+import com.example.sejongapp.components.showSuccess
+import com.example.sejongapp.models.DataClasses.StudentGroups.GroupDetailResponse
 import com.example.sejongapp.models.DataClasses.StudentGroups.Student
-import com.example.sejongapp.models.ViewModels.GradeBookViewModels.MagazineViewModel
+import com.example.sejongapp.models.DataClasses.StudentGroups.groupAttendanceData
+import com.example.sejongapp.models.DataClasses.apiResponse.StudentAttendanceRequest
+import com.example.sejongapp.models.ViewModels.GradeBookViewModels.GroupDetailsViewModel
+import com.example.sejongapp.retrofitAPI.NetworkResponse
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -50,528 +65,319 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MagazineDesign(
+fun GroupDetailPage(
     groupId: Int,
     groupName: String
-
 ) {
-    val viewModel: MagazineViewModel = viewModel ( key = "MagazineViewModel_$groupId" )
+
+
+    val studentAttendanceHashMap = remember { mutableStateMapOf<Int, StudentAttendanceRequest>() }
+    val viewModel: GroupDetailsViewModel = viewModel(key = "MagazineViewModel_$groupId")
+
+    val TheRecievedData by viewModel.data.collectAsStateWithLifecycle()
     val realStudents by viewModel.students.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val availlableDates by viewModel.availableDates.collectAsStateWithLifecycle()
     val selectedDate by viewModel.selectedData.collectAsStateWithLifecycle()
+    val attendanceRequest by viewModel.groupAttendanceRequest.collectAsStateWithLifecycle()
+
+    val allSkipsMap by viewModel.studentSkips.collectAsStateWithLifecycle()
+    val allPresentsMap by viewModel.studentPresents.collectAsStateWithLifecycle()
+
+
+    val allLatesMap by viewModel.studentLates.collectAsStateWithLifecycle()
+
+    // --- НОВОЕ СОСТОЯНИЕ ДЛЯ ИНФО-ОКНА ---
+    var selectedStudentForInfo by remember { mutableStateOf<Student?>(null) }
+    // -------------------------------------
 
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by remember { mutableStateOf(false) }
-    var tempSelectedDate by remember { mutableStateOf("") }
-
     val context = LocalContext.current
 
-
-
-    var triggerOpeningAnimatin by remember { mutableStateOf(false)}
-
-    LaunchedEffect (Unit){
-        kotlinx.coroutines.delay(300)
-        triggerOpeningAnimatin = true
-    }
-
-
-    LaunchedEffect(isSheetOpen) {
-        if (isSheetOpen) {
-            tempSelectedDate = selectedDate
-        }
-    }
-
     LaunchedEffect(groupId) {
-        viewModel.loadGroupData(groupId)
+        viewModel.loadGroupData(groupId, context)
     }
 
     val studentsData = remember { mutableStateMapOf<Int, String>() }
     val savedStates = remember { mutableStateMapOf<Int, Boolean>() }
 
-    LaunchedEffect(realStudents) {
+    LaunchedEffect(realStudents, selectedDate) {
+        val successData = (TheRecievedData as? NetworkResponse.Success<GroupDetailResponse>)?.data
+        val attendanceHistory = successData?.data?.group_attendance ?: emptyList()
+
         realStudents.forEach { student ->
-            if (!studentsData.containsKey(student.id)) {
-                studentsData[student.id] = "Был"
-                savedStates[student.id] = false
+            val savedStatus = getStatusDate(student.student_id, selectedDate, attendanceHistory)
+            val hasRecordInDatabase = attendanceHistory.any {
+                it.student_id == student.student_id.toString() &&
+                        convertDateToBackendFormat(selectedDate) == it.date
             }
+            studentsData[student.student_id] = savedStatus
+            savedStates[student.student_id] = hasRecordInDatabase
         }
     }
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(backgroundColor))
-    {
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-               .align(Alignment.Center),
-                color = primaryColor
-            )
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = context.getString(R.string.attendance_gradebook),
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold
-                )
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.Asset("Loading.lottie")
+    )
 
-                Spacer(modifier = Modifier.height(20.dp))
+    Box(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
+        when (attendanceRequest) {
+            is NetworkResponse.Error -> {}
+            NetworkResponse.Idle -> {
+                when (TheRecievedData) {
+                    is NetworkResponse.Loading -> {
+                        Box (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 100.dp),
+                            contentAlignment = Alignment.Center
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp))
-                {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f))
-                    {
-                        InfoSelectionCard(
-                            icon = Icons.Default.DateRange,
-                            text = if (selectedDate.isEmpty()) "Loading..." else selectedDate,
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                isSheetOpen = true
-                            }
-                        )
-                    }
-                    InfoSelectionCard(
-                        icon = Icons.Default.PeopleAlt,
-                        showArrow = false,
-                        text = groupName,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    items(realStudents) { student ->
-                        StudentAttendanceItem(
-                            student = student,
-                            currentStatus = studentsData[student.id] ?: "Был",
-                            isSaved = savedStates[student.id] ?: false,
-                            onStatusChange = { newStatus ->
-                                studentsData[student.id] = newStatus
-                                savedStates[student.id] = false
-                            }
-                        )
-                    }
-                }
-
-                Button(
-                    onClick = {
-                        realStudents.forEach { savedStates[it.id] = true } },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .padding(top = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Text(
-                        text = context.getString(R.string.Save_Report),
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
-                }
-            }
-        }
-
-
-
-        if (isSheetOpen) {
-            ModalBottomSheet(
-                onDismissRequest = { isSheetOpen = false },
-                sheetState = sheetState,
-                containerColor = Color.White,
-                dragHandle = { BottomSheetDefaults.DragHandle(color = primaryColor) }
-            ) {
-
-                val dateParts = tempSelectedDate.split(" ")
-                val currentMonth = if (dateParts.size >= 2) dateParts[1] else "January"
-                val currentYear = if (dateParts.size >= 3) dateParts[2] else "2026"
-
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, bottom = 40.dp))
-                {
-                    Text(
-                        text = "Выберите дату урока",
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    val daysOfWeek = listOf(
-                        "Mon",
-                        "Tue",
-                        "Wed",
-                        "Thu",
-                        "Fri",
-                        "Sat",
-                        "Sun"
-                    )
-
-                    Row(modifier = Modifier
-                        .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround)
-                    {
-                        daysOfWeek.forEach { Text(
-                            it,
-                            fontSize = 12.sp,
-                            color = Color.Gray,
-                            fontWeight = FontWeight.SemiBold)
+                        ) {
+                            LottieAnimation(
+                                composition = composition,
+                                iterations = LottieConstants.IterateForever,
+                                modifier = Modifier.size(100.dp)
+                            )
                         }
                     }
+                    is NetworkResponse.Success -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = context.getString(R.string.attendance_gradebook),
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold
+                            )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
 
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(7),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        val offset = getFirstDayOffset(currentMonth, currentYear)
-                        items(offset) { Spacer(modifier = Modifier.fillMaxSize()) }
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    InfoSelectionCard(
+                                        icon = Icons.Default.DateRange,
+                                        text = if (selectedDate.isEmpty()) "Loading..." else selectedDate,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onClick = { isSheetOpen = true }
+                                    )
+                                }
+                                InfoSelectionCard(
+                                    icon = Icons.Default.PeopleAlt,
+                                    showArrow = false,
+                                    text = groupName,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
 
-                        val daysInMonth = getDaysInMonth(currentMonth, currentYear)
-                        items(daysInMonth) { index ->
-                            val day = index + 1
-                            val dateString = "$day $currentMonth $currentYear"
-                            val isEnabled = availlableDates.contains(dateString)
-                            val isSelected = tempSelectedDate == dateString
-                            val isToday = !isDateInFuture(dateString)
-                            val isFuture = isDateInFuture(dateString)
+                            Spacer(modifier = Modifier.height(20.dp))
 
-                            val showLock = isEnabled && (isFuture || (isToday && !triggerOpeningAnimatin))
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                val responseData = (TheRecievedData as NetworkResponse.Success<GroupDetailResponse>).data
 
+                                items(
+                                    responseData.data.group_students,
+                                    key = { student -> student.student_id }
+                                ) { student ->
+                                    // Безопасно достаем скипы
+                                    val totalSkipsInHistory = (allSkipsMap[student.student_id.toString()] as? Int) ?: 0
 
-                            Box(
-                                modifier = Modifier
-                                    .aspectRatio(1f)
-                                    .clip(CircleShape)
-                                    .background(
-                                        when {
-                                            isSelected -> primaryColor
-                                            isEnabled && !isFuture -> primaryColor.copy(alpha = 0.15f)
-                                            else -> Color.Transparent
+                                    StudentAttendanceItem(
+                                        student = student,
+                                        currentStatus = studentsData[student.student_id] ?: "present",
+                                        isSaved = savedStates[student.student_id] ?: false,
+                                        allSkips = totalSkipsInHistory,
+                                        selectedData = selectedDate,
+                                        onClickListener = {
+                                            // ОТКРЫВАЕМ ОКНО ИНФО
+                                            selectedStudentForInfo = student
+                                        },
+                                        onStatusChange = { newStatus ->
+                                            studentsData[student.student_id] = newStatus
+                                            studentAttendanceHashMap[student.student_id] = StudentAttendanceRequest(
+                                                student_id = student.student_id,
+                                                group_id = groupId,
+                                                date = convertDateToBackendFormat(selectedDate),
+                                                status = newStatus,
+                                                group_name = groupName
+                                            )
+                                            savedStates[student.student_id] = false
                                         }
                                     )
-                                    .clickable(enabled = isEnabled && !isFuture) {
-                                        tempSelectedDate = dateString
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-
-                                AnimatedContent(
-                                    targetState = showLock,
-                                    transitionSpec = {
-
-                                        (fadeIn(animationSpec = tween(500)) + scaleIn(initialScale = 0.8f))
-                                            .togetherWith(fadeOut(animationSpec = tween(500)) + scaleOut(targetScale = 0.8f))
-                                    },
-                                    label = "LockToNumberTransition"
-                                ) { targetIsFuture ->
-                                    if (targetIsFuture) {
-
-                                        Icon(
-                                            imageVector = Icons.Default.Lock,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(16.dp),
-                                            tint = Color.LightGray.copy(alpha = 0.6f)
-                                        )
-                                    } else {
-
-                                        Text(
-                                            text = day.toString(),
-                                            fontSize = 16.sp,
-                                            fontWeight = if (isEnabled) FontWeight.Bold else FontWeight.Normal,
-                                            color = when {
-                                                isSelected -> Color.White
-                                                isEnabled && !isFuture -> primaryColor
-                                                else -> Color.Gray.copy(alpha = 0.4f)
-                                            }
-                                        )
-                                    }
                                 }
                             }
+                            Spacer (modifier = Modifier.height(16.dp))
+
+
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Button(
+                                onClick = {
+                                    val allStudents = (TheRecievedData as? NetworkResponse.Success<GroupDetailResponse>)?.data?.data?.group_students ?: emptyList()
+                                    val finalAttendanceList = allStudents.map { student ->
+                                        studentAttendanceHashMap[student.student_id] ?: StudentAttendanceRequest(
+                                            student_id = student.student_id,
+                                            group_id = groupId,
+                                            date = convertDateToBackendFormat(selectedDate),
+                                            status = studentsData[student.student_id] ?: "present",
+                                            group_name = groupName
+                                        )
+                                    }
+                                    if (finalAttendanceList.isNotEmpty()) {
+                                        viewModel.saveGroupAttendance(context, finalAttendanceList)
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .navigationBarsPadding()
+                                    .padding(horizontal = 16.dp)
+                                    .height(56.dp), // Фиксированная высота
+                                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                                shape = RoundedCornerShape(16.dp),
+                                contentPadding = PaddingValues(0.dp)
+                            ) {
+                                Text(
+                                    text = context.getString(R.string.Save_Report),
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+//                            Button(
+//                                onClick = {
+//                                    val allStudents = (TheRecievedData as? NetworkResponse.Success<GroupDetailResponse>)?.data?.data?.group_students ?: emptyList()
+//                                    val finalAttendanceList = allStudents.map { student ->
+//                                        studentAttendanceHashMap[student.student_id] ?: StudentAttendanceRequest(
+//                                            student_id = student.student_id,
+//                                            group_id = groupId,
+//                                            date = convertDateToBackendFormat(selectedDate),
+//                                            status = studentsData[student.student_id] ?: "present",
+//                                            group_name = groupName
+//                                        )
+//                                    }
+//                                    if (finalAttendanceList.isNotEmpty()) {
+//                                        viewModel.saveGroupAttendance(context, finalAttendanceList)
+//                                    }
+//                                },
+//                                modifier = Modifier.fillMaxWidth().height(56.dp).padding(bottom = 20.dp),
+//                                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+//                                shape = MaterialTheme.shapes.medium
+//                            ) {
+//                                Text(
+//                                    text = context.getString(R.string.Save_Report),
+//                                    color = Color.White,
+//                                    fontSize = 16.sp
+//                                )
+//                            }
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    val isFutureSelected = isDateInFuture(tempSelectedDate)
-                    Button(
-                        onClick = {
-                            viewModel.updateSelectedDate(tempSelectedDate)
-                            isSheetOpen = false
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isFutureSelected) Color(0xFFE0E0E0) else primaryColor
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = if (isFutureSelected) "Недоступно (Будущее)" else "Подтвердить выбор",
-                            color = if (isFutureSelected) Color.Gray else Color.White
-                        )
-                    }
+                    else -> {}
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun StudentAttendanceItem(
-    isSaved: Boolean,
-    student: Student,
-    currentStatus: String,
-    onStatusChange: (String) -> Unit
-) {
-    var isExpanded by remember { mutableStateOf(false) }
-    val isChecked = currentStatus != "Не был"
-
-
-    val totalNB = if (isSaved && currentStatus == "Не был") 1 else 0
-
-    val totalDamage = (totalNB * 14.2f).coerceIn(0f, 100f)
-    val healthFactor = (100f - totalDamage) / 100f
-
-    val animatedHealth by animateFloatAsState(
-        targetValue = healthFactor,
-        animationSpec = tween(800)
-    )
-
-
-    val targetColor = when {
-        currentStatus == "Опоздал" -> if (isSaved)
-            Color(0xFFFFF9C4)
-        else Color(0xFFE8F5E9)
-        healthFactor > 0.7f -> if (currentStatus == "Не был" && isSaved)
-            Color(0xFFC8E6C9)
-        else Color(0xFFE8F5E9)
-        else -> if (currentStatus == "Не был")
-            Color(0xFFEF5350)
-        else Color(0xFFE8F5E9)
-    }
-
-    val animatedBackground by
-    animateColorAsState(
-        targetValue = targetColor,
-        animationSpec = tween(600)
-    )
-
-    val statusTheme = when (currentStatus) {
-        "Не был" -> Color.Red to Icons.Default.Close
-        "Опоздал" -> Color(0xFFFFA500) to Icons.Default.Timer
-        else -> Color(0xFF4CAF50) to Icons.Default.Check
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(Color.White)
-            .drawBehind {
-                drawRect(
-                    color = animatedBackground,
-                    size = size.copy(width = size.width * animatedHealth)
+            NetworkResponse.Loading -> {
+                val composition by rememberLottieComposition(
+                    LottieCompositionSpec.Asset("Loading.lottie")
                 )
-            }
-            .animateContentSize()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(primaryColor.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = student.student_name_en.take(1).uppercase(),
-                    color = primaryColor,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                Text(
-                    text = student.student_name_en,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                if (!isExpanded) {
-                    Text(
-                        text = currentStatus,
-                        fontSize = 12.sp,
-                        color = statusTheme.first
-                    )
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .minimumInteractiveComponentSize()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        isExpanded = !isExpanded
-                    }
-            ) {
-                Switch(
-                    checked = isChecked,
-                    onCheckedChange = null,
-                    thumbContent = {
-                        Icon(
-                            imageVector = statusTheme.second,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                            tint = statusTheme.first
-                        )
-                    },
-                    colors = SwitchDefaults.colors(
-                        checkedTrackColor = statusTheme.first.copy(alpha = 0.2f),
-                        checkedThumbColor = Color.White,
-                        checkedBorderColor = statusTheme.first,
-                        uncheckedTrackColor = Color.Red.copy(alpha = 0.1f),
-                        uncheckedThumbColor = Color.White,
-                        uncheckedBorderColor = Color.Red
-                    )
-                )
-            }
-        }
-
-        if (isExpanded) {
-            val options = listOf("Был", "Опоздал", "Не был")
-            options.forEach { statusName ->
-                val icon = when(statusName) {
-                    "Был" -> Icons.Default.Check
-                    "Опоздал" -> Icons.Default.Timer
-                    else -> Icons.Default.Close
-                }
-                val itemColor = when (statusName) {
-                    "Не был" -> Color.Red
-                    "Опоздал" -> Color(0xFFFFA500)
-                    else -> primaryColor
-                }
-
-                Row(
+                Box (
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            onStatusChange(statusName)
-                            isExpanded = false
-                        }
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(top = 100.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        icon,
-                        contentDescription = null,
-                        tint = itemColor,
-                        modifier = Modifier.size(20.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Text(
-                        text = statusName,
-                        fontSize = 14.sp,
-                        color = if (currentStatus == statusName) itemColor else Color.Black,
-                        fontWeight = if (currentStatus == statusName) FontWeight.Bold else FontWeight.Normal
+                    LottieAnimation(
+                        composition = composition,
+                        iterations = LottieConstants.IterateForever,
+                        modifier = Modifier.size(100.dp)
                     )
                 }
             }
+            is NetworkResponse.Success<*> -> {
+                Box (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+
+
+
+                ) {
+                    showSuccess{
+                        viewModel.resetGroupAttendance()
+                    }
+                }
+
+
+            }
+        }
+
+        if (isSheetOpen) {
+            LessonDateBottomSheet(
+                sheetState = sheetState,
+                availableDates = availlableDates,
+                selectedDate = selectedDate,
+                onDismiss = { isSheetOpen = false },
+                onDateConfirm = { newChosenDate ->
+                    viewModel.updateSelectedDate(newChosenDate)
+                    isSheetOpen = false
+                }
+            )
+        }
+
+
+        if (selectedStudentForInfo != null) {
+            val student = selectedStudentForInfo!!
+            val sId = student.student_id.toString()
+
+            // 1. Берем данные из базы (которые уже сохранены)
+            val baseSkips = (allSkipsMap[sId] as? Int) ?: 0
+            val basePresents = (allPresentsMap[sId] as? Int) ?: 0
+            val baseLates = (allLatesMap[sId] as? Int) ?: 0
+
+
+            // Это нужно, чтобы статистика в инфо-окне обновилась ДО нажатия кнопки "Сохранить"
+            val currentStatus = studentsData[student.student_id]
+            val savedStatusInDb = getStatusDate(student.student_id, selectedDate,
+                (TheRecievedData as? NetworkResponse.Success)?.data?.data?.group_attendance ?: emptyList())
+
+
+            var finalSkips = baseSkips
+            var finalPresents = basePresents
+            var finalLates = baseLates
+
+            if (currentStatus != savedStatusInDb) {
+
+                when(savedStatusInDb) {
+                    "absent" -> finalSkips--
+                    "present" -> finalPresents--
+                    "late" -> finalLates--
+                }
+
+                when(currentStatus) {
+                    "absent" -> finalSkips++
+                    "present" -> finalPresents++
+                    "late" -> finalLates++
+                }
+            }
+
+            StudentInfoBottomSheet(
+                student = student,
+                allSkips = finalSkips.coerceAtLeast(0),
+                presents = finalPresents.coerceAtLeast(0),
+                lates = finalLates.coerceAtLeast(0),
+                onDismiss = { selectedStudentForInfo = null }
+            )
         }
     }
 }
 
-@SuppressLint("UnrememberedMutableInteractionSource")
-@Composable
-fun InfoSelectionCard(
-    icon: ImageVector,
-    showArrow: Boolean = true,
-    text: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
-) {
-    Card(
-        modifier = modifier
-            .height(48.dp)
-            .clickable(
-                interactionSource = MutableInteractionSource(),
-                indication = null
-            ) {
-                onClick()
-            },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(imageVector = icon,
-                    contentDescription = null,
-                    tint = primaryColor
-                )
 
-                Spacer(modifier = Modifier.width(9.dp))
 
-                Text(
-                    text,
-                    fontSize = 13.sp,
-                    color = Color.Black
-                )
-            }
-
-            if (showArrow) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = null,
-                    tint = primaryColor,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-    }
-}
 
 fun isDateInFuture(dateStr: String): Boolean {
     return try {
@@ -583,6 +389,8 @@ fun isDateInFuture(dateStr: String): Boolean {
         date?.after(today) ?: false
     } catch (e: Exception) { false }
 }
+
+
 
 fun getFirstDayOffset(month: String, year: String): Int {
     return try {
@@ -605,4 +413,31 @@ fun getDaysInMonth(month: String, year: String): Int {
             calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         } else 31
     } catch (e: Exception) { 31 }
+}
+
+fun convertDateToBackendFormat(dateStr: String): String {
+    return try {
+
+        val inputFormat = SimpleDateFormat("d MMMM yyyy", Locale.ENGLISH)
+
+
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
+
+        val date = inputFormat.parse(dateStr)
+        date?.let { outputFormat.format(it) } ?: dateStr
+    } catch (e: Exception) {
+        dateStr
+    }
+}
+
+fun getStatusDate(
+    studentId: Int,
+    dateStr: String,
+    attendance: List<groupAttendanceData>
+) : String {
+    val backendDate = convertDateToBackendFormat(dateStr)
+    val record = attendance.find {
+        it.student_id == studentId.toString() && it.date == backendDate
+    }
+    return record?.status ?: "present"
 }

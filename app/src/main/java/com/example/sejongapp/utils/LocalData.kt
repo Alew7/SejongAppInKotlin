@@ -39,6 +39,7 @@ object LocalData {
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
         val editor = prefs.edit()
         editor.remove("token").apply()
+        editor.remove("TeacherToken").apply()
         Log.i("Token_TAG", "Token after deletion: ${prefs.getString("token", "null")}")
 
         Log.i("Token_TAG", "The token has deleted")
@@ -48,6 +49,7 @@ object LocalData {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(intent)
     }
+
 
 
     fun getSavedTeacherToken(context: Context): String {
@@ -98,13 +100,15 @@ object LocalData {
         val prefs = context.getSharedPreferences("Settings", MODE_PRIVATE)
         val statusOrdinal: Int = prefs.getInt("status", UserStatusEnum.UNKNOWN.ordinal)
         val status: UserStatusEnum = UserStatusEnum.fromOrdinal(statusOrdinal)
+
         return UserData(
             prefs.getString("username", "null") ?: "null",
             prefs.getString("avatar", "null") ?: "null",
             prefs.getString("fullname", "null") ?: "null",
             prefs.getString("email", "null") ?: "null",
             status,
-            prefs.getString("groups", "null")?.split(",") ?: listOf()
+            prefs.getString("groups", "null")?.split(",") ?: listOf(),
+            gradebook_id = prefs.getString("gradebook_id", "0") ?: "0"
         )
     }
 
@@ -137,37 +141,29 @@ object LocalData {
 
 
 
-    fun compressImageToTempFile(context: Context, uri: Uri, quality: Int): File? {
-        try {
-            // 1. Get the InputStream from the original URI
-            val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-            val originalBitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
 
-            // 2. Prepare a ByteArrayOutputStream for compression
-            val outputStream = ByteArrayOutputStream()
 
-            // 3. Compress the Bitmap (e.g., to JPEG, 75% quality)
-            originalBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
-            val compressedBytes = outputStream.toByteArray()
+    fun compressImageToTempFile(
+        context: Context,
+        bitmap: Bitmap,
+        quality: Int
+    ): File? {
+        return try {
 
-            // 4. Create a new temporary file to store the compressed data
-            val compressedFile = File(context.cacheDir, "compressed_avatar_${System.currentTimeMillis()}.jpg")
+            val compressedFile = File(
+                context.cacheDir,
+                "compressed_avatar_${System.currentTimeMillis()}.jpg"
+            )
+
             FileOutputStream(compressedFile).use { fos ->
-                fos.write(compressedBytes)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fos)
             }
 
-            // Recycle the original bitmap if you don't need it anymore
-            originalBitmap.recycle()
+            compressedFile
 
-            return compressedFile
         } catch (e: Exception) {
             e.printStackTrace()
-            return null
+            null
         }
     }
-
-
-
-
-
 }

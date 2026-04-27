@@ -3,7 +3,9 @@ package com.example.sejongapp.components.Pages
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,10 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.ModifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.models.DataClasses.ElectronicBookData
@@ -50,8 +54,8 @@ fun ShowBook(book: ElectronicBookData, dowloadVM: DownloadViewModel){
 
     Card(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
+            .fillMaxWidth()
+            .padding(12.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFDF5)), // light background
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -77,8 +81,9 @@ fun ShowBook(book: ElectronicBookData, dowloadVM: DownloadViewModel){
                 painter =  rememberImagePainter(data = book.cover),
                 contentDescription = "Book cover",
                 modifier = Modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .fillMaxWidth(0.6f)
+                    .aspectRatio(0.7f)
+                    .clip(RoundedCornerShape(12.dp))
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -92,17 +97,7 @@ fun ShowBook(book: ElectronicBookData, dowloadVM: DownloadViewModel){
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Download Button
-//            Button(
-//                onClick = { downloadFile(book.file, context) },
-//                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2B47C)),
-//                shape = RoundedCornerShape(8.dp),
-//                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
-//            ) {
-//                Text(context.getString(R.string.download))
-//            }
-            // КНОПКА ЗАГРУЗКИ
-            // Внутри ShowBook.kt найди кнопку Button
+
 
             Button(
                 onClick = {
@@ -114,9 +109,13 @@ fun ShowBook(book: ElectronicBookData, dowloadVM: DownloadViewModel){
                         dowloadVM.startDownload(context, bookUrl, fileName)
                     }
                 },
+
                 // Кнопка активна всегда, кроме момента самой загрузки
                 enabled = !isDownloading,
-                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier
+                .padding(horizontal = 32.dp)
+                .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (isDownloaded) Color(0xFF4CAF50) else Color(0xFFD2B47C)
                 )
@@ -126,7 +125,10 @@ fun ShowBook(book: ElectronicBookData, dowloadVM: DownloadViewModel){
                         isDownloaded -> "Открыть"
                         isDownloading -> "Загрузка $progress%"
                         else -> "Скачать"
-                    }
+                    },
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium
+
                 )
             }
 
@@ -136,14 +138,7 @@ fun ShowBook(book: ElectronicBookData, dowloadVM: DownloadViewModel){
     }
 }
 
-//fun downloadFile(url: String, context: Context){
-//    var download= context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-//    var PdfUri = Uri.parse(url)
-//    var getPdf = DownloadManager.Request(PdfUri)
-//    getPdf.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-//    download.enqueue(getPdf)
-//    Toast.makeText(context,"Download Started", Toast.LENGTH_LONG).show()
-//}
+
 
 
 

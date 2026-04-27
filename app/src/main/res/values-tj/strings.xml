@@ -10,7 +10,19 @@
     <string name="ElectLib">Китобхона</string>
     <string name="schedule">Ҷадвал</string>
     <string name="Profile">Профил</string>
-    <string name="Magazine">Журнал</string>
+    <string name="GradeBook">Журнал</string>
+    <string name="My_group">Гурухи ман</string>
+    <string name="Group_Journal">Журнали гурӯҳ</string>
+
+
+
+    <string name="nothing_found">Ҳеҷ чиз ёфт нашуд</string>
+
+
+
+
+
+
 
 
     <string name="Attendance">Иштирок</string>
@@ -48,7 +60,9 @@
     <string name="All">Ҳама</string>
     <string name="TIME">Вақт</string>
     <string name="DAY">Рӯз</string>
-    <string name="CLASS">Синф</string>
+    <string name="CLASS">синф</string>
+    <string name="teacher">Омӯзгор</string>
+    <string name="BOOK">КИТОБ</string>
     <string-array name="week_days">
         <item>Дш</item>
         <item>Сш</item>
@@ -97,15 +111,49 @@
     <string name="New_update_available">Навсозии нав дастрас аст</string>
     <string name="Version">Версия</string>
 
+    <string name="app_up_to_date">Барнома нав аст</string>
+    <string name="latest_version_installed">Версияи охирин\nнасб шудааст</string>
+    <string name="version_label">Версия:</string>
+
 
     <!--  for Magazin -->
-    <string name="Select_a_group_for_logging">Гурӯҳро барои пешбурди журнал интихоб кунед</string>
+    <string name="Select_a_group_for_logging">Гурӯҳро барои сабт интихоб кунед</string>
     <string name="My_groups">Гурӯҳҳои ман</string>
     <string name="Group_Gradebook">Журнали гурӯҳ</string>
-    <string name="attendance_gradebook">Журнали ҳозиршавӣ</string>
-    <string name="Save_Report">Ҳисоботро нигоҳ доштан</string>
+    <string name="attendance_gradebook">Журнали давомот</string>
+    <string name="Save_Report">Захира кардани ҳисобот</string>
 
 
+    <string name="present">Аст</string>
+    <string name="late">Дер омадан</string>
+    <string name="absent">Ғоиб</string>
+
+    <string name="Journal_Login">Ворид шудан ба журнал</string>
+    <string name="Access_Password">Рамзи дастрасӣ</string>
+    <string name="Confirm">Тасдиқ кардан</string>
+
+
+    <string name="Academic_Performance">Сатҳи пешрафти таҳсил</string>
+    <string name="Teacher">Омӯзгор</string>
+
+    <string name="Confirm_selection">Тасдиқи интихоб</string>
+    <string name="UnavailableFuture">Дастнорас (Оянда)</string>
+
+    <string name="Success">Муваффақият!</string>
+    <string name="Attendance_data_saved_successfully">Маълумот дар журнал сабт шуд.</string>
+
+
+
+<!--    for AiScreen -->
+
+        <string name="ali_history">Таърихи Ali AI</string>
+        <string name="start_new_chat">Оғози чати нав</string>
+        <string name="hello">Салом</string>
+        <string name="where_start">Аз чӣ оғоз мекунем?</string>
+        <string name="lesson_today">Имрӯз ман дарс дорам?</string>
+        <string name="loading_schedule">Ali AI ҳоло ҷадвалро бор мекунад...</string>
+        <string name="ask_ali">Аз Ali AI пурсед...</string>
+        <string name="ali_typing">Ali AI менависад...</string>
 
 </resources>
 

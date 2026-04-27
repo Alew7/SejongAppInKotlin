@@ -2,6 +2,7 @@ package com.example.sejongapp.components.Pages
 
 import LocalData
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
@@ -15,6 +16,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MenuBook
@@ -41,12 +43,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.sejongapp.Activities.AiActivity.AiActivity
 import com.example.sejongapp.Activities.AppUpdate.appupdateactivity
 import com.example.sejongapp.Activities.ProfileActivity.ProfileActivity
 import com.example.sejongapp.MainActivity
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.UserDataClasses.UserData
-import com.example.sejongapp.models.ViewModels.UserViewModels.UserViewModel
+import com.example.sejongapp.models.ViewModels.GradeBookViewModels.GroupDetailsViewModel
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
 import com.example.sejongapp.utils.NavigationScreenEnum
@@ -56,20 +66,88 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomePage(
     onChangeScreen: (NavigationScreenEnum) -> Unit,
-    viewModel: UserViewModel
+
+
 ) {
 
+    val studentSkipsViewModel: GroupDetailsViewModel = viewModel()
+    val allStudents by studentSkipsViewModel.students.collectAsStateWithLifecycle()
+    val studentSkips by studentSkipsViewModel.studentSkips.collectAsStateWithLifecycle()
+    val studentPresents by studentSkipsViewModel.studentPresents.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
-    val iconSize = 80.dp
-
-    val cardScale = remember { Animatable(0.8f) }
-    val scale = remember { Animatable(0.2f) }
-    var progressTarget by remember { mutableStateOf(0f) }
-
-    var isClickedOnce by remember { mutableStateOf(false) }
     val userData: UserData = LocalData.getUserData(context)
 
-    //  Back press logic
+
+
+
+    val myGroupId = remember(userData.groups) {
+        val groupName = userData.groups.firstOrNull() ?: ""
+        when {
+            groupName.contains("4A-1") -> 17
+            else -> groupName.toIntOrNull() ?: -1
+        }
+    }
+
+    val skipsCount = remember(studentSkips, allStudents, userData.fullname) {
+        val myName = userData.fullname.trim().lowercase()
+
+        val myProfile = allStudents.find {
+            it.student_name_en.trim().lowercase() == myName ||
+                    it.student_name_tj.trim().lowercase() == myName
+        }
+
+        val myIdKey = myProfile?.student_id?.toString() ?.trim() ?: ""
+        studentSkips[myIdKey] ?: 0
+    }
+
+    val presentsCount = remember(studentPresents, allStudents, userData.fullname) {
+        val myName = userData.fullname.trim().lowercase()
+        val myProfile = allStudents.find {
+            it.student_name_en.trim().lowercase() == myName ||
+                    it.student_name_tj.trim().lowercase() == myName
+        }
+        val myIdKey = myProfile?.student_id?.toString() ?: ""
+        studentPresents[myIdKey] ?: 0
+    }
+
+    val iconSize = 80.dp
+    val cardScale = remember { Animatable(0.8f) }
+    val scale = remember { Animatable(0.2f) }
+
+
+
+
+    var isClickedOnce by remember { mutableStateOf(false) }
+    val calculatedProgress = (1.0f - (skipsCount * 0.03f)).coerceIn(0f, 1.0f)
+    var progressTarget by remember { mutableStateOf(0f) }
+
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.Asset("Chatbot.lottie")
+    )
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
+
+    val totalLessons = 17f
+    val myPresents = (totalLessons - skipsCount).coerceAtLeast(0f)
+    val currentProgress = (myPresents / totalLessons).coerceIn(0f, 1.0f)
+
+
+
+
+    LaunchedEffect(skipsCount) {
+        progressTarget = currentProgress
+    }
+
+
+    LaunchedEffect(calculatedProgress) {
+        progressTarget = calculatedProgress
+    }
+
+
+    //  Back press logicу
     BackHandler {
         if (isClickedOnce) {
             (context as MainActivity).finish()
@@ -98,6 +176,14 @@ fun HomePage(
         )
     }
 
+    LaunchedEffect(myGroupId) {
+        if (myGroupId != -1) {
+            studentSkipsViewModel.loadGroupData(myGroupId, context)
+        } else {
+            Log.e("HOME_DEBUG", "ID ГРУППЫ НЕ НАЙДЕН: ${userData.groups}")
+        }
+    }
+
     LaunchedEffect (Unit){
         cardScale.animateTo(
             targetValue = 1f,
@@ -116,15 +202,23 @@ fun HomePage(
         else -> lerp(primaryColor,Color(0xFF2E7D32), (animatedprogress - 0.5f) * 2f)
 
     }
-    LaunchedEffect(Unit) {
-        progressTarget = 1.0f
-    }
+
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
     ) {
+
+//        Image (
+//            painter = painterResource(R.drawable.wtit_logo),
+//            contentDescription = null,
+//            modifier = Modifier
+//            .size(250.dp)
+//                .align(Alignment.Center)
+//                .alpha(0.70f),
+//            contentScale = ContentScale.Fit
+//        )
 
         //  HEADER
         Box(
@@ -189,7 +283,7 @@ fun HomePage(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ){
-                            (onChangeScreen.invoke(NavigationScreenEnum.MAGAZINES))
+                            (onChangeScreen(NavigationScreenEnum.MAGAZINES))
                         }
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     shape = RoundedCornerShape(20.dp),
@@ -230,7 +324,7 @@ fun HomePage(
 
                             Column {
                                 Text(
-                                    text = "Журнал группы",
+                                    text = context.getString(R.string.My_groups),
                                     fontSize = 17.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = Color(0xFF1A1A1A),
@@ -241,7 +335,7 @@ fun HomePage(
 
 
                                 Text (
-                                    text = "Мои группы",
+                                    text = context.getString(R.string.Group_Gradebook),
                                     fontSize = 12.sp,
                                     color = Color(0xFF757575)
                                 )
@@ -256,6 +350,8 @@ fun HomePage(
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(30.dp)
+
+
                             )
 
                         }
@@ -265,27 +361,28 @@ fun HomePage(
 
 
             if (userData.status == UserStatusEnum.STUDENT) {
-                Spacer (modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
                 Card(
                     modifier = Modifier
-                        .size(width = 350.dp, height = 140.dp)
-                        .scale(cardScale.value)
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 8.dp)
+                        .scale(cardScale.value),
                     shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
                     Row(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 20.dp),
+                            .fillMaxWidth()
+                            .padding(all = 20.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-
+                        // ЛЕВАЯ ЧАСТЬ (Иконка + Текст)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             Box(
                                 modifier = Modifier
                                     .size(54.dp)
@@ -313,68 +410,74 @@ fun HomePage(
                                     fontSize = 17.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = Color(0xFF1A1A1A),
-                                    letterSpacing = 0.5.sp
+                                    letterSpacing = 0.5.sp,
+                                    maxLines = 1
                                 )
 
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
 
-
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.wrapContentWidth()
+                                ) {
                                     Surface(
                                         color = Color(0xFFE8F5E9),
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
                                         Text(
-                                            text = "12 " + context.getString(R.string.Lesson),
+                                            text = "17 " + context.getString(R.string.Lesson),
                                             fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = Color(0xFF2E7D32),
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "0 " + context.getString(R.string.skips),
+                                        text = "4 " + context.getString(R.string.skips),
                                         fontSize = 12.sp,
-                                        color = Color(0xFF757575)
+                                        color = Color(0xFF757575),
+                                        maxLines = 1
                                     )
                                 }
                             }
                         }
-                        Spacer (modifier = Modifier.width(6.dp))
 
 
-                        Box(contentAlignment = Alignment.Center) {
-
+                        Box(
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .size(68.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
                             CircularProgressIndicator(
                                 progress = 1f,
-                                modifier = Modifier.size(68.dp),
+                                modifier = Modifier.fillMaxSize(),
                                 color = Color(0xFFF0F0F0),
-                                strokeWidth = 8.dp
+                                strokeWidth = 7.dp
                             )
-
 
                             CircularProgressIndicator(
                                 progress = animatedprogress,
-                                modifier = Modifier.size(68.dp),
+                                modifier = Modifier.fillMaxSize(),
                                 color = dynamicProgressColor,
-                                strokeWidth = 8.dp,
+                                strokeWidth = 7.dp,
                                 strokeCap = StrokeCap.Round
                             )
 
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = "${(animatedprogress * 100).toInt()}%",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Black,
-                                    color = dynamicProgressColor
-                                )
-                            }
+                            Text(
+                                text = "${(animatedprogress * 88).toInt()}%",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Black,
+                                color = dynamicProgressColor
+                            )
                         }
                     }
                 }
 
+
             }
+
             Spacer (modifier = Modifier.height(50.dp))
 
             //  КОНТЕНТ
@@ -403,7 +506,7 @@ fun HomePage(
                     ) { onChangeScreen(NavigationScreenEnum.LIBRARY) }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(40.dp),
@@ -428,23 +531,40 @@ fun HomePage(
                             Intent(context, ProfileActivity::class.java)
                         )
                     }
-
                 }
 
-//                if (userData.status == UserStatusEnum.TEACHER || userData.status == UserStatusEnum.ADMIN) {
-//                    Spacer(modifier = Modifier.height(24.dp))
-//                    HomeMenuItem(
-//                        icon = R.drawable.ic_magazine2,
-//                        text = R.string.Magazine,
-//                        scale = scale.value,
-//                        iconSize = 100.dp
-//                    ) { onChangeScreen(NavigationScreenEnum.MAGAZINES) }
-//                }
 
+                Spacer (modifier = Modifier.height(20.dp))
 
             }
 
             Spacer(modifier = Modifier.weight(1f)) //  низ
+
+
+
+        }
+        Box (
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 130.dp, end = 20.dp)
+                .size(100.dp)
+
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    context.startActivity(
+                        Intent(context, AiActivity::class.java)
+                    )
+                },
+            contentAlignment = Alignment.Center
+
+        ) {
+            LottieAnimation(
+                composition = composition,
+                progress = { progress },
+                modifier = Modifier.size(150.dp)
+            )
         }
 
 
@@ -485,3 +605,13 @@ fun HomeMenuItem(
         )
     }
 }
+
+//@Composable
+//fun AttendanceStatItem(label: String, value: String, color: Color) {
+//    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//        Text(text = value, fontSize = 28.sp, fontWeight = FontWeight.Black, color = color)
+//        Text(text = label, fontSize = 12.sp, color = Color.Gray)
+//    }
+//}
+
+

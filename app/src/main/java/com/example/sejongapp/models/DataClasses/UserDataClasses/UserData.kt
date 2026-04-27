@@ -12,7 +12,8 @@ data class UserData(
     val fullname: String,
     val email: String,
     val status: UserStatusEnum,
-    val groups: List<String>
+    val groups: List<String>,
+    val gradebook_id: String? = "0"
 ): Parcelable
 
 
@@ -23,7 +24,8 @@ data class UserDataDTO(
     val fullname: String,
     val email: String,
     val status: String,
-    val groups: List<String>
+    val groups: List<String>,
+    val gradebook_id: String? = "0"
 ): Parcelable
 
 

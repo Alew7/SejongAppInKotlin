@@ -21,24 +21,20 @@ import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -47,10 +43,10 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.sejongapp.DialogModels.EditAvatarUser
+import com.example.sejongapp.DialogModels.EditUserDialog
+import com.example.sejongapp.DialogModels.EditUserPasswordDialog
 import com.example.sejongapp.R
-import com.example.sejongapp.components.EditAvatarUser
-import com.example.sejongapp.components.EditUserDialog
-import com.example.sejongapp.components.EditUserPasswordDialog
 import com.example.sejongapp.components.LoadingDialog
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.UserDataClasses.ChangeUserAvatarInfo
@@ -62,19 +58,18 @@ import com.example.sejongapp.retrofitAPI.NetworkResponse
 import com.example.sejongapp.room.RoomUserViewModel
 import com.example.sejongapp.ui.theme.backgroundColor
 import com.example.sejongapp.ui.theme.primaryColor
-import com.example.sejongapp.ui.theme.secondaryColor
 import com.example.sejongapp.utils.UserStatusEnum
 import kotlinx.coroutines.delay
-
-const val TAG = "TAG_ProfilePage"
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun ProfilePage() {
-    val userViewModel : UserViewModel = viewModel()
-
+    val userViewModel: UserViewModel = viewModel()
     val context = LocalContext.current
-    val userData = remember { getUserData(context)}
+
+    // ВАЖНО: используем state для данных, чтобы UI реагировал на изменения внутри этой функции
+    var userDataState by remember { mutableStateOf(getUserData(context)) }
+
     var showEditDialog by remember { mutableStateOf(false) }
     var showLoadingDialog by remember { mutableStateOf(false) }
     var fetchingNewUserData by remember { mutableStateOf(false) }
@@ -85,16 +80,11 @@ fun ProfilePage() {
     var isChangingPassword by remember { mutableStateOf(false) }
 
     val roomviewModel: RoomUserViewModel = viewModel()
-    val user = roomviewModel.user
     val token = LocalData.getSavedToken(context)
 
     LaunchedEffect(Unit) {
         roomviewModel.loadUser(token)
     }
-
-
-
-
 
     BoxWithConstraints(
         modifier = Modifier
@@ -104,471 +94,292 @@ fun ProfilePage() {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
 
-        val paddingHorizontal = screenWidth * 0.05f
-        val avatarSize = screenWidth * 0.3f
-        val editButtonSize = avatarSize * 0.25f
-        val titleFontSize = (screenWidth.value * 0.07).sp
-        val subFontSize = (screenWidth.value * 0.045).sp
-        val buttonHeight = screenHeight * 0.07f
-
-        val painter = rememberImagePainter(
-            data = userData.avatar,
-            builder = {
-                crossfade(true)
-                allowHardware(false)
-            }
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = paddingHorizontal),
+                .statusBarsPadding()
+                .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Image (
-                painter = painterResource(R.drawable.ic_back),
-                contentDescription = "ic_back"
-                ,
+            // --- Header ---
+            Row(
                 modifier = Modifier
-                    .size(screenWidth * 0.08f)
-                    .offset(y = 30.dp)
-                    .align(Alignment.Start)
-                    .clickable (
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        (context as? ProfileActivity)?.finish()
-                    }
-
-            )
-//            IconButton(
-//                onClick = { (context as? ProfileActivity)?.finish() },
-//                modifier = Modifier.align(Alignment.Start)
-//                    .offset(y = 30.dp)
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.ArrowBack,
-//                    contentDescription = "ic_back",
-//                    modifier = Modifier.size(screenWidth * 0.08f)
-//                )
-//            }
-
-            // Заголовок
-            Text(
-                text = context.getString(R.string.Profile),
-                fontSize = titleFontSize,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF222222)
-            )
-
-            Spacer(modifier = Modifier.height(screenHeight * 0.03f))
-
-            // Аватар
-            Box(
-                modifier = Modifier
-                    .size(avatarSize)
-                    .clip(CircleShape)
-                    .background(Color.White)
-                    .shadow(8.dp, CircleShape),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                if (userData.avatar.isNotEmpty()) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_back),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { (context as? Activity)?.finish() },
+                    tint = Color(0xFF1A1A1A)
+                )
+            }
 
-                    Image(
-                        painter = rememberImagePainter(userData.avatar),
-                        contentDescription = "userAvatar",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .size(avatarSize * 0.9f)
-                            .clip(CircleShape),
-//                            .rotate(90f),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Default user icon",
-                        tint = Color(0xFF555555),
-                        modifier = Modifier.size(avatarSize * 0.5f)
-                    )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // --- Avatar Section ---
+            Box(contentAlignment = Alignment.BottomEnd) {
+                Surface(
+                    modifier = Modifier
+                        .size(135.dp)
+                        .border(4.dp, Color.White, CircleShape)
+                        .shadow(25.dp, CircleShape),
+                    shape = CircleShape,
+                    color = Color.White
+                ) {
+                    if (userDataState.avatar.isNotEmpty()) {
+                        Image(
+                            painter = rememberImagePainter(userDataState.avatar),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize().clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            Icons.Default.Person,
+                            contentDescription = null,
+                            modifier = Modifier.padding(35.dp),
+                            tint = Color(0xFFE0E0E0)
+                        )
+                    }
                 }
 
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset(x = -(avatarSize * 0.1f), y = -(avatarSize * 0.1f))
-                        .size(editButtonSize)
-                        .clip(CircleShape)
-                        .background(primaryColor)
-                        .border(2.dp, Color.White, CircleShape)
-                        .shadow(6.dp, CircleShape)
-                        .clickable { showUserAvatarDialog = true },
-                    contentAlignment = Alignment.Center
+                Surface(
+                    onClick = { showUserAvatarDialog = true },
+                    shape = CircleShape,
+                    color = primaryColor,
+                    shadowElevation = 6.dp,
+                    modifier = Modifier.size(38.dp).border(3.dp, Color.White, CircleShape)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "ic_Edit",
-                        tint = Color.White,
-                        modifier = Modifier.size(editButtonSize * 0.5f)
-                    )
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(screenHeight * 0.02f))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Имя и Email
             Text(
-                text = userData.username ?: "Unknown User",
-                fontSize = titleFontSize,
+                text = userDataState.username ?: "username",
+                fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF111111)
+                color = Color(0xFF1A1A1A)
             )
+
             Text(
-                text = userData.fullname ?: "email@example.com",
-                fontSize = subFontSize,
-                color = Color.Gray
+                text = userDataState.fullname ?: "Fullname not set",
+                fontSize = 14.sp,
+                color = Color.Gray,
+                fontWeight = FontWeight.Medium
             )
 
-            Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+            Spacer(modifier = Modifier.height(35.dp))
 
-            // Карточка с информацией
-            Card(
-                shape = RoundedCornerShape(screenWidth * 0.04f),
+            // --- Info Card (Modern Style) ---
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(4.dp)
+                shape = RoundedCornerShape(28.dp),
+                color = Color.White,
+                shadowElevation = 2.dp
             ) {
-                Column {
-                    ProfileItem(
+                Column(modifier = Modifier.padding(20.dp)) {
+                    ProfileItemModern(
                         icon = Icons.Default.VerifiedUser,
                         title = context.getString(R.string.status),
-                        value = (
-                            when(userData.status){
-                                UserStatusEnum.STUDENT -> context.getString(R.string.Student)
-                                UserStatusEnum.TEACHER -> "Teacher"
-                                UserStatusEnum.ADMIN -> "Admin"
-                                UserStatusEnum.UNKNOWN -> "Unauthorized"
-                            }
-                            ),
-                        screenWidth = screenWidth
+                        value = when(userDataState.status){
+                            UserStatusEnum.STUDENT -> context.getString(R.string.Student)
+                            UserStatusEnum.TEACHER -> "Teacher"
+                            else -> "Admin"
+                        },
+                        accentColor = Color(0xFF4CAF50)
                     )
-                    Divider(color = Color(0xFFDDDDDD))
+                    Divider(modifier = Modifier.padding(vertical = 16.dp).alpha(0.3f))
 
-                    val groupsValue = userData.groups
-                        ?.toString()
-                        ?.replace("[", "")
-                        ?.replace("]", "")
-                        ?: "-"
-
-                    ProfileItem(
+                    val groupsValue = userDataState.groups?.toString()?.replace("[", "")?.replace("]", "") ?: "-"
+                    ProfileItemModern(
                         icon = Icons.Default.Group,
                         title = context.getString(R.string.Groups),
                         value = groupsValue,
-                        screenWidth = screenWidth
+                        accentColor = Color(0xFF2196F3)
                     )
-
-                    Divider(color = Color(0xFFDDDDDD))
-
-                    ProfileItem(
-                        icon = Icons.Filled.Email,
+                    Divider(modifier = Modifier.padding(vertical = 16.dp).alpha(0.3f))
+                    ProfileItemModern(
+                        icon = Icons.Default.Email,
                         title = context.getString(R.string.Email),
-                        value = userData.email ?: "-",
-                        screenWidth = screenWidth
+                        value = userDataState.email ?: "-",
+                        accentColor = Color(0xFFFF9800)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+            Spacer(modifier = Modifier.weight(1f))
 
-            // Кнопки
-            Button(
-                onClick = { showEditDialog = true },
+            // --- Buttons ---
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(buttonHeight),
-                shape = RoundedCornerShape(screenWidth * 0.03f),
-                colors = ButtonDefaults.buttonColors(containerColor = secondaryColor)
+                    .navigationBarsPadding()
+                    .padding(bottom = 30.dp)
             ) {
-                Text(
-                    text = context.getString(R.string.Edit_profile),
-                    color = Color.White,
-                    fontSize = subFontSize,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+                Button(
+                    onClick = { showEditDialog = true },
+                    modifier = Modifier.fillMaxWidth().height(58.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+                ) {
+                    Text(context.getString(R.string.Edit_profile), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
 
-            Spacer(modifier = Modifier.height(screenHeight * 0.015f))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = { showPasswordDialog = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(buttonHeight),
-                shape = RoundedCornerShape(screenWidth * 0.03f),
-                colors = ButtonDefaults.buttonColors(containerColor = secondaryColor)
-            ) {
-                Text(
-                    text = context.getString(R.string.Change_password),
-                    color = Color.White,
-                    fontSize = subFontSize,
-                    fontWeight = FontWeight.Bold
-                )
+                Button(
+
+                    onClick = { showPasswordDialog = true },
+                    modifier = Modifier.fillMaxWidth().height(58.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+                ) {
+                    Text(context.getString(R.string.Change_password), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
 
 
-
-//---------------------    The dialogs!  ---------------------//
-
-        //        Edit dialog. For making changes of the user
-        if (showEditDialog){
-
-            EditUserDialog(
-                userData = userData,
-                onDismiss = { showEditDialog = false },
-                onSave = { newUserData ->
-                    Log.d(TAG, "The UserData was changed to ${newUserData}")
-                    userViewModel.changeUserName(LocalData.getSavedToken(context),newUserData)
-                    showEditDialog = false
-                    showLoadingDialog = true
-                    isChangingPassword = false
-
-                }
-            )
-        }
-
-        // Edit Password dialog
+        if (showEditDialog) {
+        EditUserDialog(userDataState, { showEditDialog = false }, { new ->
+            userViewModel.changeUserName(token, new)
+            showEditDialog = false; showLoadingDialog = true; isChangingPassword = false
+        })
+    }
         if (showPasswordDialog) {
-            EditUserPasswordDialog(
-                onDismiss = { showPasswordDialog = false },
-                onSave = { newPassword ->
-                    Log.d("TAG_ProfilePage", "The new password is $newPassword")
-                    userViewModel.changeUserPassword(LocalData.getSavedToken(context),newPassword)
-
-                    showPasswordDialog = false
-                    showLoadingDialog = true
-                    isChangingPassword = true
-
-                }
-            )
-        }
-
-        // Edit Avatar dialog
+        EditUserPasswordDialog({ showPasswordDialog = false }, { pass ->
+            userViewModel.changeUserPassword(token, pass)
+            showPasswordDialog = false; showLoadingDialog = true; isChangingPassword = true
+        })
+    }
         if (showUserAvatarDialog) {
-            EditAvatarUser(
-                userData = userData,
-                onDismiss = {
-                    showUserAvatarDialog = false
-                    avatarChanged = false
-                            },
-                onSave = {uri ->
-                    var token = LocalData.getSavedToken(context)
-                    userViewModel.changeUserAvatar(context, token, uri)
-                    showUserAvatarDialog = false
-                    showLoadingDialog = true
-                    avatarChanged = true
-                }
-            )
-        }
+        EditAvatarUser(userDataState, { showUserAvatarDialog = false; avatarChanged = false }, { uri ->
+            userViewModel.changeUserAvatar(context, token, uri)
+            showUserAvatarDialog = false; showLoadingDialog = true; avatarChanged = true
+        })
+    }
 
 
-        //     Loading dialogs for showing and handling the user changing requests
-        if(showLoadingDialog){
-            if (avatarChanged){
-                val result by userViewModel.userAvatarResult.observeAsState(NetworkResponse.Idle)
-                Log.i(TAG, "Started fetching for the avatar")
-                when (result) {
-
-                    is NetworkResponse.Error -> {
-                        showError((result as NetworkResponse.Error).message) {
-                            showLoadingDialog = false
-                        }
-                    }
-                    NetworkResponse.Idle -> {}
-                    NetworkResponse.Loading -> {
-                        LoadingDialog(LocalContext.current.getString(R.string.applying_changes))
-                    }
-                    is NetworkResponse.Success ->{
-                            var fetchedData = (result as NetworkResponse.Success<ChangeUserAvatarInfo>).data
-
-                            if (fetchedData.message.isNullOrEmpty()){
-                                showError("Server returned null token") { showLoadingDialog = false }
-                            }
-                            Toast.makeText(context, "Avatar updated successfully!", Toast.LENGTH_SHORT).show()
-                            showSuccessAnomation = true
-                            Log.i(TAG, "Success on  fetching the data")
-                            fetchingNewUserData = true
-                            showLoadingDialog = false
-                            isChangingPassword = false
-                            avatarChanged = false
-                            var theUserData = getUserData(context)
-                            LocalData.setUserData(context, UserData(
-                                username = theUserData.username,
-                                avatar = fetchedData.avatar,
-                                fullname = theUserData.fullname,
-                                email = theUserData.email,
-                                status = theUserData.status,
-                                groups = theUserData.groups
-
-                            )
-                            )
-
-
-
-                    }
-                    else ->{}
-
-
-                }
-            }
-            else{
-                val result by userViewModel.userChangeResult.observeAsState(NetworkResponse.Idle)
-                Log.i(TAG, "Started fetching for the user data")
-
-                when (result) {
-
-                    is NetworkResponse.Error -> {
-                        showError((result as NetworkResponse.Error).message) {
-                            showLoadingDialog = false
-                        }
-                    }
-                    NetworkResponse.Idle -> {}
-                    NetworkResponse.Loading -> {
-                        LoadingDialog(LocalContext.current.getString(R.string.applying_changes))
-                    }
-                    is NetworkResponse.Success ->{
-                        Log.i(TAG, "Success on  fetching the data")
-                        if (isChangingPassword){
-                            var fetchedData = (result as NetworkResponse.Success<tokenData>).data
-                            Log.v(TAG, "ProfileChangeDialog : The token is $fetchedData")
-                            if (fetchedData.auth_token.isNullOrEmpty()){
-                                showError("Server returned null token") { showLoadingDialog = false }
-                            }
-
-                            Toast.makeText(LocalContext.current, "The Password has been successfully updated", Toast.LENGTH_LONG)
-                            showSuccessAnomation = true
-                            LocalData.setToken(context, fetchedData.auth_token)
-                            fetchingNewUserData = true
-                            showLoadingDialog = false
-                            isChangingPassword = false
-
-                        }
-                        else{
-                            var fetchedData = (result as NetworkResponse.Success<ChangeUserInfo>).data
-                            if (fetchedData.username.isNullOrEmpty()){
-                                showError("Server returned null token") { showLoadingDialog = false }
-                            }
-                            Toast.makeText(LocalContext.current, "The data has been successfully updated", Toast.LENGTH_LONG)
-                            showSuccessAnomation = true
-                            Log.i(TAG, "Success on  fetching the data")
-                            fetchingNewUserData = true
-                            showLoadingDialog = false
-                            isChangingPassword = false
-                            avatarChanged = false
-                            var theUserData = getUserData(context)
-                            LocalData.setUserData(context, UserData(
-                                username = fetchedData.username,
-                                avatar = theUserData.avatar,
-                                fullname = theUserData.fullname,
-                                email = fetchedData.email,
-                                status = theUserData.status,
-                                groups = theUserData.groups
-                            )
-                            )
-                        }
-
-                    }
-                    else ->{}
-
-
-                }
-            }
-
-
-
-        }
-
-
-        //     Loading dialogs for showing and handing the new user data that was changed
-        if(fetchingNewUserData){
-            val result by userViewModel.userDataResult.observeAsState(NetworkResponse.Idle)
+    if (showLoadingDialog) {
+        if (avatarChanged) {
+            val result by userViewModel.userAvatarResult.observeAsState(NetworkResponse.Idle)
             when (result) {
-                is NetworkResponse.Error -> {
-                    showError((result as NetworkResponse.Error).message) {
-                        fetchingNewUserData = false
-                    }
+                is NetworkResponse.Error -> showError((result as NetworkResponse.Error).message) { showLoadingDialog = false }
+                NetworkResponse.Loading -> LoadingDialog(context.getString(R.string.applying_changes))
+                is NetworkResponse.Success -> {
+                    val fetched = (result as NetworkResponse.Success<ChangeUserAvatarInfo>).data
+                    val updated = userDataState.copy(avatar = fetched.avatar)
+                    LocalData.setUserData(context, updated)
+                    userDataState = updated
+                    showSuccessAnomation = true
+                    showLoadingDialog = false
+                    avatarChanged = false
+                    fetchingNewUserData = true
                 }
-                NetworkResponse.Idle -> {}
-                NetworkResponse.Loading -> {
-                        LoadingDialog(LocalContext.current.getString(R.string.refreshing_data))
-
-                }
-                is NetworkResponse.Success ->{
-                    Log.d(TAG, "Success on  fetching the data ${(result as NetworkResponse.Success<UserData>).data}")
-                    LocalData.setUserData(LocalContext.current,
-                        (result as NetworkResponse.Success<UserData>).data
-                    )
-                    Toast.makeText(LocalContext.current, "The data has been successfully updated", Toast.LENGTH_LONG)
-                    fetchingNewUserData = false
-
-
-
-                }
-                else ->{}
+                else -> {}
             }
-        }
-    if (showSuccessAnomation) {
-        BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0x66000000)),
-            contentAlignment = Alignment.Center
-        ) {
-            val screenWidth = maxWidth
-
-            SuccessAnimation(
-                modifier = Modifier.size(screenWidth * 0.5f)
-            )
-
-            LaunchedEffect(Unit) {
-                delay(3000)
-                showSuccessAnomation = false
-
-                if (context is Activity) {
-                    context.recreate()
+        } else {
+            val result by userViewModel.userChangeResult.observeAsState(NetworkResponse.Idle)
+            when (result) {
+                is NetworkResponse.Error -> showError((result as NetworkResponse.Error).message) { showLoadingDialog = false }
+                NetworkResponse.Loading -> LoadingDialog(context.getString(R.string.applying_changes))
+                is NetworkResponse.Success -> {
+                    if (isChangingPassword) {
+                        val tData = (result as NetworkResponse.Success<tokenData>).data
+                        LocalData.setToken(context, tData.auth_token)
+                    } else {
+                        val fetched = (result as NetworkResponse.Success<ChangeUserInfo>).data
+                        val updated = userDataState.copy(username = fetched.username, email = fetched.email)
+                        LocalData.setUserData(context, updated)
+                        userDataState = updated
+                    }
+                    showSuccessAnomation = true
+                    showLoadingDialog = false
+                    fetchingNewUserData = true
                 }
+                else -> {}
             }
         }
     }
 
+    if (fetchingNewUserData) {
+        val result by userViewModel.userDataResult.observeAsState(NetworkResponse.Idle)
+        if (result is NetworkResponse.Success) {
+            val fresh = (result as NetworkResponse.Success<UserData>).data
+            LocalData.setUserData(context, fresh)
+            userDataState = fresh
+            fetchingNewUserData = false
+        }
+    }
+
+    if (showSuccessAnomation) {
+        Box(Modifier.fillMaxSize().background(Color.Black.copy(0.7f)), Alignment.Center) {
+            SuccessAnimation()
+            LaunchedEffect(Unit) {
+                delay(2500)
+                showSuccessAnomation = false
+                (context as? Activity)?.recreate()
+            }
+        }
+    }
 }
 
 @Composable
-fun ProfileItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, value: String, screenWidth: androidx.compose.ui.unit.Dp) {
-    val iconSize = screenWidth * 0.06f
-    val titleFontSize = (screenWidth.value * 0.04).sp
-    val valueFontSize = (screenWidth.value * 0.045).sp
+fun ProfileItemModern(icon: ImageVector, title: String, value: String, accentColor: Color) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = screenWidth * 0.03f, vertical = 8.dp),
+        .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = title,
-            tint = Color(0xFF555555),
-            modifier = Modifier.size(iconSize)
-        )
-        Spacer(modifier = Modifier.width(screenWidth * 0.03f))
+        Box(
+            modifier = Modifier
+                .size(46.dp)
+                .background(accentColor.copy(0.12f),
+                    shape = RoundedCornerShape(14.dp)),
+                    contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = accentColor,
+                modifier = Modifier
+                    .size(22.dp)
+            )
+        }
+
+        Spacer(Modifier.width(16.dp))
+
         Column {
-            Text(text = title, fontSize = titleFontSize, color = Color.Gray)
+
+            Text(
+                text = title,
+                fontSize = 11.sp,
+                color = Color.Gray,
+                fontWeight = FontWeight.Bold
+            )
+
             Text(
                 text = value,
-                fontSize = valueFontSize,
-                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = Color(0xFF2D2D2D),
+                fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -576,35 +387,13 @@ fun ProfileItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: St
     }
 }
 
+
 @Composable
 fun SuccessAnimation(modifier: Modifier = Modifier) {
-
-
-    val composition by rememberLottieComposition(
+    val comp by rememberLottieComposition(
         LottieCompositionSpec.Asset("Sucesso.lottie")
     )
 
-
-    val progress by animateLottieCompositionAsState(
-        composition = composition,
-        iterations = 1,
-        speed = 1f
-    )
-
-    LottieAnimation(
-        composition = composition,
-        progress = { progress },
-        modifier = modifier.size(200.dp)
-    )
+    val prog by animateLottieCompositionAsState(comp, iterations = 1)
+    LottieAnimation(comp, { prog }, modifier = modifier.size(250.dp))
 }
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ProfilePreview() {
-    ProfilePage()
-}
-
-
-
-

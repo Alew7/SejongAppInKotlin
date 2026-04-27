@@ -1,12 +1,16 @@
 package com.example.sejongapp.retrofitAPI.gradeBookapi
 
-import com.example.sejongapp.models.DataClasses.StudentGroups.GroupsResponse
-import com.example.sejongapp.models.DataClasses.UserDataClasses.tokenData
+import com.example.sejongapp.models.DataClasses.StudentGroups.GroupDetailResponse
+import com.example.sejongapp.models.DataClasses.StudentGroups.TeachersGroupResponse
+import com.example.sejongapp.models.DataClasses.apiResponse.SaveStudentAttendance
+import com.example.sejongapp.models.DataClasses.apiResponse.StudentAttendanceRequest
+import com.example.sejongapp.models.DataClasses.apiResponse.messageResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 
 interface GroupsApi {
@@ -14,5 +18,24 @@ interface GroupsApi {
     @GET("mobile/get-groups")
     suspend fun getGroups(
         @Header("token") token: String
-    ): GroupsResponse
+    ): Response<TeachersGroupResponse>
+
+    @GET("mobile/get-group-data/{id}")
+    suspend fun getGroupDetail(
+        @Header("token") token: String,
+        @Path("id") groupId: Int
+    ): Response<GroupDetailResponse>
+
+
+    @POST("mobile/save-attendance")
+    suspend fun saveStudentAttendance(
+        @Header("token") token: String,
+        @Body request: SaveStudentAttendance
+    ): Response<messageResponse>
+
+
+
+
+
+
 }

@@ -22,12 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.R
 import com.example.sejongapp.models.DataClasses.StudentGroups.Group
 import com.example.sejongapp.models.ViewModels.GradeBookViewModels.GroupsViewModel
@@ -55,6 +60,8 @@ fun ChooseGroupDesign(
     val context = LocalContext.current
 
 
+
+
     LaunchedEffect (Unit) {
         viewModel.loadMyGroups(context)
         startAnimation = true
@@ -64,6 +71,7 @@ fun ChooseGroupDesign(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
+            .navigationBarsPadding()
             .padding(horizontal = 20.dp)
     ) {
         Spacer(modifier = Modifier.height(40.dp))
@@ -84,15 +92,28 @@ fun ChooseGroupDesign(
 
 
         if (isLoading && groups.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = primaryColor)
+
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.Asset("Loading.lottie")
+            )
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                Column (horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(top = 20.dp)) {
+                    LottieAnimation(
+                        composition = composition,
+                        iterations = LottieConstants.IterateForever,
+                        modifier = Modifier
+                            .size(100.dp)
+                    )
+                }
             }
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxWidth(),
+                    contentPadding = PaddingValues(bottom = 100.dp)
             ) {
 
                 itemsIndexed(groups) { index, group ->
@@ -173,7 +194,7 @@ fun GroupCard(group: Group, isAdmin: Boolean) {
 
             Column {
                 Text(
-                    text = group.name,
+                    text = group.name ,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF333333),
@@ -186,7 +207,7 @@ fun GroupCard(group: Group, isAdmin: Boolean) {
 
                     ) {
                         Text(
-                            text = "Преподователь: ${group.teacher_name_kr}",
+                            text = context.getString(R.string.Teacher) + ": ${group.teacher_name_kr}",
                             fontSize = 12.sp,
                             color = primaryColor,
                             maxLines = 1
@@ -209,8 +230,8 @@ fun GroupCard(group: Group, isAdmin: Boolean) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewChooseGroup() {
-    ChooseGroupDesign()
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun PreviewChooseGroup() {
+//    ChooseGroupDesign()
+//}

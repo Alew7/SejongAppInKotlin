@@ -10,8 +10,12 @@
     <string name="ElectLib">Electronic Library</string>
     <string name="schedule">Schedule</string>
     <string name="Profile">Profile</string>
-    <string name="Magazine">Magazine"</string>
+    <string name="GradeBook">GradeBook</string>
+    <string name="My_group">My group</string>
+    <string name="Group_Journal"> Group Journal </string>
 
+
+    <string name="nothing_found">Nothing found</string>
 
     <string name="Attendance">Attendance</string>
     <string name="Lesson">lesson</string>
@@ -39,13 +43,14 @@
     <string name="Review">Review</string>
 
 
-
-
     <!--Schedule-->
     <string name="All">All</string>
     <string name="TIME">TIME</string>
     <string name="DAY">DAY</string>
-    <string name="CLASS">CLASS</string>
+    <string name="CLASS">class</string>
+    <string name="teacher">teacher</string>
+    <string name="BOOK">BOOK</string>
+
 
     <string-array name="week_days">
         <item>MON</item>
@@ -99,22 +104,48 @@
     <string name="New_update_available">New update available</string>
     <string name="Version">Version</string>
 
+    <string name="app_up_to_date">App is up to date</string>
+    <string name="latest_version_installed">You have installed\nthe latest version</string>
+    <string name="version_label">Version:</string>
 
-    <!--  for Magazin -->
+
+    <!--  for GradeBook and Login GradeBook -->
     <string name="Select_a_group_for_logging">Select a group for logging</string>
     <string name="My_groups">My groups</string>
     <string name="Group_Gradebook">Group Gradebook</string>
     <string name="attendance_gradebook">Attendance gradebook</string>
     <string name="Save_Report">Save Report</string>
+    <string name="present">present</string>
+    <string name="late">late</string>
+    <string name="absent">absent</string>
+
+    <string name="Journal_Login">Journal Login</string>
+    <string name="Access_Password">Access Password</string>
+    <string name="Confirm">Confirm</string>
+
+    <string name="Live_Statistics">Live Statistics</string>
+    <string name="Academic_Performance">Academic Performance</string>
+    <string name="Teacher">Teacher</string>
+
+    <string name="Confirm_selection">Confirm selection</string>
+
+    <string name="UnavailableFuture">Unavailable (Future)</string>
+    <string name="Success">Success!</string>
+    <string name="Attendance_data_saved_successfully">Attendance data saved successfully.</string>
+    <string name="title_activity_ai">AiActivity</string>
 
 
 
+<!--     for AiScreen-->
 
-
-
-
-
-
+        <string name="ali_history">Ali AI history</string>
+        <string name="start_new_chat">Start new chat</string>
+        <string name="hello">Hello</string>
+        <string name="where_start">Where shall we start?</string>
+        <string name="lesson_today">Do I have a lesson today?</string>
+        <string name="loading_schedule">Ali AI is still loading the schedule...</string>
+        <string name="ask_ali">Ask Ali AI...</string>
+        <string name="ali_typing">Ali AI is typing...</string>
 
 
 </resources>

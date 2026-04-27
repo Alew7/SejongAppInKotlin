@@ -33,17 +33,21 @@ import com.example.sejongapp.ui.theme.primaryColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sejongapp.Activities.AnnousmentActivity.AnnousmentActivity
 import com.example.sejongapp.NavBar.getLocalized
 import com.example.sejongapp.components.showError
 import com.example.sejongapp.models.DataClasses.AnnouncementDateItem
 import com.example.sejongapp.models.ViewModels.UserViewModels.AnnouncmentsViewModel
 import com.example.sejongapp.retrofitAPI.NetworkResponse
-import com.example.sejongapp.ui.theme.brightBackgroundColor
 import com.example.sejongapp.ui.theme.darkGray
 import com.example.sejongapp.utils.NavigationScreenEnum
 
@@ -104,7 +108,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                 if (!isSeraching) {
                     Image (
                         painter = painterResource(R.drawable.ic_back),
-                        contentDescription = "ic_bakc",
+                        contentDescription = "ic_back",
                         modifier = Modifier
                             .size(64.dp)
                             .padding(start = 25.dp)
@@ -118,20 +122,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
                     )
 
-//                Icon(
-//                    imageVector = Icons.Default.ArrowBack,
-//                    contentDescription = "ic_ArrowBack",
-//                    modifier = Modifier
-//                        .size(64.dp)
-//                        .padding(start = 25.dp)
-//                        .clickable (
-//                            interactionSource = remember {MutableInteractionSource()},
-//                            indication = null
-//
-//                        ) {
-//                            onChangeScreen(NavigationScreenEnum.HOMEPAGE)
-//                        }
-//                )
+
 
                 Image (
                     painter = painterResource(R.drawable.ic_search),
@@ -214,6 +205,10 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
         NetworkResponse.Idle -> {}
         NetworkResponse.Loading -> {
             Log.d(TAG, "AnnouncementPage: Loading the data")
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.Asset("Loading.lottie")
+            )
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -221,9 +216,11 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
                 contentAlignment = Alignment.Center
 
             ) {
-                CircularProgressIndicator(
-                    color = primaryColor,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                LottieAnimation(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier
+                        .size(100.dp)
                 )
             }
         }
@@ -263,7 +260,7 @@ fun AnnousmentPage(onChangeScreen: (NavigationScreenEnum) -> Unit = {}) {
 
                 ) {
                     Text (
-                        text = "Не чего не найден",
+                        text = context.getString(R.string.nothing_found),
                         color = Color.Gray,
                         fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.montserrat_medium))
@@ -337,7 +334,7 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
                     painter = rememberImagePainter(firstImage),
                     contentDescription = "announcement_img",
                     // ВОТ ЭТО ДЕЛАЕТ ФОТО В ТОЧНЫЙ РАЗМЕР КВАДРАТА
-                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                    contentScale = Crop,
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -371,8 +368,9 @@ fun AnnousmentCard(annData: AnnouncementDateItem, onClick: () -> Unit) {
                     color = primaryColor.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
+                    val dateOnly = annData.time_posted.split(" ").firstOrNull() ?: ""
                     Text(
-                        text = annData.time_posted,
+                        text = dateOnly,
                         fontFamily = FontFamily(Font(R.font.montserrat_semibold)),
                         fontWeight = FontWeight.Light,
                         fontSize = 11.sp,
@@ -400,7 +398,3 @@ fun fixGoogleDriveLink(url: String): String {
         url
     }
 }
-
-
-
-

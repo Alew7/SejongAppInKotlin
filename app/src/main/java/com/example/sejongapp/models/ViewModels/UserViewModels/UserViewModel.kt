@@ -4,6 +4,7 @@ package com.example.sejongapp.models.ViewModels.UserViewModels
 
 import LocalData.compressImageToTempFile
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -125,6 +126,7 @@ class UserViewModel: ViewModel() {
             fullname = this.fullname,
             email = this.email,
             groups = this.groups,
+            gradebook_id = this.gradebook_id,
             status = when (this.status.uppercase()) { // .uppercase() для надежности
                 "STUDENT" -> UserStatusEnum.STUDENT
                 "TEACHER" -> UserStatusEnum.TEACHER
@@ -235,13 +237,13 @@ class UserViewModel: ViewModel() {
 
     }
 
-    fun changeUserAvatar(context: Context, token: String, uri: Uri) {
+    fun changeUserAvatar(context: Context, token: String, bitmap: Bitmap) {
         val TAG = "AvatarChange_TAG"
 
         _userAvatarResult.value = Loading
 
 
-        val compressedFile = compressImageToTempFile(context, uri, 25)
+        val compressedFile = compressImageToTempFile(context, bitmap, 80)
         Log.i(TAG, "the image in Binary ${compressedFile}")
         val requestBody = compressedFile?.asRequestBody("image/*".toMediaTypeOrNull())
         val imagePart = MultipartBody.Part.createFormData(

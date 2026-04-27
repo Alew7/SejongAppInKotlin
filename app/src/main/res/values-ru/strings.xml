@@ -10,7 +10,16 @@
     <string name="ElectLib"> Библиотека</string>
     <string name="schedule">Расписание</string>
     <string name="Profile">Профиль</string>
-    <string name="Magazine">Журнал</string>
+    <string name="GradeBook">Журнал</string>
+    <string name="My_group">Моя группа</string>
+    <string name="Group_Journal">Журнал группы</string>
+
+
+    <string name="nothing_found">Ничего не найдено</string>
+
+
+
+
 
 
     <string name="Attendance">Посещаемость</string>
@@ -44,6 +53,8 @@
     <string name="TIME">Время</string>
     <string name="DAY">День</string>
     <string name="CLASS">Класс</string>
+    <string name="teacher">Преподаватель</string>
+    <string name="BOOK">Книга</string>
     <string-array name="week_days">
         <item>Пн</item>
         <item>Вт</item>
@@ -89,13 +100,51 @@
     <string name="New_update_available">Доступно новое обновление</string>
     <string name="Version">Версия</string>
 
+    <string name="app_up_to_date">Приложение актуально</string>
+    <string name="latest_version_installed">У вас установлена\nпоследняя версия</string>
+    <string name="version_label">Версия:</string>
+
 
     <!--  for Magazin -->
-    <string name="Select_a_group_for_logging">Выберите группу для ведения журнала</string>
-    <string name="My_groups">Мои группы</string>
-    <string name="Group_Gradebook">Журнал группы</string>
-    <string name="attendance_gradebook">Журнал посещаемости</string>
+    <string name="Select_a_group_for_logging">Выберите группу для журнала</string>
     <string name="Save_Report">Сохранить отчёт</string>
+    <string name="My_groups">Мои группы</string>
+    <string name="Group_Gradebook">Классный журнал</string>
+    <string name="attendance_gradebook">Журнал посещаемости</string>
+
+    <string name="present">Присутствие</string>
+    <string name="late">Опоздание</string>
+    <string name="absent">Отсутствие</string>
+
+    <string name="Journal_Login">Вход в журнал</string>
+    <string name="Access_Password">Пароль доступа</string>
+    <string name="Confirm">Подтвердить</string>
+
+
+    <string name="Live_Statistics">Live Статистика</string>
+    <string name="Academic_Performance">Успеваемость</string>
+    <string name="Teacher">Преподователь</string>
+
+    <string name="Confirm_selection">Подтвердить выбор</string>
+
+    <string name="UnavailableFuture">Недоступно (Будущее)</string>
+
+    <string name="Success">Успешно!</string>
+    <string name="Attendance_data_saved_successfully">Данные сохранены в журнале.</string>
+
+
+<!--    for AiScreen -->
+
+        <string name="ali_history">История Ali AI</string>
+        <string name="start_new_chat">Начать новый чат</string>
+        <string name="hello">Здравствуйте</string>
+        <string name="where_start">С чего начнём?</string>
+        <string name="lesson_today">У меня сегодня есть урок?</string>
+        <string name="loading_schedule">Али ИИ ещё загружает расписание...</string>
+        <string name="ask_ali">Спроси у Али ИИ...</string>
+        <string name="ali_typing">Али ИИ печатает...</string>
+
+
 
 
 

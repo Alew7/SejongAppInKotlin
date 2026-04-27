@@ -4,7 +4,7 @@ plugins {
     id("kotlin-parcelize")
 
     id("com.google.devtools.ksp")
-
+//    alias(libs.plugins.kotlin.compose)
 
 
 }
@@ -37,11 +37,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.sessions)
+    implementation(libs.generativeai)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -82,6 +83,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
+
 
 
     // Основная библиотека Retrofit
@@ -110,6 +114,9 @@ dependencies {
         implementation ("com.google.accompanist:accompanist-pager:0.31.5-beta") // последняя версия
         implementation ("com.google.accompanist:accompanist-pager-indicators:0.31.5-beta")
 
+    implementation("androidx.exifinterface:exifinterface:1.3.6") // не оригинал
+
+
 
     // room
     val room_version = "2.6.0"
@@ -117,6 +124,23 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
 
     ksp("androidx.room:room-compiler:$room_version")
+    implementation("androidx.compose.material:material-icons-extended")
+
+
+
+
+
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+
+
+    implementation("androidx.compose.material:material-icons-extended")
+
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
+
+    implementation("com.github.yalantis:ucrop:2.2.8")
+
+
 
     
 }

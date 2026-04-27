@@ -17,3 +17,7 @@ val lightGray  = Color(0xffA4A4A4)
 //              тут мои добавленые цвета
 val WarmBeige  = Color(0xffE1DFD8)
 val brightBackgroundColor = Color(0xFFFFFDF5)
+val SejongText = Color(0xFF8B7355)
+val UserBubble = Color(0xFF3E2723)
+val AiBubble = Color.White
+val SejongCard = Color(0xFFFFF8DC)
