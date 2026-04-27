@@ -47,29 +47,32 @@ class AIChatViewModel(private val repository: AiRepository) : ViewModel() {
         val cacheKey = getUserCacheKey(context)
         val prefs = context.getSharedPreferences("ai_prefs", Context.MODE_PRIVATE)
 
-        historyMessages.clear()
-        messages.clear()
-
+        // 1. ЗАГРУЗКА ИЗ КЭША (МГНОВЕННО)
         val cached = prefs.getString(cacheKey, null)
         if (cached != null) {
             try {
                 val type = object : TypeToken<List<Message>>() {}.type
                 val saved: List<Message> = gson.fromJson(cached, type)
-                historyMessages.addAll(saved)
 
-                if (isFirstAppLaunch && saved.isNotEmpty()) {
-                    val lastId = saved.firstOrNull()?.chatID
-                    if (lastId != null) {
-                        currentChatId = lastId
-                        messages.addAll(saved.filter { it.chatID == lastId }.reversed())
+                if (saved.isNotEmpty()) {
+                    historyMessages.clear()
+                    historyMessages.addAll(saved)
+
+                    // Если мы только зашли и экран пустой — восстанавливаем последний чат
+                    if (messages.isEmpty()) {
+                        val lastId = saved.first().chatID
+                        currentChatId = lastId ?: ""
+                        val lastChatMessages = saved.filter { it.chatID == lastId }.reversed()
+                        messages.clear()
+                        messages.addAll(lastChatMessages)
                     }
-                    isFirstAppLaunch = false
                 }
             } catch (e: Exception) {
-                Log.e("AI_DEBUG", "Ошибка кэша: ${e.message}")
+                Log.e("AI_DEBUG", "Кэш пуст или ошибка: ${e.message}")
             }
         }
 
+        // 2. ЗАГРУЗКА ИЗ СЕТИ (ОБНОВЛЕНИЕ)
         viewModelScope.launch {
             try {
                 val history = repository.fetchHistory(token)
@@ -77,18 +80,28 @@ class AIChatViewModel(private val repository: AiRepository) : ViewModel() {
                     val fetched = mutableListOf<Message>()
                     history.forEach { chat ->
                         val id = chat.chatId ?: UUID.randomUUID().toString()
-                        val chatTitle = if (!chat.title.isNullOrBlank()) chat.title else "Новый диалог"
+                        val chatTitle = chat.title ?: "Чат"
                         val rawTime = chat.time ?: ""
                         val shortTime = if (rawTime.length >= 16) rawTime.substring(11, 16) else rawTime
 
                         chat.messages?.forEach { msg ->
-                            fetched.add(Message(msg.question, false, shortTime, id, chatTitle))
-                            fetched.add(Message(msg.answer, true, shortTime, id, chatTitle))
+                            // Важно: в historyMessages храним в обратном порядке (новые сверху)
+                            fetched.add(0, Message(msg.answer, true, shortTime, id, chatTitle))
+                            fetched.add(0, Message(msg.question, false, shortTime, id, chatTitle))
                         }
                     }
+
                     historyMessages.clear()
                     historyMessages.addAll(fetched)
+
+
                     prefs.edit().putString(cacheKey, gson.toJson(fetched)).apply()
+
+                    // Если сообщений на экране всё еще нет (первый запуск), берем из того что пришло
+                    if (messages.isEmpty() && fetched.isNotEmpty()) {
+                        val firstId = fetched.first().chatID
+                        openHistoryChat(firstId)
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("AI_DEBUG", "Ошибка сети: ${e.localizedMessage}")

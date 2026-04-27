@@ -79,6 +79,8 @@ fun HomePage(
     val userData: UserData = LocalData.getUserData(context)
 
 
+
+
     val myGroupId = remember(userData.groups) {
         val groupName = userData.groups.firstOrNull() ?: ""
         when {
@@ -94,7 +96,7 @@ fun HomePage(
             it.student_name_en.trim().lowercase() == myName ||
                     it.student_name_tj.trim().lowercase() == myName
         }
-        // Получаем ID как строку (ключ для мапы)
+
         val myIdKey = myProfile?.student_id?.toString() ?.trim() ?: ""
         studentSkips[myIdKey] ?: 0
     }
@@ -127,6 +129,17 @@ fun HomePage(
         composition = composition,
         iterations = LottieConstants.IterateForever
     )
+
+    val totalLessons = 17f
+    val myPresents = (totalLessons - skipsCount).coerceAtLeast(0f)
+    val currentProgress = (myPresents / totalLessons).coerceIn(0f, 1.0f)
+
+
+
+
+    LaunchedEffect(skipsCount) {
+        progressTarget = currentProgress
+    }
 
 
     LaunchedEffect(calculatedProgress) {
@@ -352,7 +365,6 @@ fun HomePage(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-
                         .padding(horizontal = 20.dp, vertical = 8.dp)
                         .scale(cardScale.value),
                     shape = RoundedCornerShape(20.dp),
@@ -413,7 +425,7 @@ fun HomePage(
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
                                         Text(
-                                            text = "12 " + context.getString(R.string.Lesson),
+                                            text = "17 " + context.getString(R.string.Lesson),
                                             fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = Color(0xFF2E7D32),
@@ -422,7 +434,7 @@ fun HomePage(
                                     }
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "0" + context.getString(R.string.skips),
+                                        text = "4 " + context.getString(R.string.skips),
                                         fontSize = 12.sp,
                                         color = Color(0xFF757575),
                                         maxLines = 1
@@ -454,7 +466,7 @@ fun HomePage(
                             )
 
                             Text(
-                                text = "${(animatedprogress * 100).toInt()}%",
+                                text = "${(animatedprogress * 88).toInt()}%",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Black,
                                 color = dynamicProgressColor
